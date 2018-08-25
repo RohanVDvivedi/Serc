@@ -6,7 +6,7 @@
 #include<serverconfig.h>
 #include<serve.h>
 
-int main()
+int server()
 {
 	int err;
 
@@ -68,7 +68,7 @@ int main()
 		conn_fd = err;
 
 		// serve the connection that has been accepted
-		serve(fd);
+		serve(conn_fd);
 
 		// phase 5
 		// closing client socket
