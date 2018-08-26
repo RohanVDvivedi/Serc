@@ -1,34 +1,41 @@
-#include<string.h>
-#include<sys/socket.h>
-#include<stdio.h>
+#include<serve.h>
+#include<httpobject.h>
+#include<distributer.h>
+
+#define buffersize 32000
 
 // once the connection is established this function is called by base Server to accept the request
-// handle parsing and all the other stuff till the response objectb is sent to the controller
+// handle parsing and all the other stuff till the response object is sent to the controller
 void serve(int fd)
 {
-	char buffer[100];
+	char buffer[buffersize];
 	int buffreadlength;
-	do
+
+	HttpRequest* hrq = getNewHttpRequest();
+
+	buffreadlength = recv(fd,buffer,buffersize,0);
+	buffer[buffreadlength] = '\0';
+
+	printf("%s\n",buffer);
+
+	int error = placeInRequest(buffer,buffreadlength,hrq);
+
+	if(error == 0)
 	{
-		bufferreadlength = recv();
-		parseAndStoreStatedRequest(buffer,100);
+		HttpResponse* hrp = getNewHttpResponse();
+
+		distribute(hrq,hrp);
+
+		buffreadlength = buffersize;
+
+		ResponseObjectToString(buffer,&buffreadlength,hrp);
+
+		send(fd,buffer,strlen(buffer),0);
+
+		printf("%s\n",buffer);
+
+		deleteHttpResponse(hrp);
 	}
-	while( bufferreadlength == 100 );
 
-	// retrieve request httpobject generated from parse and store function
-	// pass request to a method that deploys to various controllers
-	// retrieve response in httpobject from the controller
-
-	response = encodeToHttpResponse();
-	send(fd,response,strlen(response),0);
-}
-
-void parseAndStoreStatedRequest(char* requestString,int length)
-{
-
-}
-
-char* encodeToHttpResponse(char* )
-{
-
+	deleteHttpRequest(hrq);
 }

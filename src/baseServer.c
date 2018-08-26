@@ -9,7 +9,7 @@
 #include<serverconfig.h>
 #include<serve.h>
 
-int server()
+int main()
 {
 	int err;
 
