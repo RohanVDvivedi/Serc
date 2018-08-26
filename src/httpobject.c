@@ -80,8 +80,6 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 		int seen = 0;
 		while(1)
 		{
-			printf("\n11\n");
-
 			Tokens['='] = 1;
 			temp = tillToken(ptemp,Tokens,temp);
 			Tokens['='] = 0;
@@ -98,6 +96,25 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 			temp++;
 		}
 	}
+}
+
+void handleHeader(char* header,HttpRequest* hr)
+{
+	char ptemp[3000];
+	char* temp = header;
+	int Tokens[256] = {};
+
+	Tokens[':'] = 1;
+	temp = tillToken(ptemp,Tokens,temp);
+	Tokens[':'] = 0;
+	temp++;
+
+	temp++;
+
+	Tokens['\n'] = 1;Tokens['\r']=1;
+	temp = tillToken(ptemp+1500,Tokens,temp);
+	addHeaderInHttpRequest(ptemp,ptemp+1500,hr);
+	Tokens['\n'] = 0;Tokens['\r']=0;
 }
 
 // returns -1 when error
@@ -120,6 +137,36 @@ int placeInRequest(char* buffer,int bufferlength,HttpRequest* hr)
 	temp = tillToken(ptemp,Tokens,temp);
 	handlePathAndParameters(ptemp,hr);
 	Tokens[' '] = 0;
+
+	Tokens['\n'] = 1;Tokens['\r']=1;
+	temp = tillToken(ptemp,Tokens,temp);
+	temp++;
+	if(Tokens[*temp]==1)
+	{
+		temp++;
+	}
+	while(1)
+	{
+		temp = tillToken(ptemp,Tokens,temp);
+		if(strlen(ptemp)==0)
+		{
+			temp++;
+			if(Tokens[*temp]==1)
+			{
+				temp++;
+			}
+			break;
+		}
+		handleHeader(ptemp,hr);
+		temp++;
+		if(Tokens[*temp]==1)
+		{
+			temp++;
+		}
+	}
+	Tokens['\n'] = 0;Tokens['\r']=0;
+
+	setRequestBody(temp,hr);
 
 	return 0;
 }
@@ -319,7 +366,7 @@ void printHttpRequest(HttpRequest* hr)
 	{
 		printf("\t \t %s : %s \n",hr->PathParameters[i]->Key,hr->PathParameters[i]->Value);
 	}
-	printf("\t Request Headers :: \n");
+	printf("\t Request Headers :: %d\n",hr->HeaderCount);
 	for(int i=0;i<hr->HeaderCount;i++)
 	{
 		printf("\t \t %s : %s \n",hr->Headers[i]->Key,hr->Headers[i]->Value);
@@ -366,7 +413,6 @@ HttpMethodType verbToHttpMethodType(char* verb)
 
 char* httpMethodTypeToVerb(HttpMethodType m)
 {
-	printf("-->>%llu\n",(unsigned long long int)m);
 	switch(m)
 	{
 		case GET :
@@ -431,5 +477,5 @@ char* tillToken(char* result,int* Tokens,char* querystring)
 		result[i] = (*querystring);
 	}
 	result[size-1] = '\0';
-	return querystring;
+	return qs;
 }
