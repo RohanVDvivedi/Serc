@@ -16,9 +16,7 @@ void serve(int fd)
 	buffreadlength = recv(fd,buffer,buffersize,0);
 	buffer[buffreadlength] = '\0';
 
-	printf("%s\n",buffer);
-
-	int error = placeInRequest(buffer,buffreadlength,hrq);
+	int error = stringToRequestObject(buffer,hrq);
 
 	if(error == 0)
 	{
@@ -28,7 +26,7 @@ void serve(int fd)
 
 		buffreadlength = buffersize;
 
-		ResponseObjectToString(buffer,&buffreadlength,hrp);
+		responseObjectToString(buffer,&buffreadlength,hrp);
 
 		send(fd,buffer,strlen(buffer),0);
 

@@ -1,5 +1,5 @@
 #include<httpobject.h>
-#include<strhsh.h>
+
 
 const char verb[10][15] = {
 	"GET",
@@ -60,6 +60,7 @@ void URLTOSTRING(char* path_param_str)
 {
 }
 
+// path?params is parsed to populate in hr
 void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 {
 	URLTOSTRING(path_param_str);
@@ -97,7 +98,7 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 		}
 	}
 }
-
+// string header is parsed to populate in http request
 void handleHeader(char* header,HttpRequest* hr)
 {
 	char ptemp[3000];
@@ -118,7 +119,7 @@ void handleHeader(char* header,HttpRequest* hr)
 }
 
 // returns -1 when error
-int placeInRequest(char* buffer,int bufferlength,HttpRequest* hr)
+int stringToRequestObject(char* buffer,HttpRequest* hr)
 {
 	char ptemp[3000];
 	char* temp = buffer;
@@ -172,24 +173,29 @@ int placeInRequest(char* buffer,int bufferlength,HttpRequest* hr)
 }
 
 // returns -1 when error
-int placeInResponse(char* buffer,int bufferlength,HttpResponse* hr)
+int stringToResponseObject(char* buffer,HttpResponse* hr)
 {
 	return -1;
 }
 
 // returns -1 when error
-int RequestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr)
+int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr)
 {
 	return -1;
 }
 
 // returns -1 when error, when -1 is returned pass in a larger buffer
-int ResponseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
+int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 {
 	int maxsize = (*bufferlength);
 	buffer[0] = '\0';
 	(*bufferlength) = 0;
-	strcat(buffer,"HTTP/1.1 200 OK\n");
+	char* statusline = getHttpResponseStatus(hr->Status);
+	if(statusline == NULL)
+	{
+		return -2;
+	}
+	strcat(buffer,statusline);
 	(*bufferlength) = 15;
 	for(int i=0;i<hr->HeaderCount;i++)
 	{
@@ -207,14 +213,14 @@ int ResponseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 			return -1;
 		}
 		strcat(buffer,hr->Headers[i]->Value);
-		strcat(buffer,"\n");
+		strcat(buffer,"\r\n");
 	}
 	(*bufferlength) += (strlen(hr->ResponseBody) + 1);
 	if( maxsize < (*bufferlength) )
 	{
 		return -1;
 	}
-	strcat(buffer,"\n");
+	strcat(buffer,"\r\n");
 	strcat(buffer,hr->ResponseBody);
 	return 0;
 }
@@ -456,6 +462,18 @@ char* httpMethodTypeToVerb(HttpMethodType m)
 			return (char*)verb[9];
 		}
 	}
+}
+
+void setServerDefaultHeaderInRequest(HttpRequest* hr)
+{
+
+}
+
+void setServerDefaultHeaderInResponse(HttpResponse* hr)
+{
+	char ptemp[3000];
+	sprintf(ptemp, "%d",hr->ResponseBodyLength);
+	addHeaderInHttpResponse("Content-Length",ptemp,hr);
 }
 
 
