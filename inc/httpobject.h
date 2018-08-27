@@ -4,6 +4,8 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
+#include<strhsh.h>
+#include<responseStrings.h>
 
 typedef enum HttpMethodType HttpMethodType;
 enum HttpMethodType
@@ -51,6 +53,8 @@ struct HttpRequest
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse
 {
+	int Status;
+
 	int HeaderSize;
 	int HeaderCount;
 	keyvaluepair** Headers;
@@ -68,10 +72,10 @@ char* getRequestMethod(HttpRequest* hr);
 void setRequestPath(char* body,HttpRequest* hr);
 void setRequestBody(char* body,HttpRequest* hr);
 void setResponseBody(char* body,HttpResponse* hr);
-int placeInRequest(char* buffer,int bufferlength,HttpRequest* hr);
-int placeInResponse(char* buffer,int bufferlength,HttpResponse* hr);
-int RequestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
-int ResponseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr);
+int stringToRequestObject(char* buffer,HttpRequest* hr);
+int stringToResponseObject(char* buffer,HttpResponse* hr);
+int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
+int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr);
 void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr);
 void addPathParameterInHttpRequest(char* Vey,char* Value,HttpRequest* hr);
 void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr);
@@ -81,5 +85,7 @@ void printHttpRequest(HttpRequest* hr);
 void printHttpResponse(HttpResponse* hr);
 HttpMethodType verbToHttpMethodType(char* verb);
 char* httpMethodTypeToVerb(HttpMethodType m);
+void setServerDefaultHeaderInRequest(HttpRequest* hr);
+void setServerDefaultHeaderInResponse(HttpResponse* hr);
 
 #endif
