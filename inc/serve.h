@@ -3,6 +3,9 @@
 
 #include<string.h>
 #include<sys/socket.h>
+#include<httpobject.h>
+#include<distributer.h>
+#include<logger.h>
 
 void serve(int fd);
 

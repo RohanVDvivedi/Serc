@@ -1,4 +1,4 @@
-#include<string.h>
+#include<strhsh.h>
 
 unsigned long long int getHashValue(char* s)
 {

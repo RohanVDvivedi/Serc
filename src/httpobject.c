@@ -1,6 +1,6 @@
 #include<httpobject.h>
 
-
+// list of supported verbs
 const char verb[10][15] = {
 	"GET",
 	"POST",
@@ -27,7 +27,7 @@ char* getRequestMethod(HttpRequest* hr)
 }
 
 
-// create new http request object
+// create new http request object and initialized with defaults
 HttpRequest* getNewHttpRequest()
 {
 	HttpRequest* hr = (HttpRequest*) malloc(sizeof(HttpRequest));
@@ -44,7 +44,7 @@ HttpRequest* getNewHttpRequest()
 	return hr;
 }
 
-// create new http response object
+// create new http response object and initialized with defaults
 HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = (HttpResponse*) malloc(sizeof(HttpResponse));
@@ -215,13 +215,16 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 		strcat(buffer,hr->Headers[i]->Value);
 		strcat(buffer,"\r\n");
 	}
-	(*bufferlength) += (strlen(hr->ResponseBody) + 1);
+	(*bufferlength) += (hr->ResponseBodyLength + 1);
 	if( maxsize < (*bufferlength) )
 	{
 		return -1;
 	}
 	strcat(buffer,"\r\n");
-	strcat(buffer,hr->ResponseBody);
+	if(hr->ResponseBodyLength!=0)
+	{
+		strcat(buffer,hr->ResponseBody);
+	}
 	return 0;
 }
 
@@ -391,15 +394,23 @@ void printHttpResponse(HttpResponse* hr)
 	printf("\t Response Body : %s\n",hr->ResponseBody);
 }
 
-void setRequestPath(char* body,HttpRequest* hr)
+void setRequestPath(char* path,HttpRequest* hr)
 {
-	int n = strlen(body);
+	if(hr->Path!=NULL)
+	{
+		free(hr->Path);
+	}
+	int n = strlen(path);
 	hr->Path = (char*) malloc(sizeof(char)*(n+1));
-	strcpy(hr->Path,body);
+	strcpy(hr->Path,path);
 }
 
 void setRequestBody(char* body,HttpRequest* hr)
 {
+	if(hr->RequestBody!=NULL)
+	{
+		free(hr->RequestBody);
+	}
 	hr->RequestBodyLength = strlen(body);
 	hr->RequestBody = (char*) malloc(sizeof(char)*hr->RequestBodyLength);
 	strcpy(hr->RequestBody,body);
@@ -407,14 +418,57 @@ void setRequestBody(char* body,HttpRequest* hr)
 
 void setResponseBody(char* body,HttpResponse* hr)
 {
+	if(hr->ResponseBody!=NULL)
+	{
+		free(hr->ResponseBody);
+	}
 	hr->ResponseBodyLength = strlen(body);
 	hr->ResponseBody = (char*) malloc(sizeof(char)*hr->ResponseBodyLength);
 	strcpy(hr->ResponseBody,body);
 }
 
+
+
+void setServerDefaultHeaderInRequest(HttpRequest* hr)
+{
+
+}
+
+void setServerDefaultHeaderInResponse(HttpResponse* hr)
+{
+	char ptemp[3000];
+	sprintf(ptemp, "%d",hr->ResponseBodyLength);
+	addHeaderInHttpResponse("Content-Length",ptemp,hr);
+}
+
+
+
+
+// sets result pointing pointer to the string thats ends with token starting from query string
+char* tillToken(char* result,int* Tokens,char* querystring)
+{
+	int size = 0;
+	char* qs = querystring;
+	while(Tokens[*qs] == 0 && *qs != '\0')
+	{
+		size++;
+		qs++;
+	}
+	size++;
+	for(int i=0;i<size-1;i++,querystring++)
+	{
+		result[i] = (*querystring);
+	}
+	result[size-1] = '\0';
+	return qs;
+}
+
 HttpMethodType verbToHttpMethodType(char* verb)
 {
+	// get hash value
 	unsigned long long int hsh = getHashValue(verb);
+
+	// if garbage string is provided (anything except the listed verbs) return UNIDENTIFIED enum
 	char* verbtemp = httpMethodTypeToVerb((HttpMethodType)hsh);
 	if(strcmp(verbtemp,"UNIDENTIFIED")==0)
 	{
@@ -471,38 +525,4 @@ char* httpMethodTypeToVerb(HttpMethodType m)
 			return (char*)verb[9];
 		}
 	}
-}
-
-void setServerDefaultHeaderInRequest(HttpRequest* hr)
-{
-
-}
-
-void setServerDefaultHeaderInResponse(HttpResponse* hr)
-{
-	char ptemp[3000];
-	sprintf(ptemp, "%d",hr->ResponseBodyLength);
-	addHeaderInHttpResponse("Content-Length",ptemp,hr);
-}
-
-
-
-
-// sets result pointing pointer to the string thats ends with token starting from query string
-char* tillToken(char* result,int* Tokens,char* querystring)
-{
-	int size = 0;
-	char* qs = querystring;
-	while(Tokens[*qs] == 0 && *qs != '\0')
-	{
-		size++;
-		qs++;
-	}
-	size++;
-	for(int i=0;i<size-1;i++,querystring++)
-	{
-		result[i] = (*querystring);
-	}
-	result[size-1] = '\0';
-	return qs;
 }

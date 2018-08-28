@@ -1,0 +1,6 @@
+
+{
+	"methods"         : ["GET"],
+	"path"            : ["/index/{string}/{int}"],
+	"controller"      : "function_name"
+}

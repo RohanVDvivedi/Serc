@@ -9,13 +9,16 @@
 #include<serverconfig.h>
 #include<serve.h>
 
+// file shared by all of framework to register logs
+FILE* ServerLog;
+char* tag = "server_framework";
+
 int main()
 {
 	int err;
 
 	// get pointer to log file
-	FILE* ServerLog = createLogFile("ServerLog");
-	char* tag = "server";
+	ServerLog = createLogFile("ServerLog");
 
 	// phase 1
 	// file discriptor to socket
