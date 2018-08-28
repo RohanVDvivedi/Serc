@@ -63,29 +63,83 @@ struct HttpResponse
 	char* ResponseBody;
 };
 
-char* tillToken(char* result,int* Token,char* querystring);
 
+
+// functions for Request
+
+// to create HttpRequest Object
 HttpRequest* getNewHttpRequest();
-HttpResponse* getNewHttpResponse();
+
+// getter and setter for request method
 void setRequestMethod(char* Method,HttpRequest* hr);
 char* getRequestMethod(HttpRequest* hr);
-void setRequestPath(char* body,HttpRequest* hr);
+
+// setter for request path, can be accessed by .Path for get
+void setRequestPath(char* path,HttpRequest* hr);
+
+
+// setter for request body
 void setRequestBody(char* body,HttpRequest* hr);
-void setResponseBody(char* body,HttpResponse* hr);
+
+// parse string to populate HttpRequest
 int stringToRequestObject(char* buffer,HttpRequest* hr);
-int stringToResponseObject(char* buffer,HttpResponse* hr);
+
+// turn HttpRequest to String to send over network
 int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
-int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr);
+
+// add Header in HttpRequest
 void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr);
+
+// add PathParameter in HttpRequest
 void addPathParameterInHttpRequest(char* Vey,char* Value,HttpRequest* hr);
-void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr);
+
+// delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
-void deleteHttpResponse(HttpResponse* hr);
+
+// print HttpRequest Object in a readable format
 void printHttpRequest(HttpRequest* hr);
+
+// set Default Header in Request like size , type , date , updated at , server type email etc
+void setServerDefaultHeaderInRequest(HttpRequest* hr);
+
+
+
+// functions for Response
+
+// to create HttpResponse Object
+HttpResponse* getNewHttpResponse();
+
+// setter for Response Body
+void setResponseBody(char* body,HttpResponse* hr);
+
+// parse string to populate HttpResponse
+int stringToResponseObject(char* buffer,HttpResponse* hr);
+
+// turn HttpResponse to String to send over network
+int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr);
+
+// add Header in HttpResponse 
+void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr);
+
+// delete HttpResponse and all its attributes
+void deleteHttpResponse(HttpResponse* hr);
+
+// print HttpResponse Object in a readable format
 void printHttpResponse(HttpResponse* hr);
+
+// set Default Header in Response like size , type , date , updated at , server type email etc
+void setServerDefaultHeaderInResponse(HttpResponse* hr);
+
+
+
+
+
+
+// helper functions
+
+
 HttpMethodType verbToHttpMethodType(char* verb);
 char* httpMethodTypeToVerb(HttpMethodType m);
-void setServerDefaultHeaderInRequest(HttpRequest* hr);
-void setServerDefaultHeaderInResponse(HttpResponse* hr);
+char* tillToken(char* result,int* Token,char* querystring);
 
 #endif

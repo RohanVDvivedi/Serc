@@ -1,7 +1,10 @@
 #ifndef RESPONSE_STRINGS_H
 #define RESPONSE_STRINGS_H
 
-extern const char* HttpStatusLines[58];
+#include<stdio.h>
+#include<stdlib.h>
+
+extern const char HttpStatusLines[57][50];
 
 char* getHttpResponseStatus(int status);
 
