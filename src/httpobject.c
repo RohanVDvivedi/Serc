@@ -414,7 +414,16 @@ void setResponseBody(char* body,HttpResponse* hr)
 
 HttpMethodType verbToHttpMethodType(char* verb)
 {
-	return ((HttpMethodType) getHashValue(verb));
+	unsigned long long int hsh = getHashValue(verb);
+	char* verbtemp = httpMethodTypeToVerb((HttpMethodType)hsh);
+	if(strcmp(verbtemp,"UNIDENTIFIED")==0)
+	{
+		return UNIDENTIFIED;
+	}
+	else
+	{
+		return ((HttpMethodType)hsh);
+	}
 }
 
 char* httpMethodTypeToVerb(HttpMethodType m)
