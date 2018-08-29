@@ -1,7 +1,6 @@
 import json;
 
 # same as getHashValue function in c in strhsh
-"""
 def getHashValue(s):
 	ans = 0;i = 1;last = 0;curr = 0;diff = 0;lastoccur = [0] * 128;iter_i = 0
 	while iter_i < len(s) :
@@ -19,10 +18,13 @@ def getHashValue(s):
 		if i%5 == 0 :
 			ans = ans + ((ans%13)*(diff+2)*(diff%3)*(int(diff/7))) + ((ans%29)*last) + ((ans%37)*curr) + (ans%11)
 	return ans
-"""
 
+
+"""
+#temporary hash to test
 def getHashValue(s):
 	return len(s)
+"""
 
 
 routing_config_file = open("../con/routing.con","r")
@@ -52,30 +54,35 @@ for method in mydict:
 	case_string     += "\n\t\t\tswitch(PATH)"
 	case_string     += "\n\t\t\t{"
 	for hashval in mydict[method]:
-		case_string += "\n\t\t\t\t// case for path = "
 		case_string += "\n\t\t\t\tcase " + str(hashval) + " :"
 		case_string += "\n\t\t\t\t{"
 		for path in mydict[method][hashval]:
+			case_string += "\n\t\t\t\t\t// case for path = " + path
 			case_string += "\n\t\t\t\t\tif( strcmp( path_str , \"" + path + "\" ) )"
 			case_string += "\n\t\t\t\t\t{"
-			case_string += "\n\t\t\t\t\t\tint error = " + mydict[method][hashval][path] + "(hrq,hrp);"
-			case_string += "\n\t\t\t\t\t\tint routing_resolved = 1;"
+			case_string += "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path] + "(hrq,hrp);"
+			case_string += "\n\t\t\t\t\t\trouting_resolved = 1;"
 			case_string += "\n\t\t\t\t\t}"
+		case_string += "\n\t\t\t\t\tbreak;"
 		case_string += "\n\t\t\t\t}"
 	case_string     += "\n\t\t\t}"
+	case_string     += "\n\t\t\tbreak;"
 	case_string     += "\n\t\t}"
 case_string += "\n\t}\n"
 		
-print (case_string)
+#print (case_string)
 
 
 
 
-Templatefile = open("./distributerTemplate.c","r");
+Templatefile = open("./distributer.temp","r");
 codefile = open("./distributer.c","w");
 
 for line in Templatefile:
-	codefile.write()
+	if line == "//@switchcase\n":
+		codefile.write(case_string)
+	else:
+		codefile.write(line)
 
 Templatefile.close();
 codefile.close();
