@@ -29,6 +29,8 @@ routing_config_file = open("../con/routing.con","r")
 
 routes = json.loads(routing_config_file.read())
 
+routing_config_file.close()
+
 mydict = {}
 for route in routes :
 	for method in route['methods']:
@@ -65,3 +67,15 @@ for method in mydict:
 case_string += "\n\t}\n"
 		
 print (case_string)
+
+
+
+
+Templatefile = open("./distributerTemplate.c","r");
+codefile = open("./distributer.c","w");
+
+for line in Templatefile:
+	codefile.write()
+
+Templatefile.close();
+codefile.close();
