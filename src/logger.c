@@ -2,8 +2,9 @@
 
 FILE* createLogFile(const char* filename)
 {
-	char* fn = (char*) malloc(sizeof(char)*(strlen(filename)+15));
-	strcpy(fn,"../log/");
+	char* fn = (char*) malloc(sizeof(char)*(strlen(PROJECT_PATH)+strlen(filename)+50));
+	strcpy(fn,PROJECT_PATH);
+	strcat(fn,"/log/");
 	strcat(fn,filename);
 	strcat(fn,".lg");
 	FILE* fp = fopen(fn,"w");

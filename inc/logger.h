@@ -5,6 +5,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<sys/time.h>
+#include<serverconfig.h>
 
 FILE* createLogFile(const char* filename);
 int logMsg(char* tag,char* details,FILE* fp);

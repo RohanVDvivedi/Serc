@@ -9,13 +9,25 @@
 #include<serverconfig.h>
 #include<serve.h>
 
+#include<signal.h>
+
+static volatile int servicerequests = 1;
+
 // file shared by all of framework to register logs
 FILE* ServerLog;
 char* tag = "server_framework";
 
+void interrupt(int dummy)
+{
+	printf("CTRL-C pressed application will close after a dummy request\n");
+	servicerequests = 0;
+}
+
 int main()
 {
 	int err;
+
+	signal(SIGINT, interrupt);
 
 	// get pointer to log file
 	ServerLog = createLogFile("ServerLog");
@@ -59,7 +71,7 @@ int main()
 	// start accepting in loop
 	struct sockaddr_in client_addr;
 	int conn_fd;
-	while(1)
+	while( servicerequests == 1 )
 	{
 		// phase 4
 		// accept uses backlog queue connection and de-queues them 
