@@ -1,6 +1,12 @@
-
-{
-	"methods"         : ["GET"],
-	"path"            : ["/index/{string}/{int}"],
-	"controller"      : "function_name"
-}
+[
+	{
+		"methods"         : ["GET","DELETE"],
+		"paths"           : ["/index/abc"],
+		"controller"      : "function_name1"
+	},
+	{
+		"methods"         : ["GET","POST","PUT"],
+		"paths"           : ["/hello/def","/index/ghi"],
+		"controller"      : "function_name2"
+	}
+]

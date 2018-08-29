@@ -11,10 +11,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 	int routing_resolved = 0;
 	int error = 0;
 
-	switch(PATH) 
-	{
-		@PathSwitchTemplate
-	}
+	//@switchcase
 
 	if(routing_resolved==0)
 	{
