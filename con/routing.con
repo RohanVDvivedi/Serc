@@ -1,12 +1,7 @@
 [
 	{
-		"methods"         : ["GET","DELETE"],
-		"paths"           : ["/index/abc"],
-		"controller"      : "function_name1"
-	},
-	{
-		"methods"         : ["GET","POST","PUT"],
-		"paths"           : ["/hello/def","/index/ghi"],
-		"controller"      : "function_name2"
+		"methods"         : ["GET","POST"],
+		"paths"           : ["/index"],
+		"controller"      : "first_controller"
 	}
 ]
