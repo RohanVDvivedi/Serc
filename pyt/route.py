@@ -37,6 +37,7 @@ routing_config_file.close()
 # use a dictionery to store the routes in format as required for making switch case
 # format is mydict[method][hashvalue_of_path][path_in_string] = controller
 mydict = {}
+controllers_list = []
 for route in routes :
 	for method in route['methods']:
 		if not (method in mydict):
@@ -46,6 +47,8 @@ for route in routes :
 			if not (hashval in mydict[method]):
 				mydict[method][hashval] = {}
 			mydict[method][hashval][path] = route['controller']
+			if not (route['controller'] in controllers_list) :
+				controllers_list += [route['controller']]
 
 
 """
@@ -88,15 +91,18 @@ case_string             += "\n\t}\n"
 
 
 
-Templatefile = open("./pyt/distributer.temp","r");
+Templatefile = open("./pyt/distributer_source.temp","r");
 codefile = open("./src/distributer.c","w");
 
 #replace case string for the comment "//@switchcase\n" in c fil
 for line in Templatefile:
-	if line == "//@switchcase\n":
+	if line == "//@switch_case\n":
 		codefile.write(case_string)
 	else:
 		codefile.write(line)
 
 Templatefile.close();
 codefile.close();
+
+
+print(controllers_list)
