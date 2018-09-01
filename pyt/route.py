@@ -1,4 +1,26 @@
+import os;
 import json;
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+# the below function takes a template filename and code file name to edit
+# it picks up each c one line type comment if found it replaces it with the 
+# given code in the hash passed
+def replaceLineWithCode(templateFileName,codeFileName,compareCodeHash):
+	global dir_path
+	Templatefile = open(dir_path + "/" + templateFileName,"r");
+	codefile = open(dir_path + "/" + codeFileName,"w");
+
+	#replace case string for the comment "//@switchcase\n" in c fil
+	for line in Templatefile:
+		test = line
+		if test in compareCodeHash:
+			codefile.write(compareCodeHash[line])
+		else:
+			codefile.write(line)
+
+	Templatefile.close();
+	codefile.close();
 
 # same as getHashValue function in c in strhsh
 def getHashValue(s):
@@ -36,6 +58,7 @@ routing_config_file.close()
 
 # use a dictionery to store the routes in format as required for making switch case
 # format is mydict[method][hashvalue_of_path][path_in_string] = controller
+# the below given loop builds up structure mydict for distributer.c and controllers_list for controller.h
 mydict = {}
 controllers_list = []
 for route in routes :
@@ -49,6 +72,12 @@ for route in routes :
 			mydict[method][hashval][path] = route['controller']
 			if not (route['controller'] in controllers_list) :
 				controllers_list += [route['controller']]
+
+
+
+
+
+
 
 
 """
@@ -82,27 +111,19 @@ for method in mydict:
 	case_string         += "\n\t\t}"
 case_string             += "\n\t}\n"
 		
-#print (case_string)
+
+
+declarations = ""
+for function_name in controllers_list :
+	declarations += "\n\tint " + function_name + "(HttpRequest* hrq,HttpResponse* hrp);"
 
 
 
 
 
+replaceLineWithCode("../pyt/distributer_source.temp","../src/bootstrapfiles/distributer.c",{"//@switch_case\n":case_string})
 
 
-
-Templatefile = open("./pyt/distributer_source.temp","r");
-codefile = open("./src/distributer.c","w");
-
-#replace case string for the comment "//@switchcase\n" in c fil
-for line in Templatefile:
-	if line == "//@switch_case\n":
-		codefile.write(case_string)
-	else:
-		codefile.write(line)
-
-Templatefile.close();
-codefile.close();
+replaceLineWithCode("../pyt/controller_header.temp","../inc/bootstrapfiles/controller.h",{"//@controller_definitions\n":declarations})
 
 
-print(controllers_list)
