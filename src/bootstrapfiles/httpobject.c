@@ -80,7 +80,6 @@ void urlToString(char* path_param_str)
 {
 	char* ptemp = path_param_str;
 	char* update = ptemp;
-	printf("%s\n",path_param_str);
 	while(*ptemp != '\0')
 	{
 		if(*ptemp == '%')
@@ -95,7 +94,6 @@ void urlToString(char* path_param_str)
 		update++;
 		ptemp++;
 	}
-	printf("%s\n",path_param_str);
 	*update = '\0';
 }
 

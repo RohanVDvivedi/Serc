@@ -8,6 +8,7 @@
 #include<logger.h>
 #include<serverconfig.h>
 #include<serve.h>
+#include<arpa/inet.h>
 
 #include<signal.h>
 
@@ -86,6 +87,8 @@ int main()
 		conn_fd = err;
 
 		// serve the connection that has been accepted
+		char logLine[300] = "servicing request from : ";
+		logMsg(tag,strcat(logLine,inet_ntoa(client_addr.sin_addr)),ServerLog);
 		serve(conn_fd);
 
 		// phase 5
@@ -98,6 +101,8 @@ int main()
 		logMsg(tag,"closing client socket successfull",ServerLog);
 	}
 
+	// phase 6
+	// closing server socket
 	err = close(fd);
 	if (err == -1)
 	{
