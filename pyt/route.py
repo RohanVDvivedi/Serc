@@ -103,12 +103,17 @@ for method in mydict:
 			case_string += "\n\t\t\t\t\t{"
 			case_string += "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path] + "(hrq,hrp);"
 			case_string += "\n\t\t\t\t\t\trouting_resolved = 1;"
+			case_string += "\n\t\t\t\t\t\thrp->Status = 200;"
 			case_string += "\n\t\t\t\t\t}"
 		case_string     += "\n\t\t\t\t\tbreak;"
 		case_string     += "\n\t\t\t\t}"
 	case_string         += "\n\t\t\t}"
 	case_string         += "\n\t\t\tbreak;"
 	case_string         += "\n\t\t}"
+case_string				+= "\n\t\tdefault :"
+case_string				+= "\n\t\t{"
+case_string				+= "\n\t\t\thrp->Status = 404;"
+case_string				+= "\n\t\t}"
 case_string             += "\n\t}\n"
 		
 

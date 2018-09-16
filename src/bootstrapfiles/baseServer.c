@@ -98,6 +98,13 @@ int main()
 		logMsg(tag,"closing client socket successfull",ServerLog);
 	}
 
+	err = close(fd);
+	if (err == -1)
+	{
+		logMsg(tag,"closing server socket failed",ServerLog);
+	}
+	logMsg(tag,"closing server socket successfull",ServerLog);
+
 	logMsg(tag,"Application closing",ServerLog);
 	end: closeLogFile(ServerLog);
 	return 0;
