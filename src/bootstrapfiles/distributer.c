@@ -13,23 +13,6 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 
 	switch(METHOD)
 	{
-		case GET :
-		{
-			switch(PATH)
-			{
-				case 143199 :
-				{
-					// case for path = /index and supports method = GET
-					if( 0 == strcmp( path_str , "/index" ) )
-					{
-						error = first_controller(hrq,hrp);
-						routing_resolved = 1;
-					}
-					break;
-				}
-			}
-			break;
-		}
 		case POST :
 		{
 			switch(PATH)
@@ -41,11 +24,34 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					{
 						error = first_controller(hrq,hrp);
 						routing_resolved = 1;
+						hrp->Status = 200;
 					}
 					break;
 				}
 			}
 			break;
+		}
+		case GET :
+		{
+			switch(PATH)
+			{
+				case 143199 :
+				{
+					// case for path = /index and supports method = GET
+					if( 0 == strcmp( path_str , "/index" ) )
+					{
+						error = first_controller(hrq,hrp);
+						routing_resolved = 1;
+						hrp->Status = 200;
+					}
+					break;
+				}
+			}
+			break;
+		}
+		default :
+		{
+			hrp->Status = 404;
 		}
 	}
 

@@ -56,14 +56,53 @@ HttpResponse* getNewHttpResponse()
 	return hr;
 }
 
-void URLTOSTRING(char* path_param_str)
+char charToHex(char c)
 {
+	if( '0' <= c && c <= '9' )
+	{
+		return c - '0';
+	}
+	else if('a' <= c && c <= 'f')
+	{
+		return c - 'a' + 10;
+	}
+	else if('A' <= c && c <= 'F')
+	{
+		return c - 'A' + 10;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void urlToString(char* path_param_str)
+{
+	char* ptemp = path_param_str;
+	char* update = ptemp;
+	printf("%s\n",path_param_str);
+	while(*ptemp != '\0')
+	{
+		if(*ptemp == '%')
+		{
+			*update = (( charToHex(*(ptemp+1)) << 4 ) | charToHex(*(ptemp+2)));
+			ptemp+=2;
+		}
+		else
+		{
+			*update = *ptemp;
+		}
+		update++;
+		ptemp++;
+	}
+	printf("%s\n",path_param_str);
+	*update = '\0';
 }
 
 // path?params is parsed to populate in hr
 void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 {
-	URLTOSTRING(path_param_str);
+	urlToString(path_param_str);
 
 	char* temp = path_param_str;
 	int Tokens[256] = {};
@@ -386,6 +425,7 @@ void printHttpRequest(HttpRequest* hr)
 void printHttpResponse(HttpResponse* hr)
 {
 	printf("Http Response\n");
+	printf("\t Response Status ::  %d\n",hr->Status);
 	printf("\t Response Headers :: \n");
 	for(int i=0;i<hr->HeaderCount;i++)
 	{

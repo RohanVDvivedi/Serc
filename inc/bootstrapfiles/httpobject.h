@@ -77,7 +77,6 @@ char* getRequestMethod(HttpRequest* hr);
 // setter for request path, can be accessed by .Path for get
 void setRequestPath(char* path,HttpRequest* hr);
 
-
 // setter for request body
 void setRequestBody(char* body,HttpRequest* hr);
 
