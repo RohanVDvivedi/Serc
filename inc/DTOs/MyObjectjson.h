@@ -11,4 +11,6 @@ struct MyObject
 	char* mystring;
 };
 
+//add_code
+
 #endif

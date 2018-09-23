@@ -13,13 +13,13 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 
 	switch(METHOD)
 	{
-		case POST :
+		case GET :
 		{
 			switch(PATH)
 			{
 				case 143199 :
 				{
-					// case for path = /index and supports method = POST
+					// case for path = /index and supports method = GET
 					if( 0 == strcmp( path_str , "/index" ) )
 					{
 						error = first_controller(hrq,hrp);
@@ -31,13 +31,13 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 			}
 			break;
 		}
-		case GET :
+		case POST :
 		{
 			switch(PATH)
 			{
 				case 143199 :
 				{
-					// case for path = /index and supports method = GET
+					// case for path = /index and supports method = POST
 					if( 0 == strcmp( path_str , "/index" ) )
 					{
 						error = first_controller(hrq,hrp);
