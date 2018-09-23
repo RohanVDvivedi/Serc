@@ -1,45 +1,6 @@
-import os;
 import json;
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
-
-# the below function takes a template filename and code file name to edit
-# it picks up each c one line type comment if found it replaces it with the 
-# given code in the hash passed
-def replaceLineWithCode(templateFileName,codeFileName,compareCodeHash):
-	global dir_path
-	Templatefile = open(dir_path + "/" + templateFileName,"r");
-	codefile = open(dir_path + "/" + codeFileName,"w");
-
-	#replace case string for the comment "//@switchcase\n" in c fil
-	for line in Templatefile:
-		test = line
-		if test in compareCodeHash:
-			codefile.write(compareCodeHash[line])
-		else:
-			codefile.write(line)
-
-	Templatefile.close();
-	codefile.close();
-
-# same as getHashValue function in c in strhsh
-def getHashValue(s):
-	ans = 0;i = 1;last = 0;curr = 0;diff = 0;lastoccur = [0] * 128;iter_i = 0
-	while iter_i < len(s) :
-		curr = ( ord(s[iter_i]) & 0x7f )
-		if( i == 1 ):
-			diff = 1
-		else:
-			diff = abs( last - curr ) + 1
-		delta = curr * i * diff * (i - lastoccur[curr])
-		ans = ans + delta;
-		iter_i+=1
-		last = curr
-		lastoccur[curr] = i
-		i+=1
-		if i%5 == 0 :
-			ans = ans + ((ans%13)*(diff+2)*(diff%3)*(int(diff/7))) + ((ans%29)*last) + ((ans%37)*curr) + (ans%11)
-	return ans
+import strhsh;
+import replace;
 
 
 """
@@ -49,7 +10,7 @@ def getHashValue(s):
 """
 
 # read the file that contains route configurations
-routing_config_file = open("./con/routing.con","r")
+routing_config_file = open(replace.dir_path + "/" + "../con/routing.con","r")
 
 # since the file is in json use json.loads to use it as onject
 routes = json.loads(routing_config_file.read())
@@ -66,7 +27,7 @@ for route in routes :
 		if not (method in mydict):
 			mydict[method] = {}
 		for path in route['paths']:
-			hashval = getHashValue(path)
+			hashval = strhsh.getHashValue(path)
 			if not (hashval in mydict[method]):
 				mydict[method][hashval] = {}
 			mydict[method][hashval][path] = route['controller']
@@ -126,9 +87,9 @@ for function_name in controllers_list :
 
 
 
-replaceLineWithCode("../pyt/distributer_source.temp","../src/bootstrapfiles/distributer.c",{"//@switch_case\n":case_string})
+replace.replaceLineWithCode("../pyt/distributer_source.temp","../src/bootstrapfiles/distributer.c",{"//@switch_case\n":case_string})
 
 
-replaceLineWithCode("../pyt/controller_header.temp","../inc/bootstrapfiles/controller.h",{"//@controller_definitions\n":declarations})
+replace.replaceLineWithCode("../pyt/controller_header.temp","../inc/bootstrapfiles/controller.h",{"//@controller_definitions\n":declarations})
 
 
