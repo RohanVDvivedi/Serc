@@ -10,7 +10,7 @@ then replaces all multiple spaces to single space
 def replaceWhiteSpaceWithSpace(string) :
 	return re.sub(' +',' ',string.replace('\n',' ').replace('\t',' ').replace('\r',' ').strip())
 
-class DataType(enum.Enum) :
+class DataType(enum.IntEnum) :
 	SIGNED_INT = 0
 	UNSIGNED_INT = 1
 	SIGNED_LONG_INT = 2
@@ -35,6 +35,8 @@ dataTypeStrings = [
 ]
 
 jsonObjectName = "MyObject"
+
+
 objectFileName = "../inc/DTOs/" + jsonObjectName + "json.h"
 objectFileData = open(replace.dir_path + '/' + objectFileName,'r')
 
@@ -95,7 +97,77 @@ for fieldi in fields :
 			fieldi[0] = DataType(id)
 			found = 1
 	if found == 0:
+		temp = fieldi[0]
 		fieldi[0] = DataType.OTHER
+		fieldi += [temp.replace("*","").replace(" ","")]
 
 
 print(fields)
+
+
+dataTypeFormatSpecifierStrings = [
+	'%d',
+	'%u',
+	'%ld',
+	'%lu',
+	'%lld',
+	'%llu',
+	'%c',
+	'%c',
+	'%s'
+]
+
+def forNumber(fieldi) :
+	code  = ""
+	code += "\n\tsprintf(number,\"" + dataTypeFormatSpecifierStrings[int(fieldi[0])] + ",\",object->" + fieldi[1] + ");"
+	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
+	code += "\n\taddToJsonString(JS,number);"
+	code += "\n"
+	return code
+
+def forString(fieldi) :
+	code  = ""
+	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\\\"\");"
+	code += "\n\taddToJsonString(JS,object->" + fieldi[1] + ");"
+	code += "\n\taddToJsonString(JS,\"\\\",\")"
+	code += "\n"
+	return code
+
+def forObject(fieldi) :
+	code  = ""
+	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
+	code += "\n\tchar* resultJsonObject = " + fieldi[2] + "_toJson(object->" + fieldi[1] + ");"
+	code += "\n\taddToJsonString(JS,resultJsonObject);"
+	code += "\n\tfree(resultJsonObject);"
+	code += "\n"
+	return code
+
+function_string  = ""
+
+function_string += "\nchar* " + jsonObjectName + "_toJson( " + jsonObjectName + "* object )"
+function_declaration = function_string + ";"
+function_string += "\n{"
+function_string += "\n"
+function_string += "\n\tchar number[20];"
+function_string += "\n\tJsonString* JS = getJsonString(\"{\");"
+function_string += "\n"
+
+for fieldi in fields:
+	if fieldi[0] == DataType.OTHER :
+		function_string += forObject(fieldi)
+	elif fieldi[0] == DataType.STRING :
+		function_string += forString(fieldi)
+	else :
+		function_string += forNumber(fieldi)
+
+function_string += "\n\tJS->string[JS->size-2] = '}';"
+function_string += "\n\tchar* result = JS->string;"
+function_string += "\n\tfree(JS);"
+function_string += "\n\treturn result;"
+function_string += "\n}"
+
+print(function_string)
+
+
+
+
