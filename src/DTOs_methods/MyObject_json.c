@@ -1,4 +1,5 @@
 #include<MyObject_json.h>
+#include<jsonstringhandler.h>
 
 
 char* MyObject_toJson( MyObject* object )

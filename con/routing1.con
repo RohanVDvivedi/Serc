@@ -1,0 +1,7 @@
+[
+	{
+		"methods"         : ["DELETE","POST"],
+		"paths"           : ["/index/delete_post"],
+		"controller"      : "first_controller"
+	}
+]
