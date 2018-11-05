@@ -26,16 +26,21 @@ and put them in fieldString
 '''
 for line in object_declaration_file :
 	line = replaceWhiteSpaceWithSpace(line).strip()
-	if (("struct " + json_object_name) in line) and (("typedef struct " + json_object_name) not in line) and insideobject == -1 :
+	if (("struct " + json_object_name) in line) and (("typedef struct " + json_object_name) not in line) and (";" not in line) and insideobject == -1 :
 		insideobject = 0
-	if  ("{" in line) and insideobject == 0 :
+	if ("{" in line) and insideobject == 0 :
 		fieldString += line.rsplit("{",1)[1]
+		if("}" in fieldString) :
+			fieldString = fieldString.rsplit("}",1)[0]
+			break
 		insideobject = 1
 		continue
 	if ("}" in line) and insideobject == 1 :
 		fieldString += line.rsplit("}",1)[0]
 		insideobject = 2
 		break
+	if (";" in line) and insideobject == 0 :
+		insideobject = -1
 	if insideobject == 1:
 		fieldString += line;
 	if insideobject == 2 :
