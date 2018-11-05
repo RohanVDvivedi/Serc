@@ -67,7 +67,7 @@ for fieldStr in fieldString :
 		continue
 	if "*" in fieldStr :
 		fieldi = fieldStr.strip().rsplit("*",1)
-		if " " in fieldi[1] :
+		if (len(fieldi)>1) and (" " in fieldi[1]) :
 			fieldi = fieldStr.strip().rsplit(" ",1)
 		else :
 			fieldi[0] += "*"
