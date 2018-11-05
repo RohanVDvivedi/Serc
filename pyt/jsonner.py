@@ -16,7 +16,7 @@ json_object_name = "MyObject"
 object_declaration_fileName = "../inc/DTOs_declarations/" + json_object_name + "_json.h"
 object_declaration_file = open(replace.dir_path + '/' + object_declaration_fileName,'r')
 
-insideobject = 0
+insideobject = -1
 
 fieldString = ""
 
@@ -25,16 +25,19 @@ the below piece of loop will read the c header to find all the text words betwee
 and put them in fieldString
 '''
 for line in object_declaration_file :
-	for word in line.split(' ') :
-		word = word.strip()
-		if  word == "{" and insideobject == 0 :
-			insideobject = 1
-			continue
-		elif word == "};" and insideobject == 1 :
-			insideobject = 2
-			break
-		if insideobject == 1:
-			fieldString += (word + " ");
+	line = replaceWhiteSpaceWithSpace(line).strip()
+	if (("struct " + json_object_name) in line) and (("typedef struct " + json_object_name) not in line) and insideobject == -1 :
+		insideobject = 0
+	if  ("{" in line) and insideobject == 0 :
+		fieldString += line.rsplit("{",1)[1]
+		insideobject = 1
+		continue
+	if ("}" in line) and insideobject == 1 :
+		fieldString += line.rsplit("}",1)[0]
+		insideobject = 2
+		break
+	if insideobject == 1:
+		fieldString += line;
 	if insideobject == 2 :
 		break
 
@@ -57,9 +60,15 @@ fields = []
 for fieldStr in fieldString :
 	if fieldStr == '' :
 		continue
-	fieldi = fieldStr.strip().rsplit(" ",1)
+	if "*" in fieldStr :
+		fieldi = fieldStr.strip().rsplit("*",1)
+		if " " in fieldi[1] :
+			fieldi = fieldStr.strip().rsplit(" ",1)
+		else :
+			fieldi[0] += "*"
+	else :
+		fieldi = fieldStr.strip().rsplit(" ",1)
 	fields += [[replaceWhiteSpaceWithSpace(fieldi[0]), replaceWhiteSpaceWithSpace(fieldi[1])]]
-
 
 '''
 in the below loop we just transform DataType representations 
