@@ -37,7 +37,7 @@ dataTypeStrings = [
 jsonObjectName = "MyObject"
 
 
-objectFileName = "../inc/DTOs/" + jsonObjectName + "json.h"
+objectFileName = "../inc/DTOs_declarations/" + jsonObjectName + "json.h"
 objectFileData = open(replace.dir_path + '/' + objectFileName,'r')
 
 insideobject = 0
