@@ -61,3 +61,5 @@ void deleteArray(array* array)
 	free(array->objectList);
 	free(array);
 }
+
+#undef object
