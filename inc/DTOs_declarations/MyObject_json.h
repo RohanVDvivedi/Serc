@@ -8,7 +8,7 @@ struct MyObject
 	signed long int mylongint;
 	unsigned int myuint;
 	unsigned long int myulongint;
-	char* mystring;
+	char *mystring;
 };
 
 char* MyObject_toJson(MyObject* myobject);
