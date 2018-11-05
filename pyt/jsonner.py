@@ -129,7 +129,7 @@ def forString(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\\\"\");"
 	code += "\n\taddToJsonString(JS,object->" + fieldi[1] + ");"
-	code += "\n\taddToJsonString(JS,\"\\\",\")"
+	code += "\n\taddToJsonString(JS,\"\\\",\");"
 	code += "\n"
 	return code
 
@@ -168,6 +168,6 @@ function_string += "\n}"
 
 print(function_string)
 
-replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/DTOs_methods/" + jsonObjectName + "_json.c",{"@DTO_declaration file include\n":"#include<" + jsonObjectName + "_json.h>\n#include<jsonstringhandler.h>\n","@add_methods\n":function_string})
+replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/DTOs_methods/" + jsonObjectName + "_json.c",{"@DTO_declaration file include\n":"#include<" + jsonObjectName + "_json.h>\n#include<jsonstringhandler.h>\n#include<stdlib.h>\n#include<stdio.h>\n","@add_methods\n":function_string})
 
 

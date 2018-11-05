@@ -9,9 +9,8 @@ struct MyObject
 	unsigned int myuint;
 	unsigned long int myulongint;
 	char* mystring;
-	subclass* subobject;
 };
 
-char* toJson(MyObject* myobject);
+char* MyObject_toJson(MyObject* myobject);
 
 #endif

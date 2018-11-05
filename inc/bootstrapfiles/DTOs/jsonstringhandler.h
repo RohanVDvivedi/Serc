@@ -1,6 +1,10 @@
 #ifndef JSONSTRINGHANDLER
 #define JSONSTRINGHANDLER
 
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
 typedef struct JsonString JsonString;
 struct JsonString
 {
