@@ -1,5 +1,7 @@
 #include<MyObject_json.h>
 #include<jsonstringhandler.h>
+#include<stdlib.h>
+#include<stdio.h>
 
 
 char* MyObject_toJson( MyObject* object )
@@ -26,12 +28,7 @@ char* MyObject_toJson( MyObject* object )
 
 	addToJsonString(JS,"\"mystring\":\"");
 	addToJsonString(JS,object->mystring);
-	addToJsonString(JS,"\",")
-
-	addToJsonString(JS,"\"subobject\":");
-	char* resultJsonObject = subclass_toJson(object->subobject);
-	addToJsonString(JS,resultJsonObject);
-	free(resultJsonObject);
+	addToJsonString(JS,"\",");
 
 	JS->string[JS->size-2] = '}';
 	char* result = JS->string;
