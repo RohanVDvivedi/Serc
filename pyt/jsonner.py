@@ -37,7 +37,7 @@ dataTypeStrings = [
 jsonObjectName = "MyObject"
 
 
-objectFileName = "../inc/DTOs_declarations/" + jsonObjectName + "json.h"
+objectFileName = "../inc/DTOs_declarations/" + jsonObjectName + "_json.h"
 objectFileData = open(replace.dir_path + '/' + objectFileName,'r')
 
 insideobject = 0
@@ -168,6 +168,6 @@ function_string += "\n}"
 
 print(function_string)
 
-
+replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/DTOs_methods/" + jsonObjectName + "_json.c",{"@DTO_declaration file include\n":"#include<" + jsonObjectName + "_json.h>\n#include<jsonstringhandler.h>\n","@add_methods\n":function_string})
 
 
