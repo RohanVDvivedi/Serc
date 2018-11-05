@@ -1,7 +1,7 @@
 [
 	{
 		"methods"         : ["GET","POST"],
-		"paths"           : ["/index"],
+		"paths"           : ["/index/get_post"],
 		"controller"      : "first_controller"
 	}
 ]

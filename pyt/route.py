@@ -1,3 +1,30 @@
+"""
+
+command is used as below
+
+python3 pyt/route.py <routing_file_0> <routing_file_1> <routing_file_2> <routing_file_3> ...
+do not add con to the end of the routing file name,
+routing files all should be present in the con folder only,
+routing file must have a .con extension at the end,
+routing file must contain be a json array
+
+example. : 
+[
+	{
+		"methods"         : ["GET","POST"],
+		"paths"           : ["/index/get_post"],
+		"controller"      : "first_controller"
+	},
+	{
+		"methods"         : ["GET"],
+		"paths"           : ["/read"],
+		"controller"      : "second_controller"
+	},
+]
+
+"""
+
+
 import json;
 import strhsh;
 import replace;
@@ -9,30 +36,41 @@ def getHashValue(s):
 	return len(s)
 """
 
-# read the file that contains route configurations
-routing_config_file = open(replace.dir_path + "/" + "../con/routing.con","r")
+# read all commandline args
+import sys
+command_line_args = sys.argv.copy()[1:]
 
-# since the file is in json use json.loads to use it as onject
-routes = json.loads(routing_config_file.read())
-
-routing_config_file.close()
-
-# use a dictionery to store the routes in format as required for making switch case
-# format is mydict[method][hashvalue_of_path][path_in_string] = controller
-# the below given loop builds up structure mydict for distributer.c and controllers_list for controller.h
+# all the routing are stored in a global dictionary
+# hence as each routing file is used conflicts are resolved by
+# simply using the latter file as the higher priority
 mydict = {}
-controllers_list = []
-for route in routes :
-	for method in route['methods']:
-		if not (method in mydict):
-			mydict[method] = {}
-		for path in route['paths']:
-			hashval = strhsh.getHashValue(path)
-			if not (hashval in mydict[method]):
-				mydict[method][hashval] = {}
-			mydict[method][hashval][path] = route['controller']
-			if not (route['controller'] in controllers_list) :
-				controllers_list += [route['controller']]
+
+# loop throught all the routing files and collect all paths
+for routing_file in command_line_args:
+
+	# read the file that contains route configurations
+	routing_config_file = open(replace.dir_path + "/" + "../con/" + routing_file + ".con","r")
+
+	# since the file is in json use json.loads to use it as onject
+	routes = json.loads(routing_config_file.read())
+
+	routing_config_file.close()
+
+	# use a dictionery to store the routes in format as required for making switch case
+	# format is mydict[method][hashvalue_of_path][path_in_string] = controller
+	# the below given loop builds up structure mydict for distributer.c and controllers_list for controller.h
+	controllers_list = []
+	for route in routes :
+		for method in route['methods']:
+			if not (method in mydict):
+				mydict[method] = {}
+			for path in route['paths']:
+				hashval = strhsh.getHashValue(path)
+				if not (hashval in mydict[method]):
+					mydict[method][hashval] = {}
+				mydict[method][hashval][path] = route['controller']
+				if not (route['controller'] in controllers_list) :
+					controllers_list += [route['controller']]
 
 
 
