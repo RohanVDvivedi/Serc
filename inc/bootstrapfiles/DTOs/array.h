@@ -1,5 +1,10 @@
 #define object int
 
+#define array        array_ ## object
+#define getArray     getArray_ ## object
+#define add          add_ ## object
+#define deleteArray  deleteArray_ ## object
+
 typedef struct array array;
 struct array
 {
