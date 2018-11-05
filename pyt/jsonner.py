@@ -8,7 +8,7 @@ then strips out white spaces from front and back
 then replaces all multiple spaces to single space
 '''
 def replaceWhiteSpaceWithSpace(string) :
-	return re.sub(' +',' ',string.replace('\n',' ').replace('\t',' ').replace('\r',' ').strip())
+	return (re.sub(' +',' ',string.replace('\n',' ').replace('\t',' ').replace('\r',' ').strip())).strip()
 
 json_object_name = "MyObject"
 
