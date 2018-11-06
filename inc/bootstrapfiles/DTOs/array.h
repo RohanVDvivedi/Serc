@@ -1,9 +1,16 @@
-#define object int
+#ifdef object
 
-#define array        array_ ## object
-#define getArray     getArray_ ## object
-#define add          add_ ## object
-#define deleteArray  deleteArray_ ## object
+#define join(x, y) x ## _ ## y
+#define concat(x,y) join(x, y)
+
+#define array 		 concat(array_,object)
+
+#define getArray     concat(getArray_,object)
+#define get          concat(get_,object)
+#define add          concat(add_,object)
+#define exists       concat(exists_,object)
+#define remove       concat(remove_,object)
+#define deleteArray  concat(deleteArray_,object)
 
 typedef struct array array;
 struct array
@@ -19,6 +26,11 @@ array getArray()
 	newArray->maxsize = 0;
 	newArray->size = 0;
 	newArray->objectList = null;
+}
+
+object* get(array* array, int i)
+{
+	return array->size > i ? array->objectList[i] : NULL;
 }
 
 void add(array* array,object* object)
@@ -49,6 +61,54 @@ void add(array* array,object* object)
 			array->newMaxSize = maxSize;
 			array->size++; 
 		}
+	}
+}
+
+void remove(array* array,object* object)
+{
+	if(array!=null && object!=null)
+	{
+		int state = 0;
+		for(int i=0;i<array->size;i++)
+		{
+			switch(state)
+			{
+				case 0:
+				{
+					if( array->objectList[i] == object || (*(array->objectList[i])) == (*object) ) 
+					{
+						state = 1;
+						free(array->objectList[i]);
+					}
+					break;
+				}
+				case 1:
+				{
+					array->objectList[i-1] = array->objectList[i];
+					break;
+				}
+			}
+		}
+		array->size-=1;
+	}
+}
+
+int exists(array* array,object* object)
+{
+	if(array!=null && object!=null)
+	{
+		for(int i=0;i<array->size;i++)
+		{
+			if( array->objectList[i] == object || (*(array->objectList[i])) == (*object) ) 
+			{
+				return 1;
+			}
+		}
+		return 0;
+	}
+	else
+	{
+		return -1;
 	}
 }
 
