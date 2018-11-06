@@ -1,6 +1,6 @@
 #ifdef object
 
-#define join(x, y) x ## _ ## y
+#define join(x, y) x ## y
 #define concat(x,y) join(x, y)
 
 #define array 		 concat(array_,object)
@@ -15,91 +15,96 @@
 typedef struct array array;
 struct array
 {
-	unsigned long long int maxSize;
+	unsigned long long int max_size;
 	unsigned long long int size;
 	object** objectList;
 };
 
-array getArray()
+array* getArray()
 {
-	array* newArray = (array*) malloc(sizeof(array));
-	newArray->maxsize = 0;
-	newArray->size = 0;
-	newArray->objectList = null;
+	array* new_array = (array*) malloc(sizeof(array));
+	new_array->max_size = 0;
+	new_array->size = 0;
+	new_array->objectList = NULL;
+	return new_array;
 }
 
-object* get(array* array, int i)
+object* get(array* array_p, unsigned long long int i)
 {
-	return array->size > i ? array->objectList[i] : NULL;
+	return (array_p!=NULL && array_p->size > i) ? array_p->objectList[i] : NULL;
 }
 
-void add(array* array,object* object)
+void add(array* array_p,object* object_p)
 {
-	if(array!=null && object!=null)
+	if(array_p!=NULL && object_p!=NULL)
 	{
-		object* newObj = (object*) malloc(sizeof(object));
-		*newObj = *object;
-		if(array->objectList!=null && array->size < array->maxSize)
+		object* new_obj = (object*) malloc(sizeof(object));
+		*new_obj = *object_p;
+		if(array_p->objectList!=NULL && array_p->size < array_p->max_size)
 		{
-			array->objectList[++size] = newObj;
+			array_p->objectList[(array_p->size)++] = new_obj;
 		}
 		else
 		{
-			int newMaxSize = maxSize * 2;
-			if(newMaxSize == 0)
+			unsigned long long int new_max_size = array_p->max_size * 2;
+			if(new_max_size == 0)
 			{
-				newMaxSize = 3;
+				new_max_size = 3;
 			}
-			object** newObjList = (object**) malloc(sizeof(object*));
-			int i;
-			for(i=0;i<size;i++)
+			object** new_objectList = (object**) calloc(new_max_size,sizeof(object*));
+			unsigned long long int i = 0;
+			for(;i<array_p->size;i++)
 			{
-				newObjList[i] = array->objectList[i];
+				new_objectList[i] = array_p->objectList[i];
 			}
-			newObjList[i] = newObj;
-			array->objectList = newObjList;
-			array->newMaxSize = maxSize;
-			array->size++; 
+			new_objectList[i] = new_obj;
+			array_p->objectList = new_objectList;
+			array_p->max_size = new_max_size;
+			array_p->size++; 
 		}
 	}
 }
 
-void remove(array* array,object* object)
+void remove(array* array_p,object* object_p)
 {
-	if(array!=null && object!=null)
+	if(array_p!=NULL && object_p!=NULL)
 	{
 		int state = 0;
-		for(int i=0;i<array->size;i++)
+		for(unsigned long long int i=0;i<array_p->size;i++)
 		{
 			switch(state)
 			{
 				case 0:
 				{
-					if( array->objectList[i] == object || (*(array->objectList[i])) == (*object) ) 
+					if( array_p->objectList[i] == object_p || (*(array_p->objectList[i])) == (*object_p) ) 
 					{
 						state = 1;
-						free(array->objectList[i]);
+						free(array_p->objectList[i]);
 					}
 					break;
 				}
 				case 1:
 				{
-					array->objectList[i-1] = array->objectList[i];
+					array_p->objectList[i-1] = array_p->objectList[i];
 					break;
 				}
 			}
 		}
-		array->size-=1;
+		if(state == 1)
+		{
+			array_p->objectList[array_p->size-1] = NULL;
+			array_p->size-=1;
+		}
 	}
 }
 
-int exists(array* array,object* object)
+int exists(array* array_p,object* object_p)
 {
-	if(array!=null && object!=null)
+	if(array_p!=NULL && object_p!=NULL)
 	{
-		for(int i=0;i<array->size;i++)
+		for(unsigned long long int i=0;i<array_p->size;i++)
 		{
-			if( array->objectList[i] == object || (*(array->objectList[i])) == (*object) ) 
+			if( array_p->objectList[i] == object_p || (*(array_p->objectList[i])) == (*object_p) ) 
 			{
 				return 1;
 			}
@@ -112,14 +117,15 @@ int exists(array* array,object* object)
 	}
 }
 
-void deleteArray(array* array)
+void deleteArray(array* array_p)
 {
-	for(int i=0;i<array->size;i++)
+	for(unsigned long long int i=0;i<array_p->size;i++)
 	{
-		free(array->objectList[i]);
+		free(array_p->objectList[i]);
 	}
-	free(array->objectList);
-	free(array);
+	free(array_p->objectList);
+	free(array_p);
 }
 
 #undef object
+#endif
