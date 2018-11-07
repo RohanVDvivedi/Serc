@@ -62,14 +62,19 @@ def forObject(fieldi) :
 	return code
 
 def to_json_function_creator(json_object_name,fields):
-	function_string  = ""
-	function_string += "\nchar* " + json_object_name + "_toJson( " + json_object_name + "* object )"
+	function_string      = ""
+	function_string     += "\nchar* " + json_object_name + "_toJson( " + json_object_name + "* object )"
 	function_declaration = function_string + ";"
-	function_string += "\n{"
-	function_string += "\n"
-	function_string += "\n\tchar number[20];"
-	function_string += "\n\tJsonString* JS = getJsonString(\"{\");"
-	function_string += "\n"
+	function_string     += "\n{"
+	function_string     += "\n"
+	function_string     += "\n\tchar number[20];"
+
+	if len(fields) == 0 :
+		function_string += "\n\tJsonString* JS = getJsonString(\"{}\");"
+	else :
+		function_string += "\n\tJsonString* JS = getJsonString(\"{\");"
+
+	function_string     += "\n"
 
 	for fieldi in fields:
 		if fieldi[0] == DataType.OTHER :
@@ -79,9 +84,10 @@ def to_json_function_creator(json_object_name,fields):
 		else :
 			function_string += forNumber(fieldi)
 
-	function_string += "\n\tJS->string[JS->size-2] = '}';"
-	function_string += "\n\tchar* result = JS->string;"
-	function_string += "\n\tfree(JS);"
-	function_string += "\n\treturn result;"
-	function_string += "\n}"
+	if len(fields) > 0 :
+		function_string += "\n\tJS->string[JS->size-2] = '}';"
+	function_string     += "\n\tchar* result = JS->string;"
+	function_string     += "\n\tfree(JS);"
+	function_string     += "\n\treturn result;"
+	function_string     += "\n}"
 	return function_string
