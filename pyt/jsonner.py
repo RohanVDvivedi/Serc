@@ -1,4 +1,3 @@
-import re
 import replace
 import datatype_handler
 import jsonner_parse_helper as jph
