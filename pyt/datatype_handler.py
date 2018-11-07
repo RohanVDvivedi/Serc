@@ -36,6 +36,8 @@ dataTypeStrings_flexible = {
 	DataType.UNSIGNED_CHARACTER:['unsigned char'],
 	DataType.STRING:['char*','char *'],
 	DataType.CHARACTER:['char']
+
+	DataType.ARRAY:['array_']
 }
 
 dataTypeFormatSpecifierStrings = {
