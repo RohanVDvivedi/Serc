@@ -10,8 +10,11 @@ class DataType(enum.IntEnum) :
 	CHARACTER = 6
 	UNSIGNED_CHARACTER = 7
 	STRING = 8
-	OTHER = 9
-	ARRAY = 10
+	BOOLEAN = 9
+	FLOAT = 10
+	DOUBLE = 11
+	OTHER = 12
+	ARRAY = 13
 
 dataTypeStrings = {
 	DataType.UNSIGNED_LONG_LONG_INT:['unsigned long long int','unsigned long long'],
@@ -22,7 +25,10 @@ dataTypeStrings = {
 	DataType.SIGNED_INT:['int','signed int'],
 	DataType.CHARACTER:['char','signed char'],
 	DataType.UNSIGNED_CHARACTER:['unsigned char'],
-	DataType.STRING:['char*','char *']
+	DataType.STRING:['char*','char *'],
+	DataType.BOOLEAN:['bool'],
+	DataType.FLOAT:['float'],
+	DataType.DOUBLE:['double']
 }
 
 dataTypeStrings_flexible = {
@@ -35,7 +41,12 @@ dataTypeStrings_flexible = {
 
 	DataType.UNSIGNED_CHARACTER:['unsigned char'],
 	DataType.STRING:['char*','char *'],
-	DataType.CHARACTER:['char']
+	DataType.CHARACTER:['char'],
+
+	DataType.BOOLEAN:['bool'],
+
+	DataType.FLOAT:['float'],
+	DataType.DOUBLE:['double'],
 
 	DataType.ARRAY:['array_']
 }
@@ -49,7 +60,9 @@ dataTypeFormatSpecifierStrings = {
 	DataType.UNSIGNED_LONG_LONG_INT:'%llu',
 	DataType.CHARACTER:'%c',
 	DataType.UNSIGNED_CHARACTER:'%c',
-	DataType.STRING:'%s'
+	DataType.STRING:'%s',
+	DataType.FLOAT:'%f',
+	DataType.DOUBLE:'%lf'
 }
 
 def forNumber(fieldi) :
@@ -65,6 +78,20 @@ def forString(fieldi) :
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\\\"\");"
 	code += "\n\taddToJsonString(JS,object->" + fieldi[1] + ");"
 	code += "\n\taddToJsonString(JS,\"\\\",\");"
+	code += "\n"
+	return code
+
+def forBoolean(fieldi) :
+	code  = ""
+	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\"\");"
+	code += "\n\tif( object->" + fieldi[1] + " )"
+	code += "\n\t{"
+	code += "\n\t\taddToJsonString(JS,\":true,\");"
+	code += "\n\t}"
+	code += "\n\telse"
+	code += "\n\t{"
+	code += "\n\t\taddToJsonString(JS,\":false,\");"
+	code += "\n\t}"
 	code += "\n"
 	return code
 
@@ -97,6 +124,8 @@ def to_json_function_creator(json_object_name,fields):
 			function_string += forObject(fieldi)
 		elif fieldi[0] == DataType.STRING :
 			function_string += forString(fieldi)
+		elif fieldi[0] == DataType.BOOLEAN :
+			function_string += forBoolean(fieldi)
 		else :
 			function_string += forNumber(fieldi)
 
