@@ -30,6 +30,24 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,object->mystring);
 	addToJsonString(JS,"\",");
 
+	addToJsonString(JS,"\"my_bool\"");
+	if( object->my_bool )
+	{
+		addToJsonString(JS,":true,");
+	}
+	else
+	{
+		addToJsonString(JS,":false,");
+	}
+
+	sprintf(number,"%f,",object->myfloat);
+	addToJsonString(JS,"\"myfloat\":");
+	addToJsonString(JS,number);
+
+	sprintf(number,"%lf,",object->mydouble);
+	addToJsonString(JS,"\"mydouble\":");
+	addToJsonString(JS,number);
+
 	JS->string[JS->size-2] = '}';
 	char* result = JS->string;
 	free(JS);
