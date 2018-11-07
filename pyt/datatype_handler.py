@@ -11,17 +11,31 @@ class DataType(enum.IntEnum) :
 	UNSIGNED_CHARACTER = 7
 	STRING = 8
 	OTHER = 9
+	ARRAY = 10
 
 dataTypeStrings = {
-	DataType.SIGNED_INT:['int','signed int'],
-	DataType.UNSIGNED_INT:['unsigned int'],
-	DataType.SIGNED_LONG_INT:['long int','long','signed long int'],
-	DataType.UNSIGNED_LONG_INT:['unsigned long int','unsigned long','unsigned long int'],
-	DataType.SIGNED_LONG_LONG_INT:['long long int','long long','signed long long int'],
 	DataType.UNSIGNED_LONG_LONG_INT:['unsigned long long int','unsigned long long'],
+	DataType.SIGNED_LONG_LONG_INT:['long long int','long long','signed long long int'],
+	DataType.UNSIGNED_LONG_INT:['unsigned long int','unsigned long','unsigned long int'],
+	DataType.SIGNED_LONG_INT:['long int','long','signed long int'],
+	DataType.UNSIGNED_INT:['unsigned int'],
+	DataType.SIGNED_INT:['int','signed int'],
 	DataType.CHARACTER:['char','signed char'],
 	DataType.UNSIGNED_CHARACTER:['unsigned char'],
 	DataType.STRING:['char*','char *']
+}
+
+dataTypeStrings_flexible = {
+	DataType.UNSIGNED_LONG_LONG_INT:['unsigned long long'],
+	DataType.SIGNED_LONG_LONG_INT:['long long'],
+	DataType.UNSIGNED_LONG_INT:['unsigned long'],
+	DataType.SIGNED_LONG_INT:['long'],
+	DataType.UNSIGNED_INT:['unsigned int'],
+	DataType.SIGNED_INT:['int'],
+
+	DataType.UNSIGNED_CHARACTER:['unsigned char'],
+	DataType.STRING:['char*','char *'],
+	DataType.CHARACTER:['char']
 }
 
 dataTypeFormatSpecifierStrings = {
