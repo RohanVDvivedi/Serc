@@ -8,6 +8,7 @@
 #define getArray     concat(getArray_,object)
 #define get          concat(get_,object)
 #define add          concat(add_,object)
+#define add_all      concat(add_all_,object)
 #define exists       concat(exists_,object)
 #define remove       concat(remove_,object)
 #define deleteArray  concat(deleteArray_,object)
@@ -62,6 +63,14 @@ void add(array* array_p,object* object_p)
 			array_p->max_size = new_max_size;
 			array_p->size++; 
 		}
+	}
+}
+
+void add_all(array* array_p,object* object_p,unsigned long long int n)
+{
+	for(int i=0;i<n;i++)
+	{
+		add(array_p,object_p + i);
 	}
 }
 
