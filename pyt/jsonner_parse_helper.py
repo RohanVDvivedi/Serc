@@ -100,7 +100,7 @@ def identify_data_type(datatype_string) :
 	return DataType.OTHER
 
 def identify_data_type_flexible(datatype_string) :
-	for key,list_data_type_string in datatype_handler.dataTypeStrings_.items() :
+	for key,list_data_type_string in datatype_handler.dataTypeStrings_flexible.items() :
 		for data_type_string in list_data_type_string :
 			if data_type_string in datatype_string :
 				return key
