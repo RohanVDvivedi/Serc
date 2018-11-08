@@ -67,7 +67,26 @@ dataTypeFormatSpecifierStrings = {
 
 def forNumber(fieldi) :
 	code  = ""
-	code += "\n\tsprintf(number,\"" + dataTypeFormatSpecifierStrings[int(fieldi[0])] + ",\",object->" + fieldi[1] + ");"
+	pointer_variable = fieldi[1]
+	tab_if_required = ""
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\tif( "
+		for i in range(fieldi[2]) :
+			code += "( ( " + pointer_variable + " ) != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+			i -= 1
+			pointer_variable = "*" + pointer_variable
+		code += " )"
+		code += "\n\t{"
+	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[int(fieldi[0])] + ",\",object->" + pointer_variable + ");"
+	if fieldi[2] > 0 :
+		code += "\n\t}"
+		code += "\n\telse"
+		code += "\n\t{"
+		code += "\n\t\tsprintf(number,\"null,\");"
+		code += "\n\t}"
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
 	code += "\n\taddToJsonString(JS,number);"
 	code += "\n"
@@ -84,14 +103,33 @@ def forString(fieldi) :
 def forBoolean(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\"\");"
-	code += "\n\tif( object->" + fieldi[1] + " )"
-	code += "\n\t{"
-	code += "\n\t\taddToJsonString(JS,\":true,\");"
-	code += "\n\t}"
-	code += "\n\telse"
-	code += "\n\t{"
-	code += "\n\t\taddToJsonString(JS,\":false,\");"
-	code += "\n\t}"
+	pointer_variable = fieldi[1]
+	tab_if_required = ""
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\tif( "
+		for i in range(fieldi[2]) :
+			code += "( ( " + pointer_variable + " ) != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+			i -= 1
+			pointer_variable = "*" + pointer_variable
+		code += " )"
+		code += "\n\t{"
+	code += "\n\t" + tab_if_required + "if( object->" + fieldi[1] + " )"
+	code += "\n\t" + tab_if_required + "{"
+	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\":true,\");"
+	code += "\n\t" + tab_if_required + "}"
+	code += "\n\t" + tab_if_required + "else"
+	code += "\n\t" + tab_if_required + "{"
+	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\":false,\");"
+	code += "\n\t" + tab_if_required + "}"
+	if fieldi[2] > 0 :
+		code += "\n\t}"
+		code += "\n\telse"
+		code += "\n\t{"
+		code += "\n\t\taddToJsonString(JS,\":null,\");"
+		code += "\n\t}"
 	code += "\n"
 	return code
 

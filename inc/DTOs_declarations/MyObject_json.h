@@ -6,14 +6,14 @@
 typedef struct MyObject MyObject;
 struct MyObject
 {
-	signed int myint;
+	signed int*** myint;
 	signed long int mylongint;
-	unsigned int myuint;
+	unsigned int * myuint;
 	unsigned long int myulongint;
 	char *mystring;
 	bool my_bool;
 	float myfloat;
-	double mydouble;
+	double* mydouble;
 };
 
 char* MyObject_toJson(MyObject* myobject);

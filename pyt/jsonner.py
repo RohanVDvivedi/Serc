@@ -29,7 +29,8 @@ and identify them in specific enum as a normalizing step
 this is required because 'int' and 'signed int' are same dataTypes
 '''
 for fieldi in fields :
-	data_type = jph.identify_data_type(fieldi[0])
+	data_type = jph.identify_data_type_flexible(fieldi[0])
+	fieldi += [fieldi[0].count("*")]
 	if data_type == datatype_handler.DataType.OTHER:
 		fieldi += [fieldi[0].replace("*","").replace(" ","")]
 	fieldi[0] = data_type

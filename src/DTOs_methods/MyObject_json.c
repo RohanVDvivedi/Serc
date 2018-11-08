@@ -10,7 +10,14 @@ char* MyObject_toJson( MyObject* object )
 	char number[20];
 	JsonString* JS = getJsonString("{");
 
-	sprintf(number,"%d,",object->myint);
+	if( ( ( myint ) != NULL ) && ( ( *myint ) != NULL ) && ( ( **myint ) != NULL ) )
+	{
+		sprintf(number,"%d,",object->***myint);
+	}
+	else
+	{
+		sprintf(number,"null,");
+	}
 	addToJsonString(JS,"\"myint\":");
 	addToJsonString(JS,number);
 
@@ -18,7 +25,14 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"mylongint\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%u,",object->myuint);
+	if( ( ( myuint ) != NULL ) )
+	{
+		sprintf(number,"%u,",object->*myuint);
+	}
+	else
+	{
+		sprintf(number,"null,");
+	}
 	addToJsonString(JS,"\"myuint\":");
 	addToJsonString(JS,number);
 
@@ -44,7 +58,14 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"myfloat\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%lf,",object->mydouble);
+	if( ( ( mydouble ) != NULL ) )
+	{
+		sprintf(number,"%lf,",object->*mydouble);
+	}
+	else
+	{
+		sprintf(number,"null,");
+	}
 	addToJsonString(JS,"\"mydouble\":");
 	addToJsonString(JS,number);
 
