@@ -10,7 +10,7 @@ struct MyObject
 	signed long int mylongint;
 	unsigned int * myuint;
 	unsigned long int myulongint;
-	char *mystring;
+	char **mystring;
 	bool my_bool;
 	float myfloat;
 	double* mydouble;
