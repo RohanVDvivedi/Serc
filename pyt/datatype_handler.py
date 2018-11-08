@@ -67,7 +67,7 @@ dataTypeFormatSpecifierStrings = {
 
 def forNumber(fieldi) :
 	code  = ""
-	pointer_variable = fieldi[1]
+	pointer_variable = "(object->" + fieldi[1] + ")"
 	tab_if_required = ""
 	if fieldi[2] > 0 :
 		tab_if_required = "\t"
@@ -80,7 +80,7 @@ def forNumber(fieldi) :
 			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
-	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[int(fieldi[0])] + ",\",object->" + pointer_variable + ");"
+	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[int(fieldi[0])] + ",\", (" + pointer_variable + ") );"
 	if fieldi[2] > 0 :
 		code += "\n\t}"
 		code += "\n\telse"
@@ -94,9 +94,29 @@ def forNumber(fieldi) :
 
 def forString(fieldi) :
 	code  = ""
-	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\\\"\");"
-	code += "\n\taddToJsonString(JS,object->" + fieldi[1] + ");"
-	code += "\n\taddToJsonString(JS,\"\\\",\");"
+	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
+	pointer_variable = "(object->" + fieldi[1] + ")"
+	tab_if_required = ""
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\tif( "
+		for i in range(fieldi[2]) :
+			code += "( ( " + pointer_variable + " ) != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+			i -= 1
+			pointer_variable = "*" + pointer_variable
+		code += " )"
+		code += "\n\t{"
+	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\"\");"
+	code += "\n\t" + tab_if_required + "addToJsonString(JS," + (" *(" * (fieldi[2]-1) ) +  " (object->" + fieldi[1] + ") " + (") " * (fieldi[2]-1)) + ");"
+	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\",\");"
+	if fieldi[2] > 0 :
+		code += "\n\t}"
+		code += "\n\telse"
+		code += "\n\t{"
+		code += "\n\t\taddToJsonString(JS,\"null,\");"
+		code += "\n\t}"
 	code += "\n"
 	return code
 

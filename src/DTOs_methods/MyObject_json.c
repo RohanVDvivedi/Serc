@@ -10,9 +10,9 @@ char* MyObject_toJson( MyObject* object )
 	char number[20];
 	JsonString* JS = getJsonString("{");
 
-	if( ( ( myint ) != NULL ) && ( ( *myint ) != NULL ) && ( ( **myint ) != NULL ) )
+	if( ( ( (object->myint) ) != NULL ) && ( ( *(object->myint) ) != NULL ) && ( ( **(object->myint) ) != NULL ) )
 	{
-		sprintf(number,"%d,",object->***myint);
+		sprintf(number,"%d,", (***(object->myint)) );
 	}
 	else
 	{
@@ -21,13 +21,13 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"myint\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%ld,",object->mylongint);
+	sprintf(number,"%ld,", ((object->mylongint)) );
 	addToJsonString(JS,"\"mylongint\":");
 	addToJsonString(JS,number);
 
-	if( ( ( myuint ) != NULL ) )
+	if( ( ( (object->myuint) ) != NULL ) )
 	{
-		sprintf(number,"%u,",object->*myuint);
+		sprintf(number,"%u,", (*(object->myuint)) );
 	}
 	else
 	{
@@ -36,13 +36,21 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"myuint\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%lu,",object->myulongint);
+	sprintf(number,"%lu,", ((object->myulongint)) );
 	addToJsonString(JS,"\"myulongint\":");
 	addToJsonString(JS,number);
 
-	addToJsonString(JS,"\"mystring\":\"");
-	addToJsonString(JS,object->mystring);
-	addToJsonString(JS,"\",");
+	addToJsonString(JS,"\"mystring\":");
+	if( ( ( (object->mystring) ) != NULL ) && ( ( *(object->mystring) ) != NULL ) )
+	{
+		addToJsonString(JS,"\"");
+		addToJsonString(JS, *( (object->mystring) ) );
+		addToJsonString(JS,"\",");
+	}
+	else
+	{
+		addToJsonString(JS,"null,");
+	}
 
 	addToJsonString(JS,"\"my_bool\"");
 	if( object->my_bool )
@@ -54,13 +62,13 @@ char* MyObject_toJson( MyObject* object )
 		addToJsonString(JS,":false,");
 	}
 
-	sprintf(number,"%f,",object->myfloat);
+	sprintf(number,"%f,", ((object->myfloat)) );
 	addToJsonString(JS,"\"myfloat\":");
 	addToJsonString(JS,number);
 
-	if( ( ( mydouble ) != NULL ) )
+	if( ( ( (object->mydouble) ) != NULL ) )
 	{
-		sprintf(number,"%lf,",object->*mydouble);
+		sprintf(number,"%lf,", (*(object->mydouble)) );
 	}
 	else
 	{

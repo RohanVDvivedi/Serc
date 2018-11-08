@@ -34,6 +34,13 @@ for fieldi in fields :
 	if data_type == datatype_handler.DataType.OTHER:
 		fieldi += [fieldi[0].replace("*","").replace(" ","")]
 	fieldi[0] = data_type
+'''
+if DataType is not array or other
+ith element is 
+feild[i] = [ DataType, variable_name_in_string, levels of pointer to reach data ]
+else
+feild[i] = [ DataType, variable_name_in_string, levels_of_pointer_to_reach_data, other_data_type_name_in_string ]
+'''
 
 """
 over here after completing the above loop we now have fields as a dictionary 
