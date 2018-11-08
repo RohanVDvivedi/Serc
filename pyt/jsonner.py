@@ -2,8 +2,12 @@ import replace
 import datatype_handler
 import jsonner_parse_helper as jph
 
+# read all commandline args
+import sys
+command_line_args = sys.argv.copy()[1:]
 
-json_object_name = "MyObject"
+json_object_name = command_line_args[0]
+
 
 
 field_string = jph.read_file_extract_string_consisting_fields(json_object_name)

@@ -9,14 +9,14 @@ array_json* get_array()
 	return new_array_json;
 }
 
-object* get(array_json* array_p, unsigned long long int i)
+object_json* get(array_json* array_p, unsigned long long int i)
 {
 	return (array_p!=NULL && array_p->size > i) ? array_p->objectList[i] : NULL;
 }
 
 void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes)
 {
-	if(array_p!=NULL && object_p!=NULL)
+	if(array_p!=NULL)
 	{
 		object_json* new_obj = get_object();
 		set(new_obj,Data,Type,Bytes);
@@ -42,66 +42,6 @@ void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes)
 			array_p->max_size = new_max_size;
 			array_p->size++; 
 		}
-	}
-}
-
-void add_all(array_json* array_p,object_json* object_p,unsigned long long int n)
-{
-	for(int i=0;i<n;i++)
-	{
-		add(array_p,object_p + i);
-	}
-}
-
-void remove(array_json* array_p,object_json* object_p)
-{
-	if(array_p!=NULL && object_p!=NULL)
-	{
-		int state = 0;
-		for(unsigned long long int i=0;i<array_p->size;i++)
-		{
-			switch(state)
-			{
-				case 0:
-				{
-					if( array_p->objectList[i] == object_p || (*(array_p->objectList[i])) == (*object_p) ) 
-					{
-						state = 1;
-						free(array_p->objectList[i]);
-					}
-					break;
-				}
-				case 1:
-				{
-					array_p->objectList[i-1] = array_p->objectList[i];
-					break;
-				}
-			}
-		}
-		if(state == 1)
-		{
-			array_p->objectList[array_p->size-1] = NULL;
-			array_p->size-=1;
-		}
-	}
-}
-
-int exists(array_json* array_p,object_json* object_p)
-{
-	if(array_p!=NULL && object_p!=NULL)
-	{
-		for(unsigned long long int i=0;i<array_p->size;i++)
-		{
-			if( array_p->objectList[i] == object_p || (*(array_p->objectList[i])) == (*object_p) ) 
-			{
-				return 1;
-			}
-		}
-		return 0;
-	}
-	else
-	{
-		return -1;
 	}
 }
 

@@ -3,6 +3,8 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include<object_json.h>
+#include<jsonstringhandler.h>
 
 typedef struct array_json array_json;
 struct array_json
@@ -12,17 +14,11 @@ struct array_json
 	object_json** objectList;
 };
 
-array* get_array();
+array_json* get_array();
 
-object* get(array_json* array_p, unsigned long long int i);
+object_json* get(array_json* array_p, unsigned long long int i);
 
 void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes);
-
-void add_all(array_json* array_p,object_json* object_p,unsigned long long int n);
-
-void remove(array_json* array_p,object_json* object_p);
-
-int exists(array_json* array_p,object_json* object_p);
 
 void delete_array(array_json* array_p);
 
