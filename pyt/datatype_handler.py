@@ -48,7 +48,7 @@ dataTypeStrings_flexible = {
 	DataType.FLOAT:['float'],
 	DataType.DOUBLE:['double'],
 
-	DataType.ARRAY:['array_']
+	DataType.ARRAY:['array_json']
 }
 
 dataTypeFormatSpecifierStrings = {
@@ -154,9 +154,12 @@ def forBoolean(fieldi) :
 	return code
 
 def forObject(fieldi) :
+	datatype_name_string = "array_json"
+	if fieldi[0] == DataType.OTHER :
+		datatype_name_string = fieldi[3]
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
-	code += "\n\tchar* resultJsonObject = " + fieldi[2] + "_toJson(object->" + fieldi[1] + ");"
+	code += "\n\tchar* resultJsonObject = " + datatype_name_string + "_toJson(object->" + fieldi[1] + ");"
 	code += "\n\taddToJsonString(JS,resultJsonObject);"
 	code += "\n\tfree(resultJsonObject);"
 	code += "\n"
@@ -178,7 +181,7 @@ def to_json_function_creator(json_object_name,fields):
 	function_string     += "\n"
 
 	for fieldi in fields:
-		if fieldi[0] == DataType.OTHER :
+		if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
 			function_string += forObject(fieldi)
 		elif fieldi[0] == DataType.STRING :
 			function_string += forString(fieldi)

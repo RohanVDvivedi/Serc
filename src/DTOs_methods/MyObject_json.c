@@ -77,6 +77,16 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"mydouble\":");
 	addToJsonString(JS,number);
 
+	addToJsonString(JS,"\"my_array\":");
+	char* resultJsonObject = array_json_toJson(object->my_array);
+	addToJsonString(JS,resultJsonObject);
+	free(resultJsonObject);
+
+	addToJsonString(JS,"\"my_sub\":");
+	char* resultJsonObject = MyObjectSub_toJson(object->my_sub);
+	addToJsonString(JS,resultJsonObject);
+	free(resultJsonObject);
+
 	JS->string[JS->size-2] = '}';
 	char* result = JS->string;
 	free(JS);

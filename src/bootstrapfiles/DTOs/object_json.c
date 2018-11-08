@@ -41,9 +41,9 @@ char* object_json_toJson(object_json* object_p)
 		}
 		case INTEGER_JSON :
 		{
-			if( object->Data != NULL )
+			if( object_p->Data != NULL )
 			{
-				sprintf(number,"%lld,", (*(object->Data)) );
+				sprintf(number,"%lld,", (*((long long int*)object_p->Data)) );
 			}
 			else
 			{
@@ -54,9 +54,9 @@ char* object_json_toJson(object_json* object_p)
 		}
 		case DOUBLE_JSON :
 		{
-			if( object->Data != NULL )
+			if( object_p->Data != NULL )
 			{
-				sprintf(number,"%lf,", (*(object->Data)) );
+				sprintf(number,"%lf,", (*((double*)object_p->Data)) );
 			}
 			else
 			{
@@ -67,9 +67,9 @@ char* object_json_toJson(object_json* object_p)
 		}
 		case STRING_JSON :
 		{
-			if( object->Data != NULL )
+			if( object_p->Data != NULL )
 			{
-				sprintf(number,"\"%s\",", (object->Data) );
+				sprintf(number,"\"%s\",", ((char*)object_p->Data) );
 			}
 			else
 			{
@@ -80,9 +80,9 @@ char* object_json_toJson(object_json* object_p)
 		}
 		case BOOLEAN_JSON :
 		{
-			if( object->Data != NULL )
+			if( object_p->Data != NULL )
 			{
-				if(*(object->Data))
+				if(*((unsigned char*)object_p->Data))
 				{
 					sprintf(number,"true,");
 				}
@@ -100,9 +100,9 @@ char* object_json_toJson(object_json* object_p)
 		}
 		case ARRAY_JSON :
 		{
-			if( object->Data != NULL )
+			if( object_p->Data != NULL )
 			{
-				char* array_json_result = array_json_toJson(((array_json*)object->Data));
+				char* array_json_result = array_json_toJson(((array_json*)object_p->Data));
 				addToJsonString(JS,array_json_result);
 				free(array_json_result);
 			}
@@ -113,11 +113,24 @@ char* object_json_toJson(object_json* object_p)
 			}
 			break;
 		}
-		case classname_JSON :
+		default :
 		{
-			if( object->Data != NULL )
+			if( object_p->Data != NULL )
 			{
-				char* object_json_result = classname_toJson(((classname*)object->Data));
+				char* object_json_result = NULL;
+
+				switch(object_p->Type)
+				{
+					/*
+					case CLASSNAME_JSON :
+					{
+						object_json_result = classname_toJson(((classname*)object_p->Data));
+						break;
+					}
+					*/
+//@case_handling
+				}
+
 				addToJsonString(JS,object_json_result);
 				free(object_json_result);
 			}
@@ -128,7 +141,6 @@ char* object_json_toJson(object_json* object_p)
 			}
 			break;
 		}
-//@case_handling
 	}
 
 	char* result = JS->string;

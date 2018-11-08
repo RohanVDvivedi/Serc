@@ -1,5 +1,7 @@
 #ifndef MYOBJECT
 #define MYOBJECT
+#include<array_json.h>
+#include<MyObjectSub_json.h>
 
 #define bool int
 
@@ -14,6 +16,8 @@ struct MyObject
 	bool my_bool;
 	float myfloat;
 	double* mydouble;
+	array_json* my_array;
+	MyObjectSub* my_sub;
 };
 
 char* MyObject_toJson(MyObject* myobject);
