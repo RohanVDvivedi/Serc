@@ -159,8 +159,9 @@ def forObject(fieldi) :
 		datatype_name_string = fieldi[3]
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
-	code += "\n\tchar* resultJsonObject = " + datatype_name_string + "_toJson(object->" + fieldi[1] + ");"
+	code += "\n\tresultJsonObject = " + datatype_name_string + "_toJson(object->" + fieldi[1] + ");"
 	code += "\n\taddToJsonString(JS,resultJsonObject);"
+	code += "\n\taddToJsonString(JS,\",\");"
 	code += "\n\tfree(resultJsonObject);"
 	code += "\n"
 	return code
@@ -172,11 +173,19 @@ def to_json_function_creator(json_object_name,fields):
 	function_string     += "\n{"
 	function_string     += "\n"
 	function_string     += "\n\tchar number[20];"
+	function_string     += "\n\tchar* resultJsonObject;"
+	function_string     += "\n\tJsonString* JS;"
+	function_string     += "\n"
+	function_string     += "\n\tif( object == NULL )"
+	function_string     += "\n\t{"
+	function_string     += "\n\t\tJS = getJsonString(\"null\");"
+	function_string     += "\n\t\tgoto exit;"
+	function_string     += "\n\t}"
 
 	if len(fields) == 0 :
-		function_string += "\n\tJsonString* JS = getJsonString(\"{}\");"
+		function_string += "\n\tJS = getJsonString(\"{}\");"
 	else :
-		function_string += "\n\tJsonString* JS = getJsonString(\"{\");"
+		function_string += "\n\tJS = getJsonString(\"{\");"
 
 	function_string     += "\n"
 
@@ -192,6 +201,8 @@ def to_json_function_creator(json_object_name,fields):
 
 	if len(fields) > 0 :
 		function_string += "\n\tJS->string[JS->size-2] = '}';"
+		function_string += "\n"
+	function_string     += "\n\texit:\t;"
 	function_string     += "\n\tchar* result = JS->string;"
 	function_string     += "\n\tfree(JS);"
 	function_string     += "\n\treturn result;"

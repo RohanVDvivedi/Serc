@@ -59,7 +59,7 @@ char* array_json_toJson(array_json* array_p)
 {
 	JsonString* JS;
 
-	if(array_p->size>0)
+	if(array_p!=NULL && array_p->size>0)
 	{
 		JS = getJsonString("[");
 		for(unsigned long long int i = 0;i<array_p->size;i++)

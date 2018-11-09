@@ -8,7 +8,15 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 {
 
 	char number[20];
-	JsonString* JS = getJsonString("{");
+	char* resultJsonObject;
+	JsonString* JS;
+
+	if( object == NULL )
+	{
+		JS = getJsonString("null");
+		goto exit;
+	}
+	JS = getJsonString("{");
 
 	sprintf(number,"%d,", ((object->a)) );
 	addToJsonString(JS,"\"a\":");
@@ -27,6 +35,8 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 	}
 
 	JS->string[JS->size-2] = '}';
+
+	exit:	;
 	char* result = JS->string;
 	free(JS);
 	return result;

@@ -8,7 +8,15 @@ char* MyObject_toJson( MyObject* object )
 {
 
 	char number[20];
-	JsonString* JS = getJsonString("{");
+	char* resultJsonObject;
+	JsonString* JS;
+
+	if( object == NULL )
+	{
+		JS = getJsonString("null");
+		goto exit;
+	}
+	JS = getJsonString("{");
 
 	if( ( ( (object->myint) ) != NULL ) && ( ( *(object->myint) ) != NULL ) && ( ( **(object->myint) ) != NULL ) )
 	{
@@ -78,16 +86,20 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"my_array\":");
-	char* resultJsonObject = array_json_toJson(object->my_array);
+	resultJsonObject = array_json_toJson(object->my_array);
 	addToJsonString(JS,resultJsonObject);
+	addToJsonString(JS,",");
 	free(resultJsonObject);
 
 	addToJsonString(JS,"\"my_sub\":");
-	char* resultJsonObject = MyObjectSub_toJson(object->my_sub);
+	resultJsonObject = MyObjectSub_toJson(object->my_sub);
 	addToJsonString(JS,resultJsonObject);
+	addToJsonString(JS,",");
 	free(resultJsonObject);
 
 	JS->string[JS->size-2] = '}';
+
+	exit:	;
 	char* result = JS->string;
 	free(JS);
 	return result;

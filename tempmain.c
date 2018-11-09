@@ -19,8 +19,16 @@ int main()
 	m.myfloat = 6.9987;
 	double d = 5.9876577;
 	m.mydouble = &d;
+
+	m.my_array = NULL;
+	m.my_sub = NULL;/*= (MyObjectSub*) malloc(sizeof(MyObjectSub));
+	m.my_sub->a = 500;
+	m.my_sub->b = "world";*/
+
 	char* c = MyObject_toJson(&m);
+printf("converted to string\n");
 	printf("\n==%s==\n",c);
 	free(c);
+	//free(m.my_sub);
 	return 0;
 }
