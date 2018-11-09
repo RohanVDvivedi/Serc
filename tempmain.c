@@ -20,15 +20,41 @@ int main()
 	double d = 5.9876577;
 	m.mydouble = &d;
 
-	m.my_array = NULL;
-	m.my_sub = NULL;/*= (MyObjectSub*) malloc(sizeof(MyObjectSub));
+	m.my_array = get_array();
+
+	long long int i = 1001;
+	double dou = 10.101;
+	unsigned char bool_= 0;
+	char* arr_str = "world";
+	add(m.my_array,&i,INTEGER_JSON,sizeof(long long int));
+	add(m.my_array,&dou,DOUBLE_JSON,sizeof(double));
+	add(m.my_array,&bool_,BOOLEAN_JSON,sizeof(unsigned char));
+	add(m.my_array,NULL,NULL_JSON,0);
+	add(m.my_array,arr_str,STRING_JSON,strlen(arr_str)+1);
+
+	array_json arr = {0,0,NULL};
+	add(m.my_array,&arr,ARRAY_JSON,sizeof(array_json));
+	array_json* arr_temp = get(m.my_array,5)->Data;
+
+	i = 10;
+	dou = 0.101;
+	bool_= 1;
+	arr_str = "India to canada";
+	add(arr_temp,&i,INTEGER_JSON,sizeof(long long int));
+	add(arr_temp,&dou,DOUBLE_JSON,sizeof(double));
+	add(arr_temp,&bool_,BOOLEAN_JSON,sizeof(unsigned char));
+	add(arr_temp,NULL,NULL_JSON,0);
+	add(arr_temp,arr_str,STRING_JSON,strlen(arr_str)+1);
+
+	m.my_sub = (MyObjectSub*) malloc(sizeof(MyObjectSub));
 	m.my_sub->a = 500;
-	m.my_sub->b = "world";*/
+	m.my_sub->b = "world";
 
 	char* c = MyObject_toJson(&m);
 printf("converted to string\n");
 	printf("\n==%s==\n",c);
 	free(c);
-	//free(m.my_sub);
+	delete_array(m.my_array);
+	free(m.my_sub);
 	return 0;
 }
