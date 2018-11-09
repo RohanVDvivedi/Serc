@@ -11,18 +11,31 @@ object_json* get_object()
 
 void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 {
-
+	if(object_p->Data!=NULL)
+	{
+		free(object_p->Data);
+	}
+	if( Type == NULL_JSON || Data == NULL || Bytes <=0 )
+	{
+		object_p->Data = NULL;
+		object_p->Type = NULL_JSON;
+		object_p->Bytes = 0;
+	}
 	object_p->Data = malloc(Bytes);
 	memcpy(object_p->Data,Data,Bytes);
 	object_p->Type = Type;
-	object_p->Type = Bytes;
+	object_p->Bytes = Bytes;
 }
 
 void delete_object(object_json* object_p)
 {
-	if(object_p->Data != NULL)
+	if(object_p->Data != NULL && object_p->Type!=ARRAY_JSON)
 	{
 		free(object_p->Data);
+	}
+	else if (object_p->Data != NULL && object_p->Type == ARRAY_JSON)
+	{
+		delete_array(object_p->Data);
 	}
 	free(object_p);
 }
@@ -43,6 +56,7 @@ char* object_json_toJson(object_json* object_p)
 			}
 			case INTEGER_JSON :
 			{
+				printf("INTEGER_JSON\n");
 				if( object_p->Data != NULL )
 				{
 					sprintf(number,"%lld,", (*((long long int*)object_p->Data)) );
@@ -82,6 +96,7 @@ char* object_json_toJson(object_json* object_p)
 			}
 			case BOOLEAN_JSON :
 			{
+				printf("BOOLEAN_JSON\n");
 				if( object_p->Data != NULL )
 				{
 					if(*((unsigned char*)object_p->Data))
@@ -106,6 +121,7 @@ char* object_json_toJson(object_json* object_p)
 				{
 					char* array_json_result = array_json_toJson(((array_json*)object_p->Data));
 					addToJsonString(JS,array_json_result);
+					addToJsonString(JS,",");
 					free(array_json_result);
 				}
 				else
