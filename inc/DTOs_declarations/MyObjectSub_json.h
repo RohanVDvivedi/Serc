@@ -8,4 +8,6 @@ struct MyObjectSub
 	char* b;
 };
 
+char* MyObjectSub_toJson(MyObjectSub* object);
+
 #endif

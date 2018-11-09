@@ -32,115 +32,122 @@ char* object_json_toJson(object_json* object_p)
 	char number[20];
 	JsonString* JS = getJsonString("");
 
-	switch(object_p->Type)
+	if(object_p!=NULL)
 	{
-		case NULL_JSON :
+		switch(object_p->Type)
 		{
-			addToJsonString(JS,"null,");
-			break;
-		}
-		case INTEGER_JSON :
-		{
-			if( object_p->Data != NULL )
+			case NULL_JSON :
 			{
-				sprintf(number,"%lld,", (*((long long int*)object_p->Data)) );
+				addToJsonString(JS,"null,");
+				break;
 			}
-			else
+			case INTEGER_JSON :
 			{
-				sprintf(number,"null,");
-			}
-			addToJsonString(JS,number);
-			break;
-		}
-		case DOUBLE_JSON :
-		{
-			if( object_p->Data != NULL )
-			{
-				sprintf(number,"%lf,", (*((double*)object_p->Data)) );
-			}
-			else
-			{
-				sprintf(number,"null,");
-			}
-			addToJsonString(JS,number);
-			break;
-		}
-		case STRING_JSON :
-		{
-			if( object_p->Data != NULL )
-			{
-				sprintf(number,"\"%s\",", ((char*)object_p->Data) );
-			}
-			else
-			{
-				sprintf(number,"null,");
-			}
-			addToJsonString(JS,number);
-			break;
-		}
-		case BOOLEAN_JSON :
-		{
-			if( object_p->Data != NULL )
-			{
-				if(*((unsigned char*)object_p->Data))
+				if( object_p->Data != NULL )
 				{
-					sprintf(number,"true,");
+					sprintf(number,"%lld,", (*((long long int*)object_p->Data)) );
 				}
 				else
 				{
-					sprintf(number,"false,");
+					sprintf(number,"null,");
 				}
-			}
-			else
-			{
-				sprintf(number,"null,");
-			}
-			addToJsonString(JS,number);
-			break;
-		}
-		case ARRAY_JSON :
-		{
-			if( object_p->Data != NULL )
-			{
-				char* array_json_result = array_json_toJson(((array_json*)object_p->Data));
-				addToJsonString(JS,array_json_result);
-				free(array_json_result);
-			}
-			else
-			{
-				sprintf(number,"null,");
 				addToJsonString(JS,number);
+				break;
 			}
-			break;
-		}
-		default :
-		{
-			if( object_p->Data != NULL )
+			case DOUBLE_JSON :
 			{
-				char* object_json_result = NULL;
-
-				switch(object_p->Type)
+				if( object_p->Data != NULL )
 				{
-					/*
-					case CLASSNAME_JSON :
-					{
-						object_json_result = classname_toJson(((classname*)object_p->Data));
-						break;
-					}
-					*/
-//@case_handling
+					sprintf(number,"%lf,", (*((double*)object_p->Data)) );
 				}
-
-				addToJsonString(JS,object_json_result);
-				free(object_json_result);
-			}
-			else
-			{
-				sprintf(number,"null,");
+				else
+				{
+					sprintf(number,"null,");
+				}
 				addToJsonString(JS,number);
+				break;
 			}
-			break;
+			case STRING_JSON :
+			{
+				if( object_p->Data != NULL )
+				{
+					sprintf(number,"\"%s\",", ((char*)object_p->Data) );
+				}
+				else
+				{
+					sprintf(number,"null,");
+				}
+				addToJsonString(JS,number);
+				break;
+			}
+			case BOOLEAN_JSON :
+			{
+				if( object_p->Data != NULL )
+				{
+					if(*((unsigned char*)object_p->Data))
+					{
+						sprintf(number,"true,");
+					}
+					else
+					{
+						sprintf(number,"false,");
+					}
+				}
+				else
+				{
+					sprintf(number,"null,");
+				}
+				addToJsonString(JS,number);
+				break;
+			}
+			case ARRAY_JSON :
+			{
+				if( object_p->Data != NULL )
+				{
+					char* array_json_result = array_json_toJson(((array_json*)object_p->Data));
+					addToJsonString(JS,array_json_result);
+					free(array_json_result);
+				}
+				else
+				{
+					sprintf(number,"null,");
+					addToJsonString(JS,number);
+				}
+				break;
+			}
+			default :
+			{
+				if( object_p->Data != NULL )
+				{
+					char* object_json_result = NULL;
+
+					switch(object_p->Type)
+					{
+						/*
+						case CLASSNAME_JSON :
+						{
+							object_json_result = classname_toJson(((classname*)object_p->Data));
+							break;
+						}
+						*/
+//@case_handling
+					}
+
+					addToJsonString(JS,object_json_result);
+					free(object_json_result);
+				}
+				else
+				{
+					sprintf(number,"null,");
+					addToJsonString(JS,number);
+				}
+				break;
+			}
 		}
+	}
+	else
+	{
+		addToJsonString(JS,"null,");
 	}
 
 	char* result = JS->string;
