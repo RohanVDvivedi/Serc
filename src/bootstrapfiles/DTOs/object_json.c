@@ -38,7 +38,7 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 			object_p->Bytes = sizeof(classname_json);
 			break;
 		}*/
-//@case_handling_set
+//@case_handling_set)))
 		default :
 		{
 			object_p->Data = malloc(Bytes);
@@ -66,7 +66,7 @@ void delete_object(object_json* object_p)
 				delet_classname(object_p->Data);
 				break;
 			}*/
-//@case_handling_delete
+//@case_handling_delete)))
 			default :
 			{
 				free(object_p->Data);
@@ -181,7 +181,7 @@ char* object_json_toJson(object_json* object_p)
 							break;
 						}
 						*/
-//@case_handling_toJson
+//@case_handling_toJson)))
 						default :
 						{
 							sprintf(number,"null,");

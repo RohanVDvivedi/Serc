@@ -14,8 +14,8 @@ enum Type_Support
 	,STRING_JSON
 	,BOOLEAN_JSON
 	,ARRAY_JSON
-//  ,CLASSNAME_JSON
-//@ add others
+	/*,CLASSNAME_JSON*/
+//@add_enum 
 };
 
 typedef struct object_json object_json;
@@ -35,5 +35,7 @@ void delete_object(object_json* object_p);
 char* object_json_toJson(object_json* object_p);
 
 #include<array_json.h>
+/*#include<classname_json.h>*/
+//@add_headers
 
 #endif
