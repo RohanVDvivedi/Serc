@@ -20,6 +20,13 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 		object_p->Data = NULL;
 		object_p->Type = NULL_JSON;
 		object_p->Bytes = 0;
+		return;
+	}
+	else if( Type == ARRAY_JSON )
+	{
+		object_p->Data = get_array();
+		object_p->Type = ARRAY_JSON;
+		object_p->Bytes = sizeof(array_json);
 	}
 	object_p->Data = malloc(Bytes);
 	memcpy(object_p->Data,Data,Bytes);
