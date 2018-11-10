@@ -56,7 +56,6 @@ char* object_json_toJson(object_json* object_p)
 			}
 			case INTEGER_JSON :
 			{
-				printf("INTEGER_JSON\n");
 				if( object_p->Data != NULL )
 				{
 					sprintf(number,"%lld,", (*((long long int*)object_p->Data)) );
@@ -96,7 +95,6 @@ char* object_json_toJson(object_json* object_p)
 			}
 			case BOOLEAN_JSON :
 			{
-				printf("BOOLEAN_JSON\n");
 				if( object_p->Data != NULL )
 				{
 					if(*((unsigned char*)object_p->Data))

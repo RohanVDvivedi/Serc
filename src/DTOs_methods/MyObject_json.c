@@ -13,7 +13,7 @@ char* MyObject_toJson( MyObject* object )
 
 	if( object == NULL )
 	{
-		JS = getJsonString("null");
+		JS = getJsonString("{}");
 		goto exit;
 	}
 	JS = getJsonString("{");
@@ -52,7 +52,7 @@ char* MyObject_toJson( MyObject* object )
 	if( ( ( (object->mystring) ) != NULL ) && ( ( *(object->mystring) ) != NULL ) )
 	{
 		addToJsonString(JS,"\"");
-		addToJsonString(JS, *( (object->mystring) ) );
+		addToJsonString(JS, (*(object->mystring)) );
 		addToJsonString(JS,"\",");
 	}
 	else
@@ -61,7 +61,7 @@ char* MyObject_toJson( MyObject* object )
 	}
 
 	addToJsonString(JS,"\"my_bool\"");
-	if( object->my_bool )
+	if( (object->my_bool) )
 	{
 		addToJsonString(JS,":true,");
 	}
@@ -86,16 +86,37 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"my_array\":");
-	resultJsonObject = array_json_toJson(object->my_array);
-	addToJsonString(JS,resultJsonObject);
-	addToJsonString(JS,",");
+	resultJsonObject = array_json_toJson( (&(object->my_array)) );
+	if( strcmp(resultJsonObject,"{}")==0 )
+	{
+		addToJsonString(JS,"null,");
+	}
+	else
+	{
+		addToJsonString(JS,resultJsonObject);
+		addToJsonString(JS,",");
+	}
 	free(resultJsonObject);
 
 	addToJsonString(JS,"\"my_sub\":");
-	resultJsonObject = MyObjectSub_toJson(object->my_sub);
-	addToJsonString(JS,resultJsonObject);
-	addToJsonString(JS,",");
-	free(resultJsonObject);
+	if( ( ( (object->my_sub) ) != NULL ) )
+	{
+		resultJsonObject = MyObjectSub_toJson( ((object->my_sub)) );
+		if( strcmp(resultJsonObject,"{}")==0 )
+		{
+			addToJsonString(JS,"null,");
+		}
+		else
+		{
+			addToJsonString(JS,resultJsonObject);
+			addToJsonString(JS,",");
+		}
+		free(resultJsonObject);
+	}
+	else
+	{
+		addToJsonString(JS,"null,");
+	}
 
 	JS->string[JS->size-2] = '}';
 

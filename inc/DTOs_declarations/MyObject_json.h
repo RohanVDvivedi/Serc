@@ -16,7 +16,7 @@ struct MyObject
 	bool my_bool;
 	float myfloat;
 	double* mydouble;
-	array_json* my_array;
+	array_json my_array;
 	MyObjectSub* my_sub;
 };
 
