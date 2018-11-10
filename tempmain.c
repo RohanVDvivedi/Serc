@@ -34,7 +34,7 @@ int main()
 	add(&m.my_array,NULL,NULL_JSON,0);
 	add(&m.my_array,arr_str,STRING_JSON,strlen(arr_str)+1);
 
-	add(&m.my_array,&arr,ARRAY_JSON,sizeof(array_json));
+	add(&m.my_array,NULL,ARRAY_JSON,0);
 	array_json* arr_temp = get(&m.my_array,5)->Data;
 
 	i = 10;
