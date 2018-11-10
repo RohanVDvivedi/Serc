@@ -20,21 +20,22 @@ int main()
 	double d = 5.9876577;
 	m.mydouble = &d;
 
-	m.my_array = get_array();
+	array_json arr = {0,0,NULL};
+
+	m.my_array = arr;//get_array();
 
 	long long int i = 1001;
 	double dou = 10.101;
 	unsigned char bool_= 0;
 	char* arr_str = "world";
-	add(m.my_array,&i,INTEGER_JSON,sizeof(long long int));
-	add(m.my_array,&dou,DOUBLE_JSON,sizeof(double));
-	add(m.my_array,&bool_,BOOLEAN_JSON,sizeof(unsigned char));
-	add(m.my_array,NULL,NULL_JSON,0);
-	add(m.my_array,arr_str,STRING_JSON,strlen(arr_str)+1);
+	add(&m.my_array,&i,INTEGER_JSON,sizeof(long long int));
+	add(&m.my_array,&dou,DOUBLE_JSON,sizeof(double));
+	add(&m.my_array,&bool_,BOOLEAN_JSON,sizeof(unsigned char));
+	add(&m.my_array,NULL,NULL_JSON,0);
+	add(&m.my_array,arr_str,STRING_JSON,strlen(arr_str)+1);
 
-	array_json arr = {0,0,NULL};
-	add(m.my_array,&arr,ARRAY_JSON,sizeof(array_json));
-	array_json* arr_temp = get(m.my_array,5)->Data;
+	add(&m.my_array,&arr,ARRAY_JSON,sizeof(array_json));
+	array_json* arr_temp = get(&m.my_array,5)->Data;
 
 	i = 10;
 	dou = 0.101;
@@ -54,7 +55,7 @@ int main()
 printf("converted to string\n");
 	printf("\n==%s==\n",c);
 	free(c);
-	delete_array(m.my_array);
+	delete_array_contents(&m.my_array);
 	free(m.my_sub);
 	return 0;
 }

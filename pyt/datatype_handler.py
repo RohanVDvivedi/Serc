@@ -109,7 +109,7 @@ def forString(fieldi) :
 		code += " )"
 		code += "\n\t{"
 	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\"\");"
-	code += "\n\t" + tab_if_required + "addToJsonString(JS," + (" *(" * (fieldi[2]-1) ) +  " (object->" + fieldi[1] + ") " + (") " * (fieldi[2]-1)) + ");"
+	code += "\n\t" + tab_if_required + "addToJsonString(JS, (" + pointer_variable[1:] + ")" + " );"
 	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\",\");"
 	if fieldi[2] > 0 :
 		code += "\n\t}"
@@ -123,7 +123,7 @@ def forString(fieldi) :
 def forBoolean(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\"\");"
-	pointer_variable = fieldi[1]
+	pointer_variable = "(object->" + fieldi[1] + ")"
 	tab_if_required = ""
 	if fieldi[2] > 0 :
 		tab_if_required = "\t"
@@ -136,7 +136,7 @@ def forBoolean(fieldi) :
 			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
-	code += "\n\t" + tab_if_required + "if( object->" + fieldi[1] + " )"
+	code += "\n\t" + tab_if_required + "if( " + pointer_variable + " )"
 	code += "\n\t" + tab_if_required + "{"
 	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\":true,\");"
 	code += "\n\t" + tab_if_required + "}"
@@ -159,10 +159,40 @@ def forObject(fieldi) :
 		datatype_name_string = fieldi[3]
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
-	code += "\n\tresultJsonObject = " + datatype_name_string + "_toJson(object->" + fieldi[1] + ");"
-	code += "\n\taddToJsonString(JS,resultJsonObject);"
-	code += "\n\taddToJsonString(JS,\",\");"
-	code += "\n\tfree(resultJsonObject);"
+	pointer_variable = "(object->" + fieldi[1] + ")"
+	tab_if_required = ""
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\tif( "
+		for i in range(fieldi[2]) :
+			code += "( ( " + pointer_variable + " ) != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+			i -= 1
+			pointer_variable = "*" + pointer_variable
+		code += " )"
+		code += "\n\t{"
+	if fieldi[2] == 0 :
+		pointer_address = "&(object->" + fieldi[1] + ")"
+	else :
+		pointer_address = pointer_variable[1:]
+	code += "\n\t" + tab_if_required + "resultJsonObject = " + datatype_name_string + "_toJson( (" + pointer_address + ") );"
+	code += "\n\t" + tab_if_required + "if( strcmp(resultJsonObject,\"{}\")==0 )"
+	code += "\n\t" + tab_if_required + "{"
+	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\"null,\");"
+	code += "\n\t" + tab_if_required + "}"
+	code += "\n\t" + tab_if_required + "else"
+	code += "\n\t" + tab_if_required + "{"
+	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,resultJsonObject);"
+	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\",\");"
+	code += "\n\t" + tab_if_required + "}"
+	code += "\n\t" + tab_if_required + "free(resultJsonObject);"
+	if fieldi[2] > 0 :
+		code += "\n\t}"
+		code += "\n\telse"
+		code += "\n\t{"
+		code += "\n\t\taddToJsonString(JS,\"null,\");"
+		code += "\n\t}"
 	code += "\n"
 	return code
 
@@ -178,7 +208,7 @@ def to_json_function_creator(json_object_name,fields):
 	function_string     += "\n"
 	function_string     += "\n\tif( object == NULL )"
 	function_string     += "\n\t{"
-	function_string     += "\n\t\tJS = getJsonString(\"null\");"
+	function_string     += "\n\t\tJS = getJsonString(\"{}\");"
 	function_string     += "\n\t\tgoto exit;"
 	function_string     += "\n\t}"
 

@@ -22,6 +22,8 @@ void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes);
 
 void delete_array(array_json* array_p);
 
+void delete_array_contents(array_json* array_p);
+
 char* array_json_toJson(array_json* array_p);
 
 #endif

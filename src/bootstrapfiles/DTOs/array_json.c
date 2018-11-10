@@ -55,6 +55,18 @@ void delete_array(array_json* array_p)
 	free(array_p);
 }
 
+void delete_array_contents(array_json* array_p)
+{
+	for(unsigned long long int i=0;i<array_p->size;i++)
+	{
+		delete_object(array_p->objectList[i]);
+	}
+	free(array_p->objectList);
+	array_p->size = 0;
+	array_p->max_size = 0;
+	array_p->objectList = NULL;
+}
+
 char* array_json_toJson(array_json* array_p)
 {
 	JsonString* JS;
