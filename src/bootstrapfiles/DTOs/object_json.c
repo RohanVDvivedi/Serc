@@ -15,7 +15,7 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 	{
 		free(object_p->Data);
 	}
-	if( Type == NULL_JSON || Data == NULL || Bytes <=0 )
+	if( ( Type == NULL_JSON || Data == NULL || Bytes <=0 ) && (Type != ARRAY_JSON) )
 	{
 		object_p->Data = NULL;
 		object_p->Type = NULL_JSON;
@@ -28,10 +28,13 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 		object_p->Type = ARRAY_JSON;
 		object_p->Bytes = sizeof(array_json);
 	}
-	object_p->Data = malloc(Bytes);
-	memcpy(object_p->Data,Data,Bytes);
-	object_p->Type = Type;
-	object_p->Bytes = Bytes;
+	else
+	{
+		object_p->Data = malloc(Bytes);
+		memcpy(object_p->Data,Data,Bytes);
+		object_p->Type = Type;
+		object_p->Bytes = Bytes;
+	}
 }
 
 void delete_object(object_json* object_p)
