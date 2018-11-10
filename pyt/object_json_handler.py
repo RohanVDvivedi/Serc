@@ -1,5 +1,18 @@
 import replace
 
+"""
+the below script is used to generate object_json.h and object_json.c files
+for given json object name is given
+it will build up enum, header includes and case statements required for building up
+the complete object_json file
+
+useage
+:
+python3 ./pyt/object_json_handler.py <object_name_0> <object_name_1> <object_name_2> <object_name_3> ...
+put all object name in cli params
+
+"""
+
 # read all commandline args
 import sys
 command_line_args = sys.argv.copy()[1:]
