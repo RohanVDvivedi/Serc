@@ -15,37 +15,64 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 	{
 		free(object_p->Data);
 	}
-	if( ( Type == NULL_JSON || Data == NULL || Bytes <=0 ) && (Type != ARRAY_JSON) )
+	switch( Type )
 	{
-		object_p->Data = NULL;
-		object_p->Type = NULL_JSON;
-		object_p->Bytes = 0;
-		return;
-	}
-	else if( Type == ARRAY_JSON )
-	{
-		object_p->Data = get_array();
-		object_p->Type = ARRAY_JSON;
-		object_p->Bytes = sizeof(array_json);
-	}
-	else
-	{
-		object_p->Data = malloc(Bytes);
-		memcpy(object_p->Data,Data,Bytes);
-		object_p->Type = Type;
-		object_p->Bytes = Bytes;
+		case  NULL_JSON :
+		{
+			object_p->Data = NULL;
+			object_p->Type = NULL_JSON;
+			object_p->Bytes = 0;
+			break;
+		}
+		case ARRAY_JSON :
+		{
+			object_p->Data = get_array();
+			object_p->Type = ARRAY_JSON;
+			object_p->Bytes = sizeof(array_json);
+			break;
+		}
+		/*case CLASSNAME_JSON :
+		{
+			object_p->Data = get_classname();
+			object_p->Type = CLASSNAME_JSON;
+			object_p->Bytes = sizeof(classname_json);
+			break;
+		}*/
+//@case_handling_set
+		default :
+		{
+			object_p->Data = malloc(Bytes);
+			memcpy(object_p->Data,Data,Bytes);
+			object_p->Type = Type;
+			object_p->Bytes = Bytes;
+			break;
+		}
 	}
 }
 
 void delete_object(object_json* object_p)
 {
-	if(object_p->Data != NULL && object_p->Type!=ARRAY_JSON)
+	if( object_p->Data != NULL)
 	{
-		free(object_p->Data);
-	}
-	else if (object_p->Data != NULL && object_p->Type == ARRAY_JSON)
-	{
-		delete_array(object_p->Data);
+		switch( object_p->Type )
+		{
+			case ARRAY_JSON :
+			{
+				delete_array(object_p->Data);
+				break;
+			}
+			/*case CLASSNAME_JSON :
+			{
+				delet_classname(object_p->Data);
+				break;
+			}*/
+//@case_handling_delete
+			default :
+			{
+				free(object_p->Data);
+				break;
+			}
+		}
 	}
 	free(object_p);
 }
@@ -154,7 +181,12 @@ char* object_json_toJson(object_json* object_p)
 							break;
 						}
 						*/
-//@case_handling
+//@case_handling_toJson
+						default :
+						{
+							sprintf(number,"null,");
+							addToJsonString(JS,number);
+						}
 					}
 
 					addToJsonString(JS,object_json_result);
