@@ -3,7 +3,7 @@
 JsonString* getJsonString(char* str)
 {
 	JsonString* JS = (JsonString*)malloc(sizeof(JsonString));
-	int str_length = (str==NULL ? 0 : strlen(str)) + 1;
+	int str_length = (str==NULL ? 0 : strlen(str));
 	JS->size = str_length + 1;
 	JS->max_size = (JS->size * 4) + 4;
 	JS->string = (char*)malloc(JS->max_size);

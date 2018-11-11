@@ -1,5 +1,5 @@
-#ifndef MYOBJECT_JSON_H
-#define MYOBJECT_JSON_H
+#ifndef MYOBJECTSUB_JSON_H
+#define MYOBJECTSUB_JSON_H
 
 typedef struct MyObjectSub MyObjectSub;
 struct MyObjectSub
@@ -8,6 +8,10 @@ struct MyObjectSub
 	char* b;
 };
 
+MyObjectSub* get_MyObjectSub();
+
 char* MyObjectSub_toJson(MyObjectSub* object);
+
+void delete_MyObjectSub(MyObjectSub* object_p);
 
 #endif

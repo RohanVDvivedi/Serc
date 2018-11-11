@@ -35,7 +35,7 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 		{
 			object_p->Data = get_classname();
 			object_p->Type = CLASSNAME_JSON;
-			object_p->Bytes = sizeof(classname_json);
+			object_p->Bytes = sizeof(classname);
 			break;
 		}*/
 //@case_handling_set)))

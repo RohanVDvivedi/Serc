@@ -3,6 +3,24 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+MyObject* get_MyObject()
+{
+	MyObject* object_p = (MyObject*) calloc(1,sizeof(MyObject));
+	object_p->my_array = get_array();
+	object_p->my_sub = get_MyObjectSub();
+	return object_p;
+}
+
+void delete_MyObject(MyObject* object_p)
+{
+	if(object_p==NULL)
+	{
+		return;
+	}
+	delete_array(object_p->my_array);
+	delete_MyObjectSub(object_p->my_sub);
+	free(object_p);
+}
 
 char* MyObject_toJson( MyObject* object )
 {
@@ -18,14 +36,7 @@ char* MyObject_toJson( MyObject* object )
 	}
 	JS = getJsonString("{");
 
-	if( ( ( (object->myint) ) != NULL ) && ( ( *(object->myint) ) != NULL ) && ( ( **(object->myint) ) != NULL ) )
-	{
-		sprintf(number,"%d,", (***(object->myint)) );
-	}
-	else
-	{
-		sprintf(number,"null,");
-	}
+	sprintf(number,"%d,", ((object->myint)) );
 	addToJsonString(JS,"\"myint\":");
 	addToJsonString(JS,number);
 
@@ -33,14 +44,7 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"mylongint\":");
 	addToJsonString(JS,number);
 
-	if( ( ( (object->myuint) ) != NULL ) )
-	{
-		sprintf(number,"%u,", (*(object->myuint)) );
-	}
-	else
-	{
-		sprintf(number,"null,");
-	}
+	sprintf(number,"%u,", ((object->myuint)) );
 	addToJsonString(JS,"\"myuint\":");
 	addToJsonString(JS,number);
 
@@ -49,10 +53,10 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"mystring\":");
-	if( ( ( (object->mystring) ) != NULL ) && ( ( *(object->mystring) ) != NULL ) )
+	if( ( ( (object->mystring) ) != NULL ) )
 	{
 		addToJsonString(JS,"\"");
-		addToJsonString(JS, (*(object->mystring)) );
+		addToJsonString(JS, ((object->mystring)) );
 		addToJsonString(JS,"\",");
 	}
 	else
@@ -74,29 +78,29 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"myfloat\":");
 	addToJsonString(JS,number);
 
-	if( ( ( (object->mydouble) ) != NULL ) )
-	{
-		sprintf(number,"%lf,", (*(object->mydouble)) );
-	}
-	else
-	{
-		sprintf(number,"null,");
-	}
+	sprintf(number,"%lf,", ((object->mydouble)) );
 	addToJsonString(JS,"\"mydouble\":");
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"my_array\":");
-	resultJsonObject = array_json_toJson( (&(object->my_array)) );
-	if( strcmp(resultJsonObject,"{}")==0 )
+	if( ( ( (object->my_array) ) != NULL ) )
 	{
-		addToJsonString(JS,"null,");
+		resultJsonObject = array_json_toJson( ((object->my_array)) );
+		if( strcmp(resultJsonObject,"{}")==0 )
+		{
+			addToJsonString(JS,"null,");
+		}
+		else
+		{
+			addToJsonString(JS,resultJsonObject);
+			addToJsonString(JS,",");
+		}
+		free(resultJsonObject);
 	}
 	else
 	{
-		addToJsonString(JS,resultJsonObject);
-		addToJsonString(JS,",");
+		addToJsonString(JS,"null,");
 	}
-	free(resultJsonObject);
 
 	addToJsonString(JS,"\"my_sub\":");
 	if( ( ( (object->my_sub) ) != NULL ) )

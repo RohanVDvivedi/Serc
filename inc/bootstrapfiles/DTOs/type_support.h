@@ -1,0 +1,18 @@
+#ifndef TYPE_SUPPORT_H
+#define TYPE_SUPPORT_H
+
+typedef enum Type_Support Type_Support;
+enum Type_Support
+{
+	 NULL_JSON
+	,INTEGER_JSON
+	,DOUBLE_JSON
+	,STRING_JSON
+	,BOOLEAN_JSON
+	,ARRAY_JSON
+	/*,CLASSNAME_JSON*/
+	,MYOBJECT_JSON
+	,MYOBJECTSUB_JSON
+};
+
+#endif
