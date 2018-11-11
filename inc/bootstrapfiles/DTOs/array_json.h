@@ -4,7 +4,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<object_json.h>
-#include<jsonstringhandler.h>
 
 typedef struct array_json array_json;
 struct array_json

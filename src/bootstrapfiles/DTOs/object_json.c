@@ -35,21 +35,21 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 		{
 			object_p->Data = get_classname();
 			object_p->Type = CLASSNAME_JSON;
-			object_p->Bytes = sizeof(classname_json);
+			object_p->Bytes = sizeof(classname);
 			break;
 		}*/
 		case MYOBJECT_JSON :
 		{
-			object_p->Data = get_MyObject();
+			object_p->Data = ((void*)get_MyObject());
 			object_p->Type = MYOBJECT_JSON;
-			object_p->Bytes = sizeof(MyObject_json);
+			object_p->Bytes = sizeof(MyObject);
 			break;
 		}
 		case MYOBJECTSUB_JSON :
 		{
-			object_p->Data = get_MyObjectSub();
+			object_p->Data = ((void*)get_MyObjectSub());
 			object_p->Type = MYOBJECTSUB_JSON;
-			object_p->Bytes = sizeof(MyObjectSub_json);
+			object_p->Bytes = sizeof(MyObjectSub);
 			break;
 		}
 		default :
@@ -81,12 +81,12 @@ void delete_object(object_json* object_p)
 			}*/
 			case MYOBJECT_JSON :
 			{
-				delete_MyObject(object_p->Data);
+				delete_MyObject((MyObject*)object_p->Data);
 				break;
 			}
 			case MYOBJECTSUB_JSON :
 			{
-				delete_MyObjectSub(object_p->Data);
+				delete_MyObjectSub((MyObjectSub*)object_p->Data);
 				break;
 			}
 			default :

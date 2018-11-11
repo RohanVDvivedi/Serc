@@ -4,20 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<jsonstringhandler.h>
-
-typedef enum Type_Support Type_Support;
-enum Type_Support
-{
-	 NULL_JSON
-	,INTEGER_JSON
-	,DOUBLE_JSON
-	,STRING_JSON
-	,BOOLEAN_JSON
-	,ARRAY_JSON
-	/*,CLASSNAME_JSON*/
-	,MYOBJECT_JSON
-	,MYOBJECTSUB_JSON
-};
+#include<type_support.h>
 
 typedef struct object_json object_json;
 struct object_json
@@ -35,9 +22,13 @@ void delete_object(object_json* object_p);
 
 char* object_json_toJson(object_json* object_p);
 
+#ifndef ARRAY_JSON_H
+
 #include<array_json.h>
 /*#include<classname_json.h>*/
 #include<MyObject_json.h>
 #include<MyObjectSub_json.h>
+
+#endif
 
 #endif
