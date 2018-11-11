@@ -221,6 +221,7 @@ char* object_json_toJson(object_json* object_p)
 					}
 
 					addToJsonString(JS,object_json_result);
+					addToJsonString(JS,",");
 					free(object_json_result);
 				}
 				else

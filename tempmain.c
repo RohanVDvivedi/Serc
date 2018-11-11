@@ -26,6 +26,10 @@ int main()
 	add(m->my_array,NULL,NULL_JSON,0);
 	add(m->my_array,arr_str,STRING_JSON,strlen(arr_str)+1);
 	add(m->my_array,NULL,ARRAY_JSON,0);
+	add(m->my_array,NULL,MYOBJECTSUB_JSON,0);
+
+	((MyObjectSub*)(get(m->my_array,6)->Data))->a = 69;
+	((MyObjectSub*)(get(m->my_array,6)->Data))->b = "hello sexy";
 
 	array_json* arr_temp = get(m->my_array,5)->Data;
 
