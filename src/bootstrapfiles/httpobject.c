@@ -98,13 +98,13 @@ void urlToString(char* path_param_str)
 }
 
 // path?params is parsed to populate in hr
-void handlePathAndParameters(char* path_param_str,HttpRequest* hr,StringToRequestState* state)
+void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 {
 	urlToString(path_param_str);
 
 	char* temp = path_param_str;
 	int Tokens[256] = {};
-	char ptemp[3000];
+	static char ptemp[3000];
 	TillTokenState state;
 
 	Tokens['?'] = 1;
@@ -137,9 +137,9 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr,StringToReques
 	}
 }
 // string header is parsed to populate in http request
-void handleHeader(char* header,HttpRequest* hr,StringToRequestState* state)
+void handleHeader(char* header,HttpRequest* hr)
 {
-	char ptemp[3000];
+	static char ptemp[3000];
 	char* temp = header;
 	int Tokens[256] = {};
 	TillTokenState state;
@@ -158,37 +158,98 @@ void handleHeader(char* header,HttpRequest* hr,StringToRequestState* state)
 }
 
 // returns -1 when error
-int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* state)
+// returns -2 on incomplete
+int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rstate)
 {
-	char ptemp[3000];
+	static char ptemp[3000];
 	char* temp = buffer;
 	int Tokens[256] = {};
 	TillTokenState state;
+	char* temptest = ptemp;
 
 	Tokens[' '] = 1;
-	temp = tillToken(ptemp,Tokens,temp,&state);
-	setRequestMethod(ptemp,hr);
+	temptest = ptemp;
+	if(*Rstate == IN_METHOD)
+	{
+		temptest = ptemp + strlen(ptemp);
+	}
+	temp = tillToken(temptest,Tokens,temp,&state);
+	if(state == TASK_COMPLETED)
+	{
+		setRequestMethod(ptemp,hr);
+		*Rstate = METHOD_COMPLETE;
+	}
+	else
+	{
+		*Rstate = IN_METHOD;
+		return -2;
+	}
 	Tokens[' '] = 0;
 
 	Tokens['/'] = 1;
 	temp = tillToken(ptemp,Tokens,temp,&state);
+	if(state == TASK_COMPLETED)
+	{
+		*Rstate = IN_PATH;
+		ptemp = "/";
+		return -2;
+	}
 	Tokens['/'] = 0;
+	temp++;
 
 	Tokens[' '] = 1;
-	temp = tillToken(ptemp,Tokens,temp,&state);
-	handlePathAndParameters(ptemp,hr);
+	temptest = ptemp;
+	if(Rstate == IN_PATH)
+	{
+		temptest = ptemp + strlen(ptemp);
+	}
+	temp = tillToken(temptest,Tokens,temp,&state);
+	if(state == TASK_COMPLETED)
+	{
+		*Rstate = PATH_COMPLETED;
+		handlePathAndParameters(ptemp,hr);
+	}
+	else
+	{
+		*Rstate = IN_PATH;
+		return -2;
+	}
 	Tokens[' '] = 0;
 
 	Tokens['\n'] = 1;Tokens['\r']=1;
 	temp = tillToken(ptemp,Tokens,temp,&state);
-	temp++;
-	if(Tokens[*temp]==1)
+	if(state == REACHED_END_OF_STRING)
 	{
-		temp++;
+		*Rstate = IN_VERSION;
+		return -2;
+	}
+	temp = skipCharacters(Tokens,temp);
+	if(*temp == '\0')
+	{
+		*Rstate = IN_VERSION;
+		return -2;
+	}
+	else
+	{
+		*Rstate = VERSION_COMPLETED;
 	}
 	while(1)
 	{
-		temp = tillToken(ptemp,Tokens,temp,&state);
+		temptest = ptemp;
+		if(Rstate == IN_PATH)
+		{
+			temptest = ptemp + strlen(ptemp);
+		}
+		temp = tillToken(temptest,Tokens,temp,&state);
+		if(state == TASK_COMPLETED)
+		{
+			*Rstate = HEADER_COMPLETE;
+		}
+		else
+		{
+			*Rstate = IN_HEADER;
+			return -2;
+		}
 		if(strlen(ptemp)==0)
 		{
 			temp++;
@@ -513,6 +574,13 @@ char* tillToken(char* result,int* Tokens,char* querystring,TillTokenState* state
 	}
 	result[size-1] = '\0';
 	return qs;
+}
+
+char* skipCharacters(int* Token,char* querystring)
+{
+	while( Token[*querystring] == 1 && *querystring != '\0')
+	{}
+	return querystring;
 }
 
 HttpMethodType verbToHttpMethodType(char* verb)
