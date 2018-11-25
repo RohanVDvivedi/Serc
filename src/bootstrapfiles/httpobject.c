@@ -105,9 +105,10 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 	char* temp = path_param_str;
 	int Tokens[256] = {};
 	char ptemp[3000];
+	TillTokenState state;
 
 	Tokens['?'] = 1;
-	temp = tillToken(ptemp,Tokens,temp);
+	temp = tillToken(ptemp,Tokens,temp,&state);
 	setRequestPath(ptemp,hr);
 	Tokens['?'] = 0;
 
@@ -119,12 +120,12 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 		while(1)
 		{
 			Tokens['='] = 1;
-			temp = tillToken(ptemp,Tokens,temp);
+			temp = tillToken(ptemp,Tokens,temp,&state);
 			Tokens['='] = 0;
 			temp++;
 
 			Tokens['\0'] = 1;Tokens['&'] = 1;
-			temp = tillToken(ptemp+1500,Tokens,temp);
+			temp = tillToken(ptemp+1500,Tokens,temp,&state);
 			addPathParameterInHttpRequest(ptemp,ptemp+1500,hr);
 			Tokens['\0'] = 0;Tokens['&'] = 0;
 			if(*temp == '\0')
@@ -141,16 +142,17 @@ void handleHeader(char* header,HttpRequest* hr)
 	char ptemp[3000];
 	char* temp = header;
 	int Tokens[256] = {};
+	TillTokenState state;
 
 	Tokens[':'] = 1;
-	temp = tillToken(ptemp,Tokens,temp);
+	temp = tillToken(ptemp,Tokens,temp,&state);
 	Tokens[':'] = 0;
 	temp++;
 
 	temp++;
 
 	Tokens['\n'] = 1;Tokens['\r']=1;
-	temp = tillToken(ptemp+1500,Tokens,temp);
+	temp = tillToken(ptemp+1500,Tokens,temp,&state);
 	addHeaderInHttpRequest(ptemp,ptemp+1500,hr);
 	Tokens['\n'] = 0;Tokens['\r']=0;
 }
@@ -161,23 +163,24 @@ int stringToRequestObject(char* buffer,HttpRequest* hr)
 	char ptemp[3000];
 	char* temp = buffer;
 	int Tokens[256] = {};
+	TillTokenState state;
 
 	Tokens[' '] = 1;
-	temp = tillToken(ptemp,Tokens,temp);
+	temp = tillToken(ptemp,Tokens,temp,&state);
 	setRequestMethod(ptemp,hr);
 	Tokens[' '] = 0;
 
 	Tokens['/'] = 1;
-	temp = tillToken(ptemp,Tokens,temp);
+	temp = tillToken(ptemp,Tokens,temp,&state);
 	Tokens['/'] = 0;
 
 	Tokens[' '] = 1;
-	temp = tillToken(ptemp,Tokens,temp);
+	temp = tillToken(ptemp,Tokens,temp,&state);
 	handlePathAndParameters(ptemp,hr);
 	Tokens[' '] = 0;
 
 	Tokens['\n'] = 1;Tokens['\r']=1;
-	temp = tillToken(ptemp,Tokens,temp);
+	temp = tillToken(ptemp,Tokens,temp,&state);
 	temp++;
 	if(Tokens[*temp]==1)
 	{
@@ -185,7 +188,7 @@ int stringToRequestObject(char* buffer,HttpRequest* hr)
 	}
 	while(1)
 	{
-		temp = tillToken(ptemp,Tokens,temp);
+		temp = tillToken(ptemp,Tokens,temp,&state);
 		if(strlen(ptemp)==0)
 		{
 			temp++;
@@ -483,7 +486,7 @@ void setServerDefaultHeaderInResponse(HttpResponse* hr)
 
 
 // sets result pointing pointer to the string thats ends with token starting from query string
-char* tillToken(char* result,int* Tokens,char* querystring)
+char* tillToken(char* result,int* Tokens,char* querystring,TillTokenState* state)
 {
 	int size = 0;
 	char* qs = querystring;
@@ -492,7 +495,18 @@ char* tillToken(char* result,int* Tokens,char* querystring)
 		size++;
 		qs++;
 	}
-	size++;
+	size++;// the last increment ensures that the size finally includes '\0'
+	if(state != NULL)
+	{
+		if( *qs == '\0' && Tokens['\0'] == 0 )
+		{
+			*state = REACHED_END_OF_STRING;
+		}
+		else
+		{
+			*state = TASK_COMPLETED;
+		}
+	}
 	for(int i=0;i<size-1;i++,querystring++)
 	{
 		result[i] = (*querystring);

@@ -22,6 +22,19 @@ enum HttpMethodType
 	UNIDENTIFIED =    166308
 };
 
+// helper enums
+
+typedef enum TillTokenState TillTokenState;
+enum TillTokenState
+{
+	TASK_COMPLETED,
+	REACHED_END_OF_STRING
+};
+
+
+
+
+
 extern const char Verb[10][15];
 
 typedef struct keyvaluepair keyvaluepair;
@@ -139,6 +152,6 @@ void setServerDefaultHeaderInResponse(HttpResponse* hr);
 
 HttpMethodType verbToHttpMethodType(char* verb);
 char* httpMethodTypeToVerb(HttpMethodType m);
-char* tillToken(char* result,int* Token,char* querystring);
+char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state);
 
 #endif
