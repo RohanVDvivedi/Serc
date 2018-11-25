@@ -104,7 +104,7 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 
 	char* temp = path_param_str;
 	int Tokens[256] = {};
-	static char ptemp[3000];
+	char ptemp[3000];
 	TillTokenState state;
 
 	Tokens['?'] = 1;
@@ -139,7 +139,7 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 // string header is parsed to populate in http request
 void handleHeader(char* header,HttpRequest* hr)
 {
-	static char ptemp[3000];
+	char ptemp[3000];
 	char* temp = header;
 	int Tokens[256] = {};
 	TillTokenState state;
@@ -162,10 +162,12 @@ void handleHeader(char* header,HttpRequest* hr)
 int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rstate)
 {
 	static char ptemp[3000];
+	static int skipcount;
 	char* temp = buffer;
 	int Tokens[256] = {};
 	TillTokenState state;
 	char* temptest = ptemp;
+	static int expectedBodyLength = -1;
 
 	Tokens[' '] = 1;
 	temptest = ptemp;
@@ -191,7 +193,12 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	if(state == TASK_COMPLETED)
 	{
 		*Rstate = IN_PATH;
-		ptemp = "/";
+		ptemp[0] = '/';
+		ptemp[1] = '\0';
+	}
+	else
+	{
+		*Rstate = METHOD_COMPLETE;
 		return -2;
 	}
 	Tokens['/'] = 0;
@@ -199,14 +206,14 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 
 	Tokens[' '] = 1;
 	temptest = ptemp;
-	if(Rstate == IN_PATH)
+	if(*Rstate == IN_PATH)
 	{
 		temptest = ptemp + strlen(ptemp);
 	}
 	temp = tillToken(temptest,Tokens,temp,&state);
 	if(state == TASK_COMPLETED)
 	{
-		*Rstate = PATH_COMPLETED;
+		*Rstate = PATH_COMPLETE;
 		handlePathAndParameters(ptemp,hr);
 	}
 	else
@@ -216,14 +223,14 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	}
 	Tokens[' '] = 0;
 
-	Tokens['\n'] = 1;Tokens['\r']=1;
+	Tokens['\n'] = 1;Tokens['\r'] = 1;
 	temp = tillToken(ptemp,Tokens,temp,&state);
 	if(state == REACHED_END_OF_STRING)
 	{
 		*Rstate = IN_VERSION;
 		return -2;
 	}
-	temp = skipCharacters(Tokens,temp);
+	temp = skipCharacters(Tokens,temp,&skipcount);skipcount=0;
 	if(*temp == '\0')
 	{
 		*Rstate = IN_VERSION;
@@ -231,12 +238,12 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	}
 	else
 	{
-		*Rstate = VERSION_COMPLETED;
+		*Rstate = VERSION_COMPLETE;
 	}
 	while(1)
 	{
 		temptest = ptemp;
-		if(Rstate == IN_PATH)
+		if(*Rstate == IN_HEADER)
 		{
 			temptest = ptemp + strlen(ptemp);
 		}
@@ -244,31 +251,54 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 		if(state == TASK_COMPLETED)
 		{
 			*Rstate = HEADER_COMPLETE;
+			handleHeader(ptemp,hr);
+			printHttpRequest(hr);
+			temp = skipCharacters(Tokens,temp,&skipcount);
+			if( *temp != '\0' )
+			{
+				if( skipcount <= 2 )
+				{
+					skipcount = 0;
+					continue;
+				}
+				else
+				{
+					*Rstate = HEADERS_COMPLETE;
+					break;
+				}
+			}
+			else
+			{
+				*Rstate = HEADERS_SKIPS;
+				return -2;
+			}
 		}
 		else
 		{
 			*Rstate = IN_HEADER;
 			return -2;
 		}
-		if(strlen(ptemp)==0)
-		{
-			temp++;
-			if(Tokens[*temp]==1)
-			{
-				temp++;
-			}
-			break;
-		}
-		handleHeader(ptemp,hr);
-		temp++;
-		if(Tokens[*temp]==1)
-		{
-			temp++;
-		}
 	}
 	Tokens['\n'] = 0;Tokens['\r']=0;
 
-	setRequestBody(temp,hr);
+	if(*Rstate == HEADERS_COMPLETE)
+	{
+		setRequestBody(temp,hr);
+	}
+	else if(*Rstate == IN_BODY)
+	{
+		addToRequestBody(temp,hr);
+		if(expectedBodyLength != -1 && expectedBodyLength <= hr->RequestBodyLength)
+		{
+			*Rstate = BODY_COMPLETE;
+			return 0;
+		}
+		else
+		{
+			*Rstate = IN_BODY;
+			return -2;
+		}
+	}
 
 	return 0;
 }
@@ -514,8 +544,27 @@ void setRequestBody(char* body,HttpRequest* hr)
 		free(hr->RequestBody);
 	}
 	hr->RequestBodyLength = strlen(body);
-	hr->RequestBody = (char*) malloc(sizeof(char)*hr->RequestBodyLength);
+	hr->RequestBody = (char*) malloc(sizeof(char)*(hr->RequestBodyLength + 1));
 	strcpy(hr->RequestBody,body);
+}
+
+void addToRequestBody(char* body,HttpRequest* hr)
+{
+	unsigned long long int oldLength = hr->RequestBody == NULL ? 0 : strlen(hr->RequestBody);
+	unsigned long long newLength = oldLength + strlen(body);
+	hr->RequestBodyLength = newLength;
+	char* newBody = (char*) malloc(sizeof(char)*(hr->RequestBodyLength+1));
+	if(hr->RequestBody != NULL)
+	{
+		strcpy(newBody,hr->RequestBody);
+		free(hr->RequestBody);
+	}
+	else
+	{
+		newBody[0] = '\0';
+	}
+	strcat(newBody,body);
+	hr->RequestBody = newBody;
 }
 
 void setResponseBody(char* body,HttpResponse* hr)
@@ -525,7 +574,7 @@ void setResponseBody(char* body,HttpResponse* hr)
 		free(hr->ResponseBody);
 	}
 	hr->ResponseBodyLength = strlen(body);
-	hr->ResponseBody = (char*) malloc(sizeof(char)*hr->ResponseBodyLength);
+	hr->ResponseBody = (char*) malloc(sizeof(char)*(hr->ResponseBodyLength + 1));
 	strcpy(hr->ResponseBody,body);
 }
 
@@ -576,10 +625,13 @@ char* tillToken(char* result,int* Tokens,char* querystring,TillTokenState* state
 	return qs;
 }
 
-char* skipCharacters(int* Token,char* querystring)
+char* skipCharacters(int* Token,char* querystring,int* count)
 {
-	while( Token[*querystring] == 1 && *querystring != '\0')
-	{}
+	while( Token[*querystring] == 1 && *querystring != '\0' && *count < 10)
+	{
+		*count += 1;
+		querystring++;
+	}
 	return querystring;
 }
 

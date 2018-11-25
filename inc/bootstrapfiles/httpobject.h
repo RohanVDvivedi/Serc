@@ -39,13 +39,12 @@ enum StringToRequestState
 	METHOD_COMPLETE,
 	IN_PATH,
 	PATH_COMPLETE,
-	IN_QUERY_PARAM_KEY,
-	IN_QUERY_PARAM_VALUE,
 	IN_VERSION,
 	VERSION_COMPLETE,
 	IN_HEADER,
 	HEADER_COMPLETE,
 	HEADERS_COMPLETE,
+	HEADERS_SKIPS,
 	IN_BODY,
 	BODY_COMPLETE
 };
@@ -112,6 +111,9 @@ void setRequestPath(char* path,HttpRequest* hr);
 // setter for request body
 void setRequestBody(char* body,HttpRequest* hr);
 
+// adds more content to request body
+void addToRequestBody(char* body,HttpRequest* hr);
+
 // parse string to populate HttpRequest
 int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* state);
 
@@ -172,6 +174,6 @@ void setServerDefaultHeaderInResponse(HttpResponse* hr);
 HttpMethodType verbToHttpMethodType(char* verb);
 char* httpMethodTypeToVerb(HttpMethodType m);
 char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state);
-char* skipCharacters(int* Token,char* querystring);
+char* skipCharacters(int* Token,char* querystring,int* count);
 
 #endif
