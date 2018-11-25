@@ -1,6 +1,6 @@
 #include<serve.h>
 
-#define buffersize 32000
+#define buffersize 10
 
 // file shared by all of framework to register logs
 extern FILE* ServerLog;
@@ -12,17 +12,27 @@ void serve(int fd)
 {
 	// create buffer to read the request
 	char buffer[buffersize];
-	int buffreadlength;
+	ssize_t buffreadlength;
+	StringToRequestState state = NOT_STARTED;
 
 	// create a new HttpRequest Object
 	HttpRequest* hrq = getNewHttpRequest();
 
-	// read request byte array and add '\0' at end to use it as c string
-	buffreadlength = recv(fd,buffer,buffersize,0);buffer[buffreadlength] = '\0';
-	logMsg(tag,"message read from client",ServerLog);
+	while(1)
+	{
+		// read request byte array and add '\0' at end to use it as c string
+		buffreadlength = recv(fd,buffer,buffersize-1,0);buffer[buffreadlength] = '\0';
 
-	// parse the RequestString to populate HttpRequest Object
-	int error = stringToRequestObject(buffer,hrq);
+		// if no characters read than exit
+		if(buffreadlength == -1)
+		{
+			break;
+		}
+
+		// parse the RequestString to populate HttpRequest Object
+		int error = stringToRequestObject(buffer,hrq,&state);
+	}
+	logMsg(tag,"request parsed from client",ServerLog);
 
 	// if no error in parsing the object then we work to create response
 	if(error == 0)

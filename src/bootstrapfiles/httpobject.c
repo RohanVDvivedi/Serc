@@ -98,7 +98,7 @@ void urlToString(char* path_param_str)
 }
 
 // path?params is parsed to populate in hr
-void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
+void handlePathAndParameters(char* path_param_str,HttpRequest* hr,StringToRequestState* state)
 {
 	urlToString(path_param_str);
 
@@ -137,7 +137,7 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 	}
 }
 // string header is parsed to populate in http request
-void handleHeader(char* header,HttpRequest* hr)
+void handleHeader(char* header,HttpRequest* hr,StringToRequestState* state)
 {
 	char ptemp[3000];
 	char* temp = header;
@@ -158,7 +158,7 @@ void handleHeader(char* header,HttpRequest* hr)
 }
 
 // returns -1 when error
-int stringToRequestObject(char* buffer,HttpRequest* hr)
+int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* state)
 {
 	char ptemp[3000];
 	char* temp = buffer;

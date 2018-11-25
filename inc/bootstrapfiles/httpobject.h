@@ -31,6 +31,26 @@ enum TillTokenState
 	REACHED_END_OF_STRING
 };
 
+typedef enum StringToRequestState StringToRequestState;
+enum StringToRequestState
+{
+	NOT_STARTED,
+	IN_METHOD,
+	METHOD_COMPLETE,
+	IN_PATH,
+	PATH_COMPLETE,
+	IN_QUERY_PARAM_KEY,
+	IN_QUERY_PARAM_VALUE,
+	IN_VERSION,
+	VERSION_COMPLETE,
+	IN_HEADER_KEY,
+	HEADER_KEY_COMPLETE,
+	IN_HEADER_VALUE,
+	HEADER_VALUE_COMPLETE,
+	IN_BODY,
+	BODY_COMPLETE
+};
+
 
 
 
@@ -94,7 +114,7 @@ void setRequestPath(char* path,HttpRequest* hr);
 void setRequestBody(char* body,HttpRequest* hr);
 
 // parse string to populate HttpRequest
-int stringToRequestObject(char* buffer,HttpRequest* hr);
+int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* state);
 
 // turn HttpRequest to String to send over network
 int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
