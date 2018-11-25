@@ -13,7 +13,7 @@ void serve(int fd)
 	// create buffer to read the request
 	char buffer[buffersize];
 	ssize_t buffreadlength;
-	StringToRequestState state = NOT_STARTED;
+	StringToRequestState Rstate = NOT_STARTED;
 
 	// create a new HttpRequest Object
 	HttpRequest* hrq = getNewHttpRequest();
@@ -30,7 +30,7 @@ void serve(int fd)
 		}
 
 		// parse the RequestString to populate HttpRequest Object
-		int error = stringToRequestObject(buffer,hrq,&state);
+		int error = stringToRequestObject(buffer,hrq,&Rstate);
 	}
 	logMsg(tag,"request parsed from client",ServerLog);
 

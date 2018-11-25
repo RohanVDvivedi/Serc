@@ -43,10 +43,9 @@ enum StringToRequestState
 	IN_QUERY_PARAM_VALUE,
 	IN_VERSION,
 	VERSION_COMPLETE,
-	IN_HEADER_KEY,
-	HEADER_KEY_COMPLETE,
-	IN_HEADER_VALUE,
-	HEADER_VALUE_COMPLETE,
+	IN_HEADER,
+	HEADER_COMPLETE,
+	HEADERS_COMPLETE,
 	IN_BODY,
 	BODY_COMPLETE
 };
@@ -173,5 +172,6 @@ void setServerDefaultHeaderInResponse(HttpResponse* hr);
 HttpMethodType verbToHttpMethodType(char* verb);
 char* httpMethodTypeToVerb(HttpMethodType m);
 char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state);
+char* skipCharacters(int* Token,char* querystring);
 
 #endif
