@@ -8,6 +8,7 @@ FILE* createLogFile(const char* filename)
 	strcat(fn,filename);
 	strcat(fn,".lg");
 	FILE* fp = fopen(fn,"w");
+	free(fn);
 	return fp;
 }
 
