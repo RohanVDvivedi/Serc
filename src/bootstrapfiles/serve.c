@@ -1,6 +1,6 @@
 #include<serve.h>
 
-#define buffersize 32000
+#define buffersize 20000
 
 // file shared by all of framework to register logs
 extern FILE* ServerLog;
@@ -32,7 +32,7 @@ void serve(int fd)
 		// parse the RequestString to populate HttpRequest Object
 		error = stringToRequestObject(buffer,hrq,&Rstate);
 
-		if(buffreadlength < buffersize-1)
+		if(buffreadlength < buffersize-1 || Rstate == BODY_COMPLETE)
 		{
 			break;
 		}
@@ -71,8 +71,10 @@ void serve(int fd)
 
 		// delete HttpResponse Object
 		deleteHttpResponse(hrp);
+		free(hrp);
 	}
 
 	// delete HttpRequest Object
 	deleteHttpRequest(hrq);
+	free(hrq);
 }

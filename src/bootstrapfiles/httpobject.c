@@ -169,11 +169,90 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	char* temptest = ptemp;
 	static int expectedBodyLength = -1;
 
-	Tokens[' '] = 1;
+	switch(*Rstate)
+	{
+		case NOT_STARTED :
+		{
+			goto NS;
+			break;
+		}
+		case IN_METHOD :
+		{
+			goto IM;
+			break;
+		}
+		case METHOD_COMPLETE :
+		{
+			goto MC;
+			break;
+		}
+		case IN_PATH :
+		{
+			goto IP;
+			break;
+		}
+		case PATH_COMPLETE :
+		{
+			goto PC;
+			break;
+		}
+		case IN_VERSION :
+		{
+			goto IV;
+			break;
+		}
+		case VERSION_COMPLETE :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto VC;
+			break;
+		}
+		case IN_HEADER :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto IH;
+			break;
+		}
+		case HEADER_COMPLETE :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto HC;
+			break;
+		}
+		case HEADERS_COMPLETE :
+		{
+			goto HSC;
+			break;
+		}
+		case HEADERS_SKIPS :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto HSSS;
+			break;
+		}
+		case IN_BODY :
+		{
+			goto IB;
+			break;
+		}
+		case BODY_COMPLETE :
+		{
+			goto BC;
+			break;
+		}
+	}
+
+
+	NS:	IM:	Tokens[' '] = 1;
 	temptest = ptemp;
 	if(*Rstate == IN_METHOD)
 	{
 		temptest = ptemp + strlen(ptemp);
+	}
+	else
+	{
+		ptemp[0] = '\0';
+		temptest = ptemp;
 	}
 	temp = tillToken(temptest,Tokens,temp,&state);
 	if(state == TASK_COMPLETED)
@@ -188,7 +267,7 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	}
 	Tokens[' '] = 0;
 
-	Tokens['/'] = 1;
+	MC:	Tokens['/'] = 1;
 	temp = tillToken(ptemp,Tokens,temp,&state);
 	if(state == TASK_COMPLETED)
 	{
@@ -204,11 +283,16 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	Tokens['/'] = 0;
 	temp++;
 
-	Tokens[' '] = 1;
+	IP:	Tokens[' '] = 1;
 	temptest = ptemp;
 	if(*Rstate == IN_PATH)
 	{
 		temptest = ptemp + strlen(ptemp);
+	}
+	else
+	{
+		ptemp[0] = '\0';
+		temptest = ptemp;
 	}
 	temp = tillToken(temptest,Tokens,temp,&state);
 	if(state == TASK_COMPLETED)
@@ -223,15 +307,9 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	}
 	Tokens[' '] = 0;
 
-	Tokens['\n'] = 1;Tokens['\r'] = 1;
+	PC: IV:	Tokens['\n'] = 1;Tokens['\r'] = 1;
 	temp = tillToken(ptemp,Tokens,temp,&state);
 	if(state == REACHED_END_OF_STRING)
-	{
-		*Rstate = IN_VERSION;
-		return -2;
-	}
-	temp = skipCharacters(Tokens,temp,&skipcount);skipcount=0;
-	if(*temp == '\0')
 	{
 		*Rstate = IN_VERSION;
 		return -2;
@@ -240,20 +318,44 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	{
 		*Rstate = VERSION_COMPLETE;
 	}
-	while(1)
+	VC: temp = skipCharacters(Tokens,temp,&skipcount);
+	if( ((*temp) != '\0' && Tokens[(*temp)] == 0) || ((*temp) == '\0' && Tokens[(*(temp-1))] == 0) )
+	{
+		*Rstate = VERSION_COMPLETE;
+		skipcount = 0;
+	}
+	else
+	{
+		*Rstate = VERSION_COMPLETE;
+		skipcount = 0;
+		return -2;
+	}
+	IH: HC:	while(1)
 	{
 		temptest = ptemp;
 		if(*Rstate == IN_HEADER)
 		{
 			temptest = ptemp + strlen(ptemp);
 		}
+		else
+		{
+			ptemp[0] = '\0';
+			temptest = ptemp;
+		}
 		temp = tillToken(temptest,Tokens,temp,&state);
 		if(state == TASK_COMPLETED)
 		{
 			*Rstate = HEADER_COMPLETE;
 			handleHeader(ptemp,hr);
+			if(hr->HeaderCount > 0)
+			{
+				if( strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"content-length") == 0 )
+				{
+					expectedBodyLength = readInt(hr->Headers[hr->HeaderCount - 1]->Value);
+				}
+			}
 			printHttpRequest(hr);
-			temp = skipCharacters(Tokens,temp,&skipcount);
+			HSSS: temp = skipCharacters(Tokens,temp,&skipcount);
 			if( *temp != '\0' )
 			{
 				if( skipcount <= 2 )
@@ -281,9 +383,10 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	}
 	Tokens['\n'] = 0;Tokens['\r']=0;
 
-	if(*Rstate == HEADERS_COMPLETE)
+	HSC: IB: if(*Rstate == HEADERS_COMPLETE)
 	{
 		setRequestBody(temp,hr);
+		*Rstate = IN_BODY;
 	}
 	else if(*Rstate == IN_BODY)
 	{
@@ -300,7 +403,7 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 		}
 	}
 
-	return 0;
+	BC: return 0;
 }
 
 // returns -1 when error
@@ -553,7 +656,7 @@ void addToRequestBody(char* body,HttpRequest* hr)
 	unsigned long long int oldLength = hr->RequestBody == NULL ? 0 : strlen(hr->RequestBody);
 	unsigned long long newLength = oldLength + strlen(body);
 	hr->RequestBodyLength = newLength;
-	char* newBody = (char*) malloc(sizeof(char)*(hr->RequestBodyLength+1));
+	char* newBody = (char*) malloc(sizeof(char)*(hr->RequestBodyLength + 1));
 	if(hr->RequestBody != NULL)
 	{
 		strcpy(newBody,hr->RequestBody);
@@ -633,6 +736,22 @@ char* skipCharacters(int* Token,char* querystring,int* count)
 		querystring++;
 	}
 	return querystring;
+}
+
+long long int readInt(char* str)
+{
+	long long int result = 0;
+	int i = 0;
+	if(str[i] == '-')
+	{
+		i++;
+	}
+	while(str[i] <= '9' && str[i] >= '0')
+	{
+		result = result * 10 + (str[i]-'0');
+		i++;
+	}
+	return (str[i] == '-') ? -result : result ;
 }
 
 HttpMethodType verbToHttpMethodType(char* verb)
