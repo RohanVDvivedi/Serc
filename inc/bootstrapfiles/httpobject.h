@@ -117,6 +117,9 @@ void addToRequestBody(char* body,HttpRequest* hr);
 // parse string to populate HttpRequest
 int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* state);
 
+// estimate size of request from request object
+int estimateRequestObjectSize(HttpRequest* hr);
+
 // turn HttpRequest to String to send over network
 int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
 
@@ -147,6 +150,9 @@ void setResponseBody(char* body,HttpResponse* hr);
 
 // parse string to populate HttpResponse
 int stringToResponseObject(char* buffer,HttpResponse* hr);
+
+// estimate size of response from request object
+int estimateResponseObjectSize(HttpResponse* hr);
 
 // turn HttpResponse to String to send over network
 int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr);

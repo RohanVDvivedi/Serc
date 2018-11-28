@@ -354,7 +354,6 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 					expectedBodyLength = readInt(hr->Headers[hr->HeaderCount - 1]->Value);
 				}
 			}
-			printHttpRequest(hr);
 			HSSS: temp = skipCharacters(Tokens,temp,&skipcount);
 			if( *temp != '\0' )
 			{
@@ -421,7 +420,7 @@ int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr)
 // returns -1 when error, when -1 is returned pass in a larger buffer
 int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 {
-	int maxsize = (*bufferlength);
+	const int maxsize = (*bufferlength);
 	buffer[0] = '\0';
 	(*bufferlength) = 0;
 	char* statusline = getHttpResponseStatus(hr->Status);
@@ -429,8 +428,12 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 	{
 		return -2;
 	}
+	(*bufferlength) += strlen(statusline);
+	if( maxsize < (*bufferlength) )
+	{
+		return -1;
+	}
 	strcat(buffer,statusline);
-	(*bufferlength) = 15;
 	for(int i=0;i<hr->HeaderCount;i++)
 	{
 		(*bufferlength) += (strlen(hr->Headers[i]->Key) + 2);
@@ -441,7 +444,7 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 		strcat(buffer,hr->Headers[i]->Key);
 		strcat(buffer,": ");
 
-		(*bufferlength) += (strlen(hr->Headers[i]->Value) + 1);
+		(*bufferlength) += (strlen(hr->Headers[i]->Value) + 2);
 		if( maxsize < (*bufferlength) )
 		{
 			return -1;
@@ -449,7 +452,7 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 		strcat(buffer,hr->Headers[i]->Value);
 		strcat(buffer,"\r\n");
 	}
-	(*bufferlength) += (hr->ResponseBodyLength + 1);
+	(*bufferlength) += (hr->ResponseBodyLength + 2);
 	if( maxsize < (*bufferlength) )
 	{
 		return -1;
@@ -460,6 +463,23 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 		strcat(buffer,hr->ResponseBody);
 	}
 	return 0;
+}
+
+int estimateRequestObjectSize(HttpRequest* hr)
+{
+	return -1;
+}
+
+int estimateResponseObjectSize(HttpResponse* hr)
+{
+	int result = 0;
+	result += strlen(getHttpResponseStatus(hr->Status));
+	for(int i=0;i<hr->HeaderCount;i++)
+	{
+		result += (strlen(hr->Headers[i]->Key) + 2 + strlen(hr->Headers[i]->Value) + 2);
+	}
+	result += (2 + hr->ResponseBodyLength + 1);
+	return result;
 }
 
 void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr)
