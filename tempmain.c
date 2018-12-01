@@ -1,9 +1,15 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<MyObject_json.h>
+//#include<MyObject_json.h>
+#include<logger.h>
+#include<baseRequester.h>
+
+// file shared by all of framework to register logs
+extern FILE* ServerLog;
+extern char* tag;
 
 int main()
-{
+{/*
 	MyObject* m = get_MyObject();
 
 	m->myint = 1;
@@ -52,5 +58,22 @@ int main()
 	free(c);
 
 	delete_MyObject(m);
-	return 0;
+	return 0;*/
+	// get pointer to log file
+	ServerLog = createLogFile("ServerLog");
+
+	char* host = "localhost";
+	int port = 8080;
+	HttpRequest* hr = getNewHttpRequest();
+	setRequestMethod("POST",hr);
+	setRequestPath("/test/rohan",hr);
+	addPathParameterInHttpRequest("string1","mystr",hr);
+	addPathParameterInHttpRequest("param2","thisis",hr);
+	addPathParameterInHttpRequest("name","rohan",hr);
+	addPathParameterInHttpRequest("id","1",hr);
+	addHeaderInHttpRequest("Content-Type","text/plain",hr);
+	setRequestBody("my name is lakhan, java hoga khatam",hr);
+	setServerDefaultHeaderInRequest(hr);
+	retrieveResponse(host,port,hr,NULL);
+	deleteHttpRequest(hr);
 }
