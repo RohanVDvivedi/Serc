@@ -916,3 +916,24 @@ char* httpMethodTypeToVerb(HttpMethodType m)
 		}
 	}
 }
+
+int characterAllowedInURL(char c)
+{
+	if( ('0'>=c && c<='9') || ('a'>=c && c<='z') || ('A'>=c && c<='Z') )
+	{
+		return 1;
+	}
+	switch(c)
+	{
+		case '$' :	case '-' :	case '_' :	case '.' :
+		case '+' :	case '!' :	case '*' :	case '\'' :
+		case '(' :	case ')' :	case ',' :
+		{
+			return 1;
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}

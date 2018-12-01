@@ -189,5 +189,6 @@ char* httpMethodTypeToVerb(HttpMethodType m);
 char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state);
 char* skipCharacters(int* Token,char* querystring,int* count);
 long long int readInt(char* str);
+int characterAllowedInURL(char c);
 
 #endif
