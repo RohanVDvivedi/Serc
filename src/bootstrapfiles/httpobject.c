@@ -789,7 +789,105 @@ int sendResponse(HttpResponse* hr,int fd)
 
 int sendRequest(HttpRequest* hr,int fd)
 {
-	return -1;
+	int error = 0;
+	int sentbytes = 0;
+
+	char* HttpMethodTypeString = httpMethodTypeToVerb(hr->MethodType);
+	error = sendHelper(HttpMethodTypeString,-1,&sentbytes,fd);
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	char temp[2];temp[0]=' ';temp[1]='\0';
+
+	error = sendHelper(temp,1,&sentbytes,fd);
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	error = sendHelper(hr->Path,-1,&sentbytes,fd);
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	temp[0]='?';
+	for(int i=0;i<hr->PathParameterCount;i++)
+	{
+		error = sendHelper(temp,1,&sentbytes,fd);
+		temp[0]='&';
+		if(error)
+		{
+			return sentbytes;
+		}
+
+
+		error = sendHelper(hr->PathParameters[i]->Key,-1,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+
+		error = sendHelper("=",1,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+
+		error = sendHelper(hr->PathParameters[i]->Value,-1,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+	}
+
+	error = sendHelper(" HTTP/1.1\r\n",11,&sentbytes,fd);
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	for(int i=0;i<hr->HeaderCount;i++)
+	{
+		error = sendHelper(hr->Headers[i]->Key,-1,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+		
+		error = sendHelper(": ",2,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+
+		error = sendHelper(hr->Headers[i]->Value,-1,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+
+		error = sendHelper("\r\n",2,&sentbytes,fd);
+		if(error)
+		{
+			return sentbytes;
+		}
+	}
+
+	error = sendHelper("\r\n",2,&sentbytes,fd);
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	error = sendHelper(hr->RequestBody,hr->RequestBodyLength,&sentbytes,fd);
+	if(error)
+	{
+		return sentbytes;
+	}
+	return 0;
 }
 
 void printHttpRequest(HttpRequest* hr)
@@ -878,7 +976,9 @@ void setResponseBody(char* body,HttpResponse* hr)
 
 void setServerDefaultHeaderInRequest(HttpRequest* hr)
 {
-
+	char ptemp[3000];
+	sprintf(ptemp, "%d",hr->RequestBodyLength);
+	addHeaderInHttpRequest("Content-Length",ptemp,hr);
 }
 
 void setServerDefaultHeaderInResponse(HttpResponse* hr)
@@ -1021,7 +1121,7 @@ int characterAllowedInURL(char c)
 	{
 		case '$' :	case '-' :	case '_' :	case '.' :
 		case '+' :	case '!' :	case '*' :	case '\'' :
-		case '(' :	case ')' :	case ',' :
+		case '(' :	case ')' :	case ',' :	case '/' :
 		{
 			return 1;
 		}

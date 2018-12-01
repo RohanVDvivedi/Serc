@@ -128,7 +128,7 @@ int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
 void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr);
 
 // add PathParameter in HttpRequest
-void addPathParameterInHttpRequest(char* Vey,char* Value,HttpRequest* hr);
+void addPathParameterInHttpRequest(char* Key,char* Value,HttpRequest* hr);
 
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
