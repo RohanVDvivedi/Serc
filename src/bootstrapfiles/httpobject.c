@@ -97,6 +97,72 @@ void urlToString(char* path_param_str)
 	*update = '\0';
 }
 
+char hexToChar(char hex)
+{
+	hex = hex & 0x0f;
+	if( 0 <= hex && hex <= 9 )
+	{
+		return hex + '0';
+	}
+	else
+	{
+		return (hex - 10) + 'a';
+	}
+}
+
+void getUrlHelper(char* path_param_str,int* pos,char* str)
+{
+	for(int i=0;i<strlen(str);i++)
+	{
+		if( characterAllowedInURL(str[i]) )
+		{
+			path_param_str[(*pos)++] = str[i];
+		}
+		else
+		{
+			path_param_str[(*pos)++] = '%';
+			path_param_str[(*pos)++] = hexToChar((str[i] >> 4) & 0x0f);
+			path_param_str[(*pos)++] = hexToChar((str[i] >> 0) & 0x0f);
+		}
+	}
+}
+
+char* getUrl(HttpRequest* hr)
+{
+	int path_param_str_len = 1;
+	path_param_str_len += strlen(hr->Path);
+	for(int i=0;i<hr->PathParameterCount;i++)
+	{
+		path_param_str_len += 1 + strlen(hr->PathParameters[i]->Key) + 1 + strlen(hr->PathParameters[i]->Value);
+	}
+	char* path_param_str = malloc(sizeof(char)*path_param_str_len*3);
+	int pos = 0;
+	for(int i=0;i<strlen(hr->Path);i++)
+	{
+		if( characterAllowedInURL(hr->Path[i]) || hr->Path[i]=='/')
+		{
+			path_param_str[pos++] = hr->Path[i];
+		}
+		else
+		{
+			path_param_str[pos++] = '%';
+			path_param_str[pos++] = hexToChar((hr->Path[i] >> 4) & 0x0f);
+			path_param_str[pos++] = hexToChar((hr->Path[i] >> 0) & 0x0f);
+		}
+	}
+	char reserved_character = '?';
+	for(int i=0;i<hr->PathParameterCount;i++)
+	{
+		path_param_str[pos++] = reserved_character;
+		reserved_character = '&';
+		getUrlHelper(path_param_str,&pos,hr->PathParameters[i]->Key);
+		path_param_str[pos++] = '=';
+		getUrlHelper(path_param_str,&pos,hr->PathParameters[i]->Value);
+	}
+	path_param_str[pos] = '\0';
+	return path_param_str;
+}
+
 // path?params is parsed to populate in hr
 void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 {
@@ -440,26 +506,22 @@ int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr)
 	}
 	strcat(buffer,MethodTypeString);
 
-	char precedence = ' ';
-	if( pathBuildHelper(buffer,bufferlength,maxsize,precedence,hr->Path) < 0 )
+	(*bufferlength) += 1;
+	if(maxsize < (*bufferlength))
 	{
 		return -1;
 	}
+	buffer[(*bufferlength)-1] = ' ';
+	buffer[(*bufferlength)] = '\0';
 
-	precedence = '?';
-	for(int i=0;i<hr->PathParameterCount;i++)
+	char* path_param_str = getUrl(hr);
+	(*bufferlength) += strlen(path_param_str);
+	if( maxsize < (*bufferlength) )
 	{
-		if( pathBuildHelper(buffer,bufferlength,maxsize,precedence,hr->PathParameters[i]->Key) < 0 )
-		{
-			return -1;
-		}
-		precedence = '=';
-		if( pathBuildHelper(buffer,bufferlength,maxsize,precedence,hr->PathParameters[i]->Value) < 0 )
-		{
-			return -1;
-		}
-		precedence = '&';
+		return -1;
 	}
+	strcat(buffer,path_param_str);
+	free(path_param_str);
 
 	(*bufferlength) += 11;
 	if( maxsize < (*bufferlength) )
@@ -550,11 +612,10 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 int estimateRequestObjectSize(HttpRequest* hr)
 {
 	int result = 0;
-	result += (strlen(httpMethodTypeToVerb(hr->MethodType)) + 1 + strlen(hr->Path));
-	for(int i=0;i<hr->PathParameterCount;i++)
-	{
-		result += (1 + strlen(hr->PathParameters[i]->Key) + 1 + strlen(hr->PathParameters[i]->Value));
-	}
+	result += (strlen(httpMethodTypeToVerb(hr->MethodType)) + 1);
+	char* path_param_str = getUrl(hr);
+	result += strlen(path_param_str);
+	free(path_param_str);
 	result += strlen(" HTTP/1.1\r\n");
 	for(int i=0;i<hr->HeaderCount;i++)
 	{
@@ -799,7 +860,7 @@ int sendRequest(HttpRequest* hr,int fd)
 		return sentbytes;
 	}
 
-	char temp[2];temp[0]=' ';temp[1]='\0';
+	char* temp = " ";
 
 	error = sendHelper(temp,1,&sentbytes,fd);
 	if(error)
@@ -807,41 +868,13 @@ int sendRequest(HttpRequest* hr,int fd)
 		return sentbytes;
 	}
 
-	error = sendHelper(hr->Path,-1,&sentbytes,fd);
+	char* path_param_str = getUrl(hr);
+	error = sendHelper(path_param_str,-1,&sentbytes,fd);
 	if(error)
 	{
 		return sentbytes;
 	}
-
-	temp[0]='?';
-	for(int i=0;i<hr->PathParameterCount;i++)
-	{
-		error = sendHelper(temp,1,&sentbytes,fd);
-		temp[0]='&';
-		if(error)
-		{
-			return sentbytes;
-		}
-
-
-		error = sendHelper(hr->PathParameters[i]->Key,-1,&sentbytes,fd);
-		if(error)
-		{
-			return sentbytes;
-		}
-
-		error = sendHelper("=",1,&sentbytes,fd);
-		if(error)
-		{
-			return sentbytes;
-		}
-
-		error = sendHelper(hr->PathParameters[i]->Value,-1,&sentbytes,fd);
-		if(error)
-		{
-			return sentbytes;
-		}
-	}
+	free(path_param_str);
 
 	error = sendHelper(" HTTP/1.1\r\n",11,&sentbytes,fd);
 	if(error)
@@ -1113,7 +1146,7 @@ char* httpMethodTypeToVerb(HttpMethodType m)
 
 int characterAllowedInURL(char c)
 {
-	if( ('0'>=c && c<='9') || ('a'>=c && c<='z') || ('A'>=c && c<='Z') )
+	if( ('0'<=c && c<='9') || ('a'<=c && c<='z') || ('A'<=c && c<='Z') )
 	{
 		return 1;
 	}
@@ -1121,7 +1154,7 @@ int characterAllowedInURL(char c)
 	{
 		case '$' :	case '-' :	case '_' :	case '.' :
 		case '+' :	case '!' :	case '*' :	case '\'' :
-		case '(' :	case ')' :	case ',' :	case '/' :
+		case '(' :	case ')' :	case ',' :
 		{
 			return 1;
 		}
