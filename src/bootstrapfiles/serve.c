@@ -7,6 +7,8 @@
 // choose wisely
 #define buffersize 100
 
+#define UseOptimizeSend
+
 // file shared by all of framework to register logs
 extern FILE* ServerLog;
 extern char* tag;
@@ -62,6 +64,17 @@ void serve(int fd)
 		distribute(hrq,hrp);
 		logMsg(tag,"response object returned from distributor",ServerLog);
 
+#ifdef UseOptimizeSend
+
+		logMsg(tag,"using optimized response send",ServerLog);
+
+		sendResponse(hrp,fd);
+
+		logMsg(tag,"response sent",ServerLog);
+
+#else
+		logMsg(tag,"response object will be first parsed in to response string to send",ServerLog);
+
 		// fill this variable with buffersize to let ToString function know about out response size limit
 		buffreadlength = estimateResponseObjectSize(hrp);
 
@@ -88,6 +101,8 @@ void serve(int fd)
 
 		// once data sent delete bufferResponse
 		free(bufferResponse);
+
+#endif
 
 		// delete HttpResponse Object
 		deleteHttpResponse(hrp);
