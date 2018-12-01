@@ -619,6 +619,86 @@ void deleteHttpResponse(HttpResponse* hr)
 	}
 }
 
+
+int sendAndDeleteHelper(char* stringToSent,int size,int* sentbytes)
+{
+	char* statusline = getHttpResponseStatus(hr->Status);
+	if(stringToSent == NULL)
+	{
+		return -2;
+	}
+	if(size == -1)
+	{
+		size = strlen(statusline);
+	}
+	int error = send(fd,statusline,size,0);
+	if(error == -1 || error < size)
+	{
+		return -1;
+	}
+	(*sentbytes) += error;
+	return 0;
+}
+
+// success = 0, error will return number of bytes sent, any error in response created will return -2
+int sendResponse(HttpResponse* hr,int fd)
+{
+	int sentbytes = 0;
+
+	char* statusline = getHttpResponseStatus(hr->Status);
+	int error = sendAndDeleteHelper(statusline,-1,&sentbytes);
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	for(int i=0;i<hr->HeaderCount;i++)
+	{
+		int error = sendAndDeleteHelper(hr->Headers[i]->Key,-1,&sentbytes)
+		if(error)
+		{
+			return sentbytes;
+		}
+		
+		int error = sendAndDeleteHelper(": ",2,&sentbytes)
+		if(error)
+		{
+			return sentbytes;
+		}
+
+		int error = sendAndDeleteHelper(hr->Headers[i]->Value,-1,&sentbytes)
+		if(error)
+		{
+			return sentbytes;
+		}
+
+		int error = sendAndDeleteHelper("\r\n",2,&sentbytes)
+		if(error)
+		{
+			return sentbytes;
+		}
+	}
+
+
+	int error = sendAndDeleteHelper("\r\n",2,&sentbytes)
+	if(error)
+	{
+		return sentbytes;
+	}
+
+	int error = sendAndDeleteHelper(hr->ResponseBody,hr->ResponseBodyLength,&sentbytes)
+	if(error)
+	{
+		return sentbytes;
+	}
+	return 0;
+}
+
+int sendRequest(HttpRequest* hr,int fd)
+{
+	return -1;
+}
+
 void printHttpRequest(HttpRequest* hr)
 {
 	printf("Http Request\n");

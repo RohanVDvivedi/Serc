@@ -132,6 +132,9 @@ void addPathParameterInHttpRequest(char* Vey,char* Value,HttpRequest* hr);
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
 
+// detele HttpRequest but before that send it to server socket file discriptor 
+int sendRequest(HttpRequest* hr,int fd);
+
 // print HttpRequest Object in a readable format
 void printHttpRequest(HttpRequest* hr);
 
@@ -162,6 +165,9 @@ void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr);
 
 // delete HttpResponse and all its attributes
 void deleteHttpResponse(HttpResponse* hr);
+
+// detele HttpResponse but before that send it to client socket file discriptor 
+int sendResponse(HttpResponse* hr,int fd);
 
 // print HttpResponse Object in a readable format
 void printHttpResponse(HttpResponse* hr);
