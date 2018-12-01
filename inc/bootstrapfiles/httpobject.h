@@ -142,6 +142,9 @@ void printHttpRequest(HttpRequest* hr);
 // set Default Header in Request like size , type , date , updated at , server type email etc
 void setServerDefaultHeaderInRequest(HttpRequest* hr);
 
+// returns a string that is searchable url consisting of only allowed characted and rest of which are converted to %## format
+char* getUrl(HttpRequest* hr);
+
 
 
 // functions for Response

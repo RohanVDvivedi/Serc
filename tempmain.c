@@ -66,8 +66,8 @@ int main()
 	int port = 8080;
 	HttpRequest* hr = getNewHttpRequest();
 	setRequestMethod("POST",hr);
-	setRequestPath("/test/rohan",hr);
-	addPathParameterInHttpRequest("string1","mystr",hr);
+	setRequestPath("/test/roh an",hr);
+	addPathParameterInHttpRequest("stri^ng1","mystr",hr);
 	addPathParameterInHttpRequest("param2","thisis",hr);
 	addPathParameterInHttpRequest("name","rohan",hr);
 	addPathParameterInHttpRequest("id","1",hr);

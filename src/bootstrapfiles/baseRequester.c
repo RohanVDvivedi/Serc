@@ -59,16 +59,20 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrp)
 #else
 
 	// fill this variable with buffersize to let ToString function know about out request size limit
+	logMsg(tag,"estimating request string size",ServerLog);
 	buffreadlength = estimateRequestObjectSize(hrq);
 
 	// allocate enough memory to the buffer for request to accomodate all of the request string formed
 	char* bufferRequest = malloc(sizeof(char)*buffreadlength); bufferRequest[0] = '\0';
 
 	// the following function will convert request object to string
+	logMsg(tag,"building request into a string",ServerLog);
 	requestObjectToString(bufferRequest,&buffreadlength,hrq);
 
 	// send the string
+	logMsg(tag,"sending request",ServerLog);
 	send(fd,bufferRequest,buffreadlength,0);
+	logMsg(tag,"request sent",ServerLog);
 
 	// free the buffer memory that contained request string
 	free(bufferRequest);
