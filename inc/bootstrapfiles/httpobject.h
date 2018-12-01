@@ -6,6 +6,7 @@
 #include<stdio.h>
 #include<strhsh.h>
 #include<responseStrings.h>
+#include<sys/socket.h>
 
 typedef enum HttpMethodType HttpMethodType;
 enum HttpMethodType

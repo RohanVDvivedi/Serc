@@ -620,18 +620,17 @@ void deleteHttpResponse(HttpResponse* hr)
 }
 
 
-int sendAndDeleteHelper(char* stringToSent,int size,int* sentbytes)
+int sendHelper(char* stringToSent,int size,int* sentbytes,int fd)
 {
-	char* statusline = getHttpResponseStatus(hr->Status);
 	if(stringToSent == NULL)
 	{
 		return -2;
 	}
 	if(size == -1)
 	{
-		size = strlen(statusline);
+		size = strlen(stringToSent);
 	}
-	int error = send(fd,statusline,size,0);
+	int error = send(fd,stringToSent,size,0);
 	if(error == -1 || error < size)
 	{
 		return -1;
@@ -646,7 +645,7 @@ int sendResponse(HttpResponse* hr,int fd)
 	int sentbytes = 0;
 
 	char* statusline = getHttpResponseStatus(hr->Status);
-	int error = sendAndDeleteHelper(statusline,-1,&sentbytes);
+	int error = sendHelper(statusline,-1,&sentbytes,fd);
 	if(error)
 	{
 		return sentbytes;
@@ -654,25 +653,25 @@ int sendResponse(HttpResponse* hr,int fd)
 
 	for(int i=0;i<hr->HeaderCount;i++)
 	{
-		int error = sendAndDeleteHelper(hr->Headers[i]->Key,-1,&sentbytes)
+		error = sendHelper(hr->Headers[i]->Key,-1,&sentbytes,fd);
 		if(error)
 		{
 			return sentbytes;
 		}
 		
-		int error = sendAndDeleteHelper(": ",2,&sentbytes)
+		error = sendHelper(": ",2,&sentbytes,fd);
 		if(error)
 		{
 			return sentbytes;
 		}
 
-		int error = sendAndDeleteHelper(hr->Headers[i]->Value,-1,&sentbytes)
+		error = sendHelper(hr->Headers[i]->Value,-1,&sentbytes,fd);
 		if(error)
 		{
 			return sentbytes;
 		}
 
-		int error = sendAndDeleteHelper("\r\n",2,&sentbytes)
+		error = sendHelper("\r\n",2,&sentbytes,fd);
 		if(error)
 		{
 			return sentbytes;
@@ -680,13 +679,13 @@ int sendResponse(HttpResponse* hr,int fd)
 	}
 
 
-	int error = sendAndDeleteHelper("\r\n",2,&sentbytes)
+	error = sendHelper("\r\n",2,&sentbytes,fd);
 	if(error)
 	{
 		return sentbytes;
 	}
 
-	int error = sendAndDeleteHelper(hr->ResponseBody,hr->ResponseBodyLength,&sentbytes)
+	error = sendHelper(hr->ResponseBody,hr->ResponseBodyLength,&sentbytes,fd);
 	if(error)
 	{
 		return sentbytes;
