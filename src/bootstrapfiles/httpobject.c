@@ -406,15 +406,97 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 }
 
 // returns -1 when error
-int stringToResponseObject(char* buffer,HttpResponse* hr)
+int pathBuildHelper(char* buffer,int* bufferlength,int maxsize,char precedence,char* string)
 {
-	return -1;
+	char temp[2];
+	temp[0] = precedence;
+	temp[1] = '\0';
+	(*bufferlength) += (strlen(string) + 1);
+	if( maxsize < (*bufferlength) )
+	{
+		return -1;
+	}
+	strcat(buffer,temp);
+	strcat(buffer,string);
+	return 0;
 }
 
 // returns -1 when error
 int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr)
 {
-	return -1;
+	const int maxsize = (*bufferlength);
+	buffer[0] = '\0';
+	(*bufferlength) = 0;
+
+	if(hr->MethodType == UNIDENTIFIED)
+	{
+		return -2;
+	}
+	char* MethodTypeString = httpMethodTypeToVerb(hr->MethodType);
+	(*bufferlength) += strlen(MethodTypeString);
+	if( maxsize < (*bufferlength) )
+	{
+		return -1;
+	}
+	strcat(buffer,MethodTypeString);
+
+	char precedence = ' ';
+	if( pathBuildHelper(buffer,bufferlength,maxsize,precedence,hr->Path) < 0 )
+	{
+		return -1;
+	}
+
+	precedence = '?';
+	for(int i=0;i<hr->PathParameterCount;i++)
+	{
+		if( pathBuildHelper(buffer,bufferlength,maxsize,precedence,hr->PathParameters[i]->Key) < 0 )
+		{
+			return -1;
+		}
+		precedence = '=';
+		if( pathBuildHelper(buffer,bufferlength,maxsize,precedence,hr->PathParameters[i]->Value) < 0 )
+		{
+			return -1;
+		}
+		precedence = '&';
+	}
+
+	(*bufferlength) += 11;
+	if( maxsize < (*bufferlength) )
+	{
+		return -1;
+	}
+	strcat(buffer," HTTP/1.1\r\n");
+
+	for(int i=0;i<hr->HeaderCount;i++)
+	{
+		(*bufferlength) += (strlen(hr->Headers[i]->Key) + 2);
+		if( maxsize < (*bufferlength) )
+		{
+			return -1;
+		}
+		strcat(buffer,hr->Headers[i]->Key);
+		strcat(buffer,": ");
+
+		(*bufferlength) += (strlen(hr->Headers[i]->Value) + 2);
+		if( maxsize < (*bufferlength) )
+		{
+			return -1;
+		}
+		strcat(buffer,hr->Headers[i]->Value);
+		strcat(buffer,"\r\n");
+	}
+	(*bufferlength) += (hr->RequestBodyLength + 2);
+	if( maxsize < (*bufferlength) )
+	{
+		return -1;
+	}
+	strcat(buffer,"\r\n");
+	if(hr->RequestBodyLength!=0)
+	{
+		strcat(buffer,hr->RequestBody);
+	}
+	return 0;
 }
 
 // returns -1 when error, when -1 is returned pass in a larger buffer
@@ -467,7 +549,19 @@ int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
 
 int estimateRequestObjectSize(HttpRequest* hr)
 {
-	return -1;
+	int result = 0;
+	result += (strlen(httpMethodTypeToVerb(hr->MethodType)) + 1 + strlen(hr->Path));
+	for(int i=0;i<hr->PathParameterCount;i++)
+	{
+		result += (1 + strlen(hr->PathParameters[i]->Key) + 1 + strlen(hr->PathParameters[i]->Value));
+	}
+	result += strlen(" HTTP/1.1\r\n");
+	for(int i=0;i<hr->HeaderCount;i++)
+	{
+		result += (strlen(hr->Headers[i]->Key) + 2 + strlen(hr->Headers[i]->Value) + 2);
+	}
+	result += (2 + hr->RequestBodyLength + 1);
+	return result;
 }
 
 int estimateResponseObjectSize(HttpResponse* hr)
