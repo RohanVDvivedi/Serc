@@ -471,6 +471,252 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	BC: return 0;
 }
 
+int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* Rstate)
+{
+	static char ptemp[3000];
+	static int skipcount;
+	char* temp = buffer;
+	int Tokens[256] = {};
+	TillTokenState state;
+	char* temptest = ptemp;
+	static int expectedBodyLength = -1;
+
+	switch(*Rstate)
+	{
+		case NOT_STARTED :
+		{
+			goto NS;
+			break;
+		}
+		case IN_METHOD :
+		{
+			goto IM;
+			break;
+		}
+		case METHOD_COMPLETE :
+		{
+			goto MC;
+			break;
+		}
+		case IN_PATH :
+		{
+			goto IP;
+			break;
+		}
+		case PATH_COMPLETE :
+		{
+			goto PC;
+			break;
+		}
+		case IN_VERSION :
+		{
+			goto IV;
+			break;
+		}
+		case VERSION_COMPLETE :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto VC;
+			break;
+		}
+		case IN_HEADER :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto IH;
+			break;
+		}
+		case HEADER_COMPLETE :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto HC;
+			break;
+		}
+		case HEADERS_COMPLETE :
+		{
+			goto HSC;
+			break;
+		}
+		case HEADERS_SKIPS :
+		{
+			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			goto HSSS;
+			break;
+		}
+		case IN_BODY :
+		{
+			goto IB;
+			break;
+		}
+		case BODY_COMPLETE :
+		{
+			goto BC;
+			break;
+		}
+	}
+
+
+	NS:	IM:	Tokens[' '] = 1;
+	temptest = ptemp;
+	if(*Rstate == IN_METHOD)
+	{
+		temptest = ptemp + strlen(ptemp);
+	}
+	else
+	{
+		ptemp[0] = '\0';
+		temptest = ptemp;
+	}
+	temp = tillToken(temptest,Tokens,temp,&state);
+	if(state == TASK_COMPLETED)
+	{
+		setRequestMethod(ptemp,hr);
+		*Rstate = METHOD_COMPLETE;
+	}
+	else
+	{
+		*Rstate = IN_METHOD;
+		return -2;
+	}
+	Tokens[' '] = 0;
+
+	MC:	Tokens['/'] = 1;
+	temp = tillToken(ptemp,Tokens,temp,&state);
+	if(state == TASK_COMPLETED)
+	{
+		*Rstate = IN_PATH;
+		ptemp[0] = '/';
+		ptemp[1] = '\0';
+	}
+	else
+	{
+		*Rstate = METHOD_COMPLETE;
+		return -2;
+	}
+	Tokens['/'] = 0;
+	temp++;
+
+	IP:	Tokens[' '] = 1;
+	temptest = ptemp;
+	if(*Rstate == IN_PATH)
+	{
+		temptest = ptemp + strlen(ptemp);
+	}
+	else
+	{
+		ptemp[0] = '\0';
+		temptest = ptemp;
+	}
+	temp = tillToken(temptest,Tokens,temp,&state);
+	if(state == TASK_COMPLETED)
+	{
+		*Rstate = PATH_COMPLETE;
+		handlePathAndParameters(ptemp,hr);
+	}
+	else
+	{
+		*Rstate = IN_PATH;
+		return -2;
+	}
+	Tokens[' '] = 0;
+
+	PC: IV:	Tokens['\n'] = 1;Tokens['\r'] = 1;
+	temp = tillToken(ptemp,Tokens,temp,&state);
+	if(state == REACHED_END_OF_STRING)
+	{
+		*Rstate = IN_VERSION;
+		return -2;
+	}
+	else
+	{
+		*Rstate = VERSION_COMPLETE;
+	}
+	VC: temp = skipCharacters(Tokens,temp,&skipcount);
+	if( ((*temp) != '\0' && Tokens[(*temp)] == 0) || ((*temp) == '\0' && Tokens[(*(temp-1))] == 0) )
+	{
+		*Rstate = VERSION_COMPLETE;
+		skipcount = 0;
+	}
+	else
+	{
+		*Rstate = VERSION_COMPLETE;
+		skipcount = 0;
+		return -2;
+	}
+	IH: HC:	while(1)
+	{
+		temptest = ptemp;
+		if(*Rstate == IN_HEADER)
+		{
+			temptest = ptemp + strlen(ptemp);
+		}
+		else
+		{
+			ptemp[0] = '\0';
+			temptest = ptemp;
+		}
+		temp = tillToken(temptest,Tokens,temp,&state);
+		if(state == TASK_COMPLETED)
+		{
+			*Rstate = HEADER_COMPLETE;
+			handleHeader(ptemp,hr);
+			if(hr->HeaderCount > 0)
+			{
+				if( strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"content-length") == 0 )
+				{
+					expectedBodyLength = readInt(hr->Headers[hr->HeaderCount - 1]->Value);
+				}
+			}
+			HSSS: temp = skipCharacters(Tokens,temp,&skipcount);
+			if( *temp != '\0' )
+			{
+				if( skipcount <= 2 )
+				{
+					skipcount = 0;
+					continue;
+				}
+				else
+				{
+					*Rstate = HEADERS_COMPLETE;
+					break;
+				}
+			}
+			else
+			{
+				*Rstate = HEADERS_SKIPS;
+				return -2;
+			}
+		}
+		else
+		{
+			*Rstate = IN_HEADER;
+			return -2;
+		}
+	}
+	Tokens['\n'] = 0;Tokens['\r']=0;
+
+	HSC: IB: if(*Rstate == HEADERS_COMPLETE)
+	{
+		setRequestBody(temp,hr);
+		*Rstate = IN_BODY;
+	}
+	else if(*Rstate == IN_BODY)
+	{
+		addToRequestBody(temp,hr);
+		if(expectedBodyLength != -1 && expectedBodyLength <= hr->RequestBodyLength)
+		{
+			*Rstate = BODY_COMPLETE;
+			return 0;
+		}
+		else
+		{
+			*Rstate = IN_BODY;
+			return -2;
+		}
+	}
+
+	BC: return 0;
+}
+
 // returns -1 when error
 int pathBuildHelper(char* buffer,int* bufferlength,int maxsize,char precedence,char* string)
 {
