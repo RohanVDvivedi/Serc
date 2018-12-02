@@ -688,7 +688,6 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 		if(state == TASK_COMPLETED)
 		{
 			*Rstate = HEADER_COMPLETE;
-			printf("--%s--\n",ptemp);
 			handleResponseHeader(ptemp,hr);
 			if(hr->HeaderCount > 0)
 			{
