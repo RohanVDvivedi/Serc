@@ -84,13 +84,28 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrp)
 	buffreadlength = 0;
 	do
 	{
-		temp = recv(fd,response + buffreadlength,31999,0);
-		if(temp>0)
+		temp = recv(fd,response/* + buffreadlength*/,31999,0);
+		/*if(temp>0)
 		{
 			buffreadlength += temp;
+		}*/
+		response[temp] = '\0';
+		int i=-1;int j=-1;
+		do
+		{
+			i++;j++;
+			if(response[i] == '\r')
+			{
+				response[(j++)+3000] = '\\';
+				response[j+3000] = 'r';
+			}
+			else
+			{
+				response[j+3000] = response[i];
+			}
 		}
-		response[buffreadlength] = '\0';
-		printf("-Response:\n%s\n%d---xxx---xxx---%d\n",response,temp,buffreadlength);
+		while(response[i]!='\0');
+		printf("-Response:\n%s\n%d---xxx---xxx---%d\n",response+3000,temp,buffreadlength);
 	}
 	while(temp != -1 && temp != 0);
 
