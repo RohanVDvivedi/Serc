@@ -504,6 +504,9 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 	int Tokens[256] = {};
 	TillTokenState state;
 	char* temptest = ptemp;
+
+	// expected body length = -1 (not recognized yet), +ve value means contents length is present
+	// -2 states the body is chunked
 	static int expectedBodyLength = -1;
 
 	switch(*Rstate)
@@ -689,9 +692,13 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 			handleResponseHeader(ptemp,hr);
 			if(hr->HeaderCount > 0)
 			{
-				if( strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"content-length") == 0 )
+				if( expectedBodyLength == -1 && strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"content-length") == 0 )
 				{
 					expectedBodyLength = readInt(hr->Headers[hr->HeaderCount - 1]->Value);
+				}
+				if( expectedBodyLength == -1 && strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"Transfer-Encoding") == 0 && strcmp(hr->Headers[hr->HeaderCount - 1]->Value,"chunked") )
+				{
+					expectedBodyLength = -2;
 				}
 			}
 			HSSS: temp = skipCharacters(Tokens,temp,&skipcount);
@@ -1455,5 +1462,45 @@ int characterAllowedInURL(char c)
 		{
 			return 0;
 		}
+	}
+}
+
+int strcmpcaseinsensitive(char* str1,char* str2)
+{
+	int len1 = strlen(str1);
+	int len2 = strlen(str2);
+
+	if(len1 != len2)
+	{
+		return 1;
+	}
+	else
+	{
+		for(int i=0;i<len1;i++)
+		{
+			if( !( ( str1[i] == str2[i] ) || ( str1[i] >= 'A' && str1[i] <= 'Z' && str1[i] - 'A' + 'a' == str2[i] ) || ( str1[i] >= 'a' && str1[i] <= 'z' && str1[i] - 'a' + 'A' == str2[i] ) ) )
+			{
+				return 1;
+			}
+		}
+		return 0;
+	}
+}
+
+int strhasprefixcaseinsensitive(char* prefix,char* str)
+{
+	int len1 = strlen(prefix);
+	int len2 = strlen(str);
+	if(len2 > len1)
+	{
+		char temp = str[len1];
+		str[len1] = '\0';
+		int result = strcmpcaseinsensitive(prefix,str);
+		str[len1] = temp;
+		return result;
+	}
+	else
+	{
+		return 1;
 	}
 }

@@ -98,7 +98,7 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrpp)
 	StringToResponseState Rstate = NOT_STARTED;
 
 	int error = 0;
-	while(1)
+	while(Rstate != BODY_COMPLETE)
 	{
 		// read request byte array and add '\0' at end to use it as c string
 		buffreadlength = recv(fd,bufferResponse,buffersize-1,0);bufferResponse[buffreadlength] = '\0';
@@ -111,19 +111,18 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrpp)
 
 		// parse the RequestString to populate HttpRequest Object
 		error = stringToResponseObject(bufferResponse,hrp,&Rstate);
-		printf("<<<<\n");
-		printf("%s %d %d\n",bufferResponse,error,Rstate);
-		printHttpResponse(hrp);
-		printf(">>>>\n");
 
 		if(buffreadlength < buffersize-1 || Rstate == BODY_COMPLETE)
 		{
 			break;
 		}
+
 	}
 	logMsg(tag,"response parsed from client",ServerLog);
 
 	close(fd);
+
+	printHttpResponse(hrp);
 
 	return -1;
 }
