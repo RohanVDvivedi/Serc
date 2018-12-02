@@ -50,6 +50,22 @@ enum StringToRequestState
 	BODY_COMPLETE
 };
 
+typedef enum StringToResponseState StringToResponseState;
+enum StringToResponseState
+{
+	NOT_STARTED,
+	IN_VERSION,
+	VERSION_COMPLETE,
+	IN_STATUS,
+	STATUS_COMPLETE,
+	IN_HEADER,
+	HEADER_COMPLETE,
+	HEADERS_COMPLETE,
+	HEADERS_SKIPS,
+	IN_BODY,
+	BODY_COMPLETE
+};
+
 
 
 
@@ -156,7 +172,7 @@ HttpResponse* getNewHttpResponse();
 void setResponseBody(char* body,HttpResponse* hr);
 
 // parse string to populate HttpResponse
-int stringToResponseObject(char* buffer,HttpResponse* hr);
+int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* Rstate);
 
 // estimate size of response from request object
 int estimateResponseObjectSize(HttpResponse* hr);
