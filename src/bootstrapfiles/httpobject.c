@@ -203,7 +203,7 @@ void handlePathAndParameters(char* path_param_str,HttpRequest* hr)
 	}
 }
 // string header is parsed to populate in http request
-void handleHeader(char* header,HttpRequest* hr)
+void handleRequestHeader(char* header,HttpRequest* hr)
 {
 	char ptemp[3000];
 	char* temp = header;
@@ -220,6 +220,27 @@ void handleHeader(char* header,HttpRequest* hr)
 	Tokens['\n'] = 1;Tokens['\r']=1;
 	temp = tillToken(ptemp+1500,Tokens,temp,&state);
 	addHeaderInHttpRequest(ptemp,ptemp+1500,hr);
+	Tokens['\n'] = 0;Tokens['\r']=0;
+}
+
+// string header is parsed to populate in http response
+void handleResponseHeader(char* header,HttpResponse* hr)
+{
+	char ptemp[3000];
+	char* temp = header;
+	int Tokens[256] = {};
+	TillTokenState state;
+
+	Tokens[':'] = 1;
+	temp = tillToken(ptemp,Tokens,temp,&state);
+	Tokens[':'] = 0;
+	temp++;
+
+	temp++;
+
+	Tokens['\n'] = 1;Tokens['\r']=1;
+	temp = tillToken(ptemp+1500,Tokens,temp,&state);
+	addHeaderInHttpResponse(ptemp,ptemp+1500,hr);
 	Tokens['\n'] = 0;Tokens['\r']=0;
 }
 
@@ -306,6 +327,10 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 			goto BC;
 			break;
 		}
+		default :
+		{
+			return -3;
+		}
 	}
 
 
@@ -412,7 +437,7 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 		if(state == TASK_COMPLETED)
 		{
 			*Rstate = HEADER_COMPLETE;
-			handleHeader(ptemp,hr);
+			handleRequestHeader(ptemp,hr);
 			if(hr->HeaderCount > 0)
 			{
 				if( strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"content-length") == 0 )
@@ -488,26 +513,6 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 			goto NS;
 			break;
 		}
-		case IN_METHOD :
-		{
-			goto IM;
-			break;
-		}
-		case METHOD_COMPLETE :
-		{
-			goto MC;
-			break;
-		}
-		case IN_PATH :
-		{
-			goto IP;
-			break;
-		}
-		case PATH_COMPLETE :
-		{
-			goto PC;
-			break;
-		}
 		case IN_VERSION :
 		{
 			goto IV;
@@ -515,8 +520,29 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 		}
 		case VERSION_COMPLETE :
 		{
-			Tokens['\n'] = 1;Tokens['\r'] = 1;
+			Tokens[' '] = 1;
 			goto VC;
+			break;
+		}
+		case IN_STATUS :
+		{
+			goto IS;
+			break;
+		}
+		case STATUS_COMPLETE :
+		{
+			goto SC;
+			break;
+		}
+		case IN_STATUS_STRING :
+		{
+			goto ISS;
+			break;
+		}
+		case STATUS_STRING_COMPLETE :
+		{
+			Tokens['\r'] = 1;Tokens['\n'] = 1;
+			goto SSC;
 			break;
 		}
 		case IN_HEADER :
@@ -552,12 +578,16 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 			goto BC;
 			break;
 		}
+		default :
+		{
+			return -3;
+		}
 	}
 
 
-	NS:	IM:	Tokens[' '] = 1;
+	NS:	IV:	Tokens[' '] = 1;
 	temptest = ptemp;
-	if(*Rstate == IN_METHOD)
+	if(*Rstate == IN_VERSION)
 	{
 		temptest = ptemp + strlen(ptemp);
 	}
@@ -569,79 +599,76 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 	temp = tillToken(temptest,Tokens,temp,&state);
 	if(state == TASK_COMPLETED)
 	{
-		setRequestMethod(ptemp,hr);
-		*Rstate = METHOD_COMPLETE;
-	}
-	else
-	{
-		*Rstate = IN_METHOD;
-		return -2;
-	}
-	Tokens[' '] = 0;
-
-	MC:	Tokens['/'] = 1;
-	temp = tillToken(ptemp,Tokens,temp,&state);
-	if(state == TASK_COMPLETED)
-	{
-		*Rstate = IN_PATH;
-		ptemp[0] = '/';
-		ptemp[1] = '\0';
-	}
-	else
-	{
-		*Rstate = METHOD_COMPLETE;
-		return -2;
-	}
-	Tokens['/'] = 0;
-	temp++;
-
-	IP:	Tokens[' '] = 1;
-	temptest = ptemp;
-	if(*Rstate == IN_PATH)
-	{
-		temptest = ptemp + strlen(ptemp);
-	}
-	else
-	{
+		*Rstate = VERSION_COMPLETE;
 		ptemp[0] = '\0';
-		temptest = ptemp;
-	}
-	temp = tillToken(temptest,Tokens,temp,&state);
-	if(state == TASK_COMPLETED)
-	{
-		*Rstate = PATH_COMPLETE;
-		handlePathAndParameters(ptemp,hr);
 	}
 	else
-	{
-		*Rstate = IN_PATH;
-		return -2;
-	}
-	Tokens[' '] = 0;
-
-	PC: IV:	Tokens['\n'] = 1;Tokens['\r'] = 1;
-	temp = tillToken(ptemp,Tokens,temp,&state);
-	if(state == REACHED_END_OF_STRING)
 	{
 		*Rstate = IN_VERSION;
 		return -2;
 	}
-	else
+	VC : skipcount = 0;
+	hr->Status = 0;
+	temp = skipCharacters(Tokens,temp,&skipcount);
+	if((*temp) == '\0')
 	{
 		*Rstate = VERSION_COMPLETE;
-	}
-	VC: temp = skipCharacters(Tokens,temp,&skipcount);
-	if( ((*temp) != '\0' && Tokens[(*temp)] == 0) || ((*temp) == '\0' && Tokens[(*(temp-1))] == 0) )
-	{
-		*Rstate = VERSION_COMPLETE;
-		skipcount = 0;
-	}
-	else
-	{
-		*Rstate = VERSION_COMPLETE;
-		skipcount = 0;
 		return -2;
 	}
+	else if((*temp) != ' ')
+	{
+		*Rstate = IN_STATUS;
+	}
+	else
+	{
+		return -3;
+	}
+	Tokens[' '] = 0;
+
+	IS:
+	while((*temp)>='0' && (*temp)<='9')
+	{
+		hr->Status = (hr->Status * 10) + ((*temp) - '0');
+		temp++;
+	}
+	if((*temp) == '\0')
+	{
+		*Rstate = IN_STATUS;
+		return -2;
+	}
+	else
+	{
+		*Rstate = STATUS_COMPLETE;
+	}
+
+	SC: ISS: Tokens['\r'] = 1;Tokens['\n'] = 1;
+	temp = tillToken(ptemp,Tokens,temp,&state);ptemp[0]='\0';
+	if( (*temp) == '\0')
+	{
+		*Rstate = IN_STATUS_STRING;
+		return -2;
+	}
+	else
+	{
+		*Rstate = STATUS_STRING_COMPLETE;
+	}
+
+	SSC: temp = skipCharacters(Tokens,temp,&skipcount);
+	skipcount = 0;
+	if( (*temp) != '\0' )
+	{
+		*Rstate = IN_HEADER;
+		ptemp[0] = '\0';
+		
+	}
+	else
+	{
+		*Rstate = STATUS_STRING_COMPLETE;
+		ptemp[0] = '\0';
+		return -2;
+	}
+
+	ptemp[0] = '\0';
 	IH: HC:	while(1)
 	{
 		temptest = ptemp;
@@ -658,7 +685,8 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 		if(state == TASK_COMPLETED)
 		{
 			*Rstate = HEADER_COMPLETE;
-			handleHeader(ptemp,hr);
+			printf("--%s--\n",ptemp);
+			handleResponseHeader(ptemp,hr);
 			if(hr->HeaderCount > 0)
 			{
 				if( strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"content-length") == 0 )
@@ -696,13 +724,13 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 
 	HSC: IB: if(*Rstate == HEADERS_COMPLETE)
 	{
-		setRequestBody(temp,hr);
+		setResponseBody(temp,hr);
 		*Rstate = IN_BODY;
 	}
 	else if(*Rstate == IN_BODY)
 	{
-		addToRequestBody(temp,hr);
-		if(expectedBodyLength != -1 && expectedBodyLength <= hr->RequestBodyLength)
+		addToResponseBody(temp,hr);
+		if(expectedBodyLength != -1 && expectedBodyLength <= hr->ResponseBodyLength)
 		{
 			*Rstate = BODY_COMPLETE;
 			return 0;
@@ -1238,6 +1266,25 @@ void addToRequestBody(char* body,HttpRequest* hr)
 	}
 	strcat(newBody,body);
 	hr->RequestBody = newBody;
+}
+
+void addToResponseBody(char* body,HttpResponse* hr)
+{
+	unsigned long long int oldLength = hr->ResponseBody == NULL ? 0 : strlen(hr->ResponseBody);
+	unsigned long long newLength = oldLength + strlen(body);
+	hr->ResponseBodyLength = newLength;
+	char* newBody = (char*) malloc(sizeof(char)*(hr->ResponseBodyLength + 1));
+	if(hr->ResponseBody != NULL)
+	{
+		strcpy(newBody,hr->ResponseBody);
+		free(hr->ResponseBody);
+	}
+	else
+	{
+		newBody[0] = '\0';
+	}
+	strcat(newBody,body);
+	hr->ResponseBody = newBody;
 }
 
 void setResponseBody(char* body,HttpResponse* hr)
