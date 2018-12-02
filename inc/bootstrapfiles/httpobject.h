@@ -210,5 +210,7 @@ char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state)
 char* skipCharacters(int* Token,char* querystring,int* count);
 long long int readInt(char* str);
 int characterAllowedInURL(char c);
+int strcmpcaseinsensitive(char* str1,char* str2);
+int strhasprefixcaseinsensitive(char* prefix,char* str);
 
 #endif
