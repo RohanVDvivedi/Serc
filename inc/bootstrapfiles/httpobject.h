@@ -32,41 +32,39 @@ enum TillTokenState
 	REACHED_END_OF_STRING
 };
 
-typedef enum StringToRequestState StringToRequestState;
-enum StringToRequestState
+typedef enum StringToRequestResponseState StringToRequestResponseState;
+enum StringToRequestResponseState
 {
-	NOT_STARTED,
-	IN_METHOD,
-	METHOD_COMPLETE,
-	IN_PATH,
-	PATH_COMPLETE,
-	IN_VERSION,
-	VERSION_COMPLETE,
-	IN_HEADER,
-	HEADER_COMPLETE,
-	HEADERS_COMPLETE,
-	HEADERS_SKIPS,
-	IN_BODY,
-	BODY_COMPLETE
+	NOT_STARTED=0,
+	IN_METHOD=1,
+	METHOD_COMPLETE=2,
+	IN_PATH=3,
+	PATH_COMPLETE=4,
+	IN_VERSION=5,
+	VERSION_COMPLETE=6,
+	IN_HEADER=7,
+	HEADER_COMPLETE=8,
+	HEADERS_COMPLETE=9,
+	HEADERS_SKIPS=10,
+	IN_BODY=11,
+	BODY_COMPLETE=12,
+
+//	IN_VERSION,
+//	VERSION_COMPLETE,
+	IN_STATUS=13,
+	STATUS_COMPLETE=14,
+	IN_STATUS_STRING=15,
+	STATUS_STRING_COMPLETE=16
+//	IN_HEADER,
+//	HEADER_COMPLETE,
+//	HEADERS_COMPLETE,
+//	HEADERS_SKIPS,
+//	IN_BODY,
+//	BODY_COMPLETE,
 };
 
-typedef enum StringToResponseState StringToResponseState;
-enum StringToResponseState
-{
-	NOT_STARTED,
-	IN_VERSION,
-	VERSION_COMPLETE,
-	IN_STATUS,
-	STATUS_COMPLETE,
-	IN_HEADER,
-	HEADER_COMPLETE,
-	HEADERS_COMPLETE,
-	HEADERS_SKIPS,
-	IN_BODY,
-	BODY_COMPLETE
-};
-
-
+#define StringToRequestState StringToRequestResponseState
+#define StringToResponseState StringToRequestResponseState
 
 
 
@@ -170,6 +168,9 @@ HttpResponse* getNewHttpResponse();
 
 // setter for Response Body
 void setResponseBody(char* body,HttpResponse* hr);
+
+// adds more content to response body
+void addToResponseBody(char* body,HttpResponse* hr);
 
 // parse string to populate HttpResponse
 int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* Rstate);

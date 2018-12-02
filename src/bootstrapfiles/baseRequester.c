@@ -5,9 +5,16 @@
 extern FILE* ServerLog;
 extern char* tag;
 
+// this is the buffer size of the response
+// the chunks of this size will be read from the socket
+// if kept large stack memory will be more used
+// if kept small multiple accesses will be required
+// choose wisely
+#define buffersize 2
+
 #define UseOptimizeSend
 
-int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrp)
+int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrpp)
 {
 	// get host by name will retrieve the ip of the server using the name of host
 	struct hostent* server = gethostbyname(host);
@@ -79,39 +86,44 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrp)
 
 #endif
 
-	char response[32000];
-	int temp = 0;
-	buffreadlength = 0;
-	do
+	char bufferResponse[buffersize];
+	
+	// create a new HttpRequest Object
+	HttpResponse* hrp = getNewHttpResponse();
+	if(hrpp != NULL)
 	{
-		temp = recv(fd,response/* + buffreadlength*/,31999,0);
-		/*if(temp>0)
-		{
-			buffreadlength += temp;
-		}*/
-		response[temp] = '\0';
-		int i=-1;int j=-1;
-		do
-		{
-			i++;j++;
-			if(response[i] == '\r')
-			{
-				response[(j++)+3000] = '\\';
-				response[j+3000] = 'r';
-			}
-			else
-			{
-				response[j+3000] = response[i];
-			}
-		}
-		while(response[i]!='\0');
-		printf("-Response:\n%s\n%d---xxx---xxx---%d\n",response+3000,temp,buffreadlength);
+		(*hrpp) = hrp;
 	}
-	while(temp != -1 && temp != 0);
+
+	StringToResponseState Rstate = NOT_STARTED;
+
+	int error = 0;
+	while(1)
+	{
+		// read request byte array and add '\0' at end to use it as c string
+		buffreadlength = recv(fd,bufferResponse,buffersize-1,0);bufferResponse[buffreadlength] = '\0';
+
+		// if no characters read than exit
+		if(buffreadlength == -1)
+		{
+			break;
+		}
+
+		// parse the RequestString to populate HttpRequest Object
+		error = stringToResponseObject(bufferResponse,hrp,&Rstate);
+		printf("<<<<\n");
+		printf("%s %d %d\n",bufferResponse,error,Rstate);
+		printHttpResponse(hrp);
+		printf(">>>>\n");
+
+		if(buffreadlength < buffersize-1 || Rstate == BODY_COMPLETE)
+		{
+			break;
+		}
+	}
+	logMsg(tag,"response parsed from client",ServerLog);
 
 	close(fd);
-
-	printf("Response:\n%s\n---xxx---xxx---%d\n",response,buffreadlength);
 
 	return -1;
 }
