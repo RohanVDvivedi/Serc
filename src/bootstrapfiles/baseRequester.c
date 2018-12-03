@@ -10,7 +10,7 @@ extern char* tag;
 // if kept large stack memory will be more used
 // if kept small multiple accesses will be required
 // choose wisely
-#define buffersize 200
+#define buffersize 100
 
 #define UseOptimizeSend
 
