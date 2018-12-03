@@ -845,7 +845,6 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 				if(chunk_size_finale == 0)
 				{
 					max_count_br = 2;
-					printHttpResponse(hr);
 				}
 			}
 		}
