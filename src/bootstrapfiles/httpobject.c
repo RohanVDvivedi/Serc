@@ -72,7 +72,7 @@ char charToHex(char c)
 	}
 	else
 	{
-		return 0;
+		return 'N';
 	}
 }
 
@@ -695,7 +695,7 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 				{
 					expectedBodyLength = readInt(hr->Headers[hr->HeaderCount - 1]->Value);
 				}
-				if( expectedBodyLength == -1 && strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"Transfer-Encoding") == 0 && strcmp(hr->Headers[hr->HeaderCount - 1]->Value,"chunked") )
+				if( expectedBodyLength == -1 && strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"Transfer-Encoding") == 0 && strcmp(hr->Headers[hr->HeaderCount - 1]->Value,"chunked") == 0 )
 				{
 					expectedBodyLength = -2;
 				}
@@ -755,7 +755,7 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 		static int chunk_size = 0;
 		while(1)
 		{
-			if(chunk_size_finale == 0)
+			if(chunk_size_finale == 0 || chunk_size_finale == -1)
 			{
 				while(((*temp) == '\r' || (*temp) == '\n') && max_count_br>0 && (*temp)!='\0' )
 				{
