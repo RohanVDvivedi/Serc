@@ -728,12 +728,12 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 	}
 	Tokens['\n'] = 0;Tokens['\r']=0;
 
-	HSC: IB: if(*Rstate == HEADERS_COMPLETE)
+	HSC: IB: if(expectedBodyLength!=-2 && *Rstate == HEADERS_COMPLETE)
 	{
 		setResponseBody(temp,hr);
 		*Rstate = IN_BODY;
 	}
-	else if(*Rstate == IN_BODY)
+	else if(expectedBodyLength!=-2 && *Rstate == IN_BODY)
 	{
 		addToResponseBody(temp,hr);
 		if(expectedBodyLength != -1 && expectedBodyLength <= hr->ResponseBodyLength)
@@ -745,6 +745,91 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 		{
 			*Rstate = IN_BODY;
 			return -2;
+		}
+	}
+	else
+	{
+		static int max_count_br = 2;
+		// chunk_size_finale == -1 means it is last chunk
+		static int chunk_size_finale = 0;
+		static int chunk_size = 0;
+		while(1)
+		{
+			if(chunk_size_finale == 0)
+			{
+				while(((*temp) == '\r' || (*temp) == '\n') && max_count_br>0 && (*temp)!='\0' )
+				{
+					temp++;
+					max_count_br--;
+				}
+				if(max_count_br == 0)
+				{
+					max_count_br = -1;
+				}
+				if(*temp=='\0')
+				{
+					return -2;
+				}
+				char hex_digit = 0;
+				while( (*temp) != '\0' )
+				{
+					hex_digit = charToHex((*temp));
+					if(hex_digit == 'N')
+					{
+						chunk_size_finale = chunk_size;
+						if(chunk_size_finale == 0)
+						{
+							chunk_size_finale = -1;
+							max_count_br = 2;
+						}
+						break;
+					}
+					else
+					{
+						chunk_size = (chunk_size << 4) | hex_digit;
+					}
+				}
+				if( (*temp) == '\0' )
+				{
+					return -2;
+				}
+			}
+			if(chunk_size_finale != 0)
+			{
+				while(((*temp) == '\r' || (*temp) == '\n') && max_count_br>0 && (*temp)!='\0' )
+				{
+					temp++;
+					max_count_br--;
+				}
+				if(max_count_br == 0)
+				{
+					max_count_br = -1;
+				}
+				if(*temp == '\0')
+				{
+					return -2;
+				}
+				if(chunk_size_finale == -1)
+				{
+					max_count_br = 2;
+					continue;
+				}
+				int strlen_temp = strlen(temp);
+				if(strlen_temp > chunk_size_finale)
+				{
+					char c_temp = temp[chunk_size_finale];
+					temp[chunk_size_finale] = '\0';
+					addToResponseBody(temp,hr);
+					temp[chunk_size_finale] = c_temp;
+					chunk_size_finale = 0;
+				}
+				else
+				{
+					addToResponseBody(temp,hr);
+					chunk_size_finale -= strlen_temp;
+				}
+				max_count_br = 2;
+			}
 		}
 	}
 
