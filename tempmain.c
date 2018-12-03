@@ -72,6 +72,10 @@ int main()
 //	addPathParameterInHttpRequest("name","rohan",hr);
 //	addPathParameterInHttpRequest("id","1",hr);
 //	addHeaderInHttpRequest("Content-Type","text/plain",hr);
+	addPathParameterInHttpRequest("field","id",hr);
+	addPathParameterInHttpRequest("in","1,2,3,12,14",hr);
+	addPathParameterInHttpRequest("active","false",hr);
+	addPathParameterInHttpRequest("page","-1",hr);
 	addHeaderInHttpRequest("Cache-Control","no-cache",hr);
 	addHeaderInHttpRequest("Postman-Token","129e366c-bb66-4025-9fe9-e3db0c60e30a",hr);
 //	setRequestBody("my name is lakhan, java hoga khatam",hr);
