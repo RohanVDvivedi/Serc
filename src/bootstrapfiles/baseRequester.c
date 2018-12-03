@@ -116,7 +116,7 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrpp)
 		{
 			break;
 		}
-
+		printHttpResponse(hrp);
 	}
 	logMsg(tag,"response parsed from client",ServerLog);
 
