@@ -10,7 +10,7 @@ extern char* tag;
 // if kept large stack memory will be more used
 // if kept small multiple accesses will be required
 // choose wisely
-#define buffersize 2
+#define buffersize 200
 
 #define UseOptimizeSend
 
@@ -116,7 +116,6 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrpp)
 		{
 			break;
 		}
-		printHttpResponse(hrp);
 	}
 	logMsg(tag,"response parsed from client",ServerLog);
 

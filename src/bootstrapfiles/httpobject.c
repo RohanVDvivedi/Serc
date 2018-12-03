@@ -756,7 +756,8 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 		static int max_count_digits = 6;
 		while((*temp)!='\0' && *Rstate != BODY_COMPLETE )
 		{
-			printf("max_count_br = %d, chunk_size_finale = %d, chunk_size = %d, temp_char = %c\n",max_count_br,chunk_size_finale,chunk_size,(*temp));
+		//	this is a very help full debug statement
+		//	printf("max_count_br = %d, chunk_size_finale = %d, chunk_size = %d, temp_char = %s, temp_length %lu\n",max_count_br,chunk_size_finale,chunk_size,temp,strlen(temp));
 			if(chunk_size_finale == 0 || chunk_size_finale == -1)
 			{
 				while(((*temp) == '\r' || (*temp) == '\n') && max_count_br>0 && (*temp)!='\0' )
@@ -772,7 +773,7 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 					}
 					max_count_br = -1;
 				}
-				if(*temp=='\0')
+				if((*temp)=='\0')
 				{
 					return -2;
 				}
@@ -789,6 +790,8 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 							max_count_br = 2;
 						}
 						chunk_size = 0;
+						max_count_br = 2;
+						max_count_digits = 6;
 						break;
 					}
 					else
@@ -830,8 +833,8 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 					temp[chunk_size_finale] = '\0';
 					addToResponseBody(temp,hr);
 					temp[chunk_size_finale] = c_temp;
-					chunk_size_finale = 0;
 					temp = temp + chunk_size_finale;
+					chunk_size_finale = 0;
 				}
 				else
 				{
@@ -839,7 +842,11 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 					chunk_size_finale -= strlen_temp;
 					temp = temp + strlen_temp;
 				}
-				max_count_br = 2;
+				if(chunk_size_finale == 0)
+				{
+					max_count_br = 2;
+					printHttpResponse(hr);
+				}
 			}
 		}
 	}
