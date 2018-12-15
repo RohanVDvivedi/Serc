@@ -1,0 +1,30 @@
+#include<combined.h>
+
+char* toJson(void* data,Type_Support type)
+{
+	char* return_string = NULL;
+	if(data!=NULL)
+	{
+		switch(type)
+		{
+			case ARRAY_JSON :
+			{
+				return_string = array_json_toJson((array_json*)data);
+				break;
+			}
+			/*
+			case CLASSNAME_JSON :
+			{
+				return_string = classname_toJson((classname*)data);
+				break;
+			}
+			*/
+//@add_case_for_objects)))
+			default :
+			{
+				break;
+			}
+		}
+	}
+	return return_string;
+}

@@ -1,0 +1,12 @@
+#ifndef COMBINED_H
+#define COMBINED_H
+
+#include<type_support.h>
+
+#include<array_json.h>
+//#include<classname_json.h>
+//@headers_all_json)))
+
+char* toJson(void* data,Type_Support type);
+
+#endif

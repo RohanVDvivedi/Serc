@@ -8,6 +8,8 @@
 #include<responseStrings.h>
 #include<sys/socket.h>
 
+#include<combined.h>
+
 typedef enum HttpMethodType HttpMethodType;
 enum HttpMethodType
 {
@@ -126,6 +128,9 @@ void setRequestPath(char* path,HttpRequest* hr);
 // setter for request body
 void setRequestBody(char* body,HttpRequest* hr);
 
+// setter for request body from json objects
+void setRequestBodyFromJsonObject(void* json_object,Type_Support type,HttpRequest* hr);
+
 // adds more content to request body
 void addToRequestBody(char* body,HttpRequest* hr);
 
@@ -171,6 +176,9 @@ void setResponseBody(char* body,HttpResponse* hr);
 
 // adds more content to response body
 void addToResponseBody(char* body,HttpResponse* hr);
+
+// setter for response body from json objects
+void setResponseBodyFromJsonObject(void* json_object,Type_Support type,HttpResponse* hr);
 
 // parse string to populate HttpResponse
 int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* Rstate);
