@@ -52,6 +52,6 @@ with key as a DataType enum and value as variable name
 """
 function_string = datatype_handler.to_json_function_creator(json_object_name,fields)
 
-replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/DTOs_methods/" + json_object_name + "_json.c",{"@DTO_declaration file include\n":"#include<" + json_object_name + "_json.h>\n#include<jsonstringhandler.h>\n#include<stdlib.h>\n#include<stdio.h>\n","@add_methods\n":function_string})
+replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/bootstrapfiles/DTOs/DTOs_methods/" + json_object_name + "_json.c",{"@DTO_declaration file include\n":"#include<" + json_object_name + "_json.h>\n#include<jsonstringhandler.h>\n#include<stdlib.h>\n#include<stdio.h>\n","@add_methods\n":function_string})
 
 
