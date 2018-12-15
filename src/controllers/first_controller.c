@@ -1,5 +1,6 @@
 #include<httpobject.h>
 #include<MyObject_json.h>
+#include<type_support.h>
 
 int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 {
@@ -47,13 +48,11 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	m->my_sub->a = 500;
 	m->my_sub->b = "world";
 
-	char* response = MyObject_toJson(m);
+	// setResponseBody("This is the first test",hrp);
+
+	setResponseBodyFromJsonObject(m,MYOBJECT_JSON,hrp);
 	
 	delete_MyObject(m); 
 	//
-
-	// setResponseBody("This is the first test",hrp);
-	hrp->ResponseBody = response;
-	hrp->ResponseBodyLength = strlen(response);
 	return 0;
 }

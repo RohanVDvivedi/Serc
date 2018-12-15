@@ -1357,6 +1357,18 @@ void setRequestBody(char* body,HttpRequest* hr)
 	strcpy(hr->RequestBody,body);
 }
 
+void setRequestBodyFromJsonObject(void* json_object,Type_Support type,HttpRequest* hr)
+{
+	hr->RequestBody = toJson(json_object,type);
+	hr->RequestBodyLength = (hr->RequestBody == NULL) ? 0 : strlen(hr->RequestBody);
+}
+
+void setResponseBodyFromJsonObject(void* json_object,Type_Support type,HttpResponse* hr)
+{
+	hr->ResponseBody = toJson(json_object,type);
+	hr->ResponseBodyLength = (hr->ResponseBody == NULL) ? 0 : strlen(hr->ResponseBody);
+}
+
 void addToRequestBody(char* body,HttpRequest* hr)
 {
 	unsigned long long int oldLength = hr->RequestBody == NULL ? 0 : strlen(hr->RequestBody);
