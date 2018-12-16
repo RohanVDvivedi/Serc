@@ -2,7 +2,8 @@
 #include<stdlib.h>
 //#include<MyObject_json.h>
 #include<logger.h>
-#include<baseRequester.h>
+//#include<baseRequester.h>
+#include<jsonp.h>
 
 // file shared by all of framework to register logs
 extern FILE* ServerLog;
@@ -35,5 +36,13 @@ int main()
 	deleteHttpRequest(hr);
 	return 0;*/
 
-	
+	char* json = "{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}";
+	json_error error = NO_ERROR;
+	json_node* root = json_parse(json,&error);
+	if(error == NO_ERROR)
+	{
+		json_print(root);
+	}
+	json_delete();
+	return 0;
 }
