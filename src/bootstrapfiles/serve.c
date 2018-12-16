@@ -106,10 +106,8 @@ void serve(int fd)
 
 		// delete HttpResponse Object
 		deleteHttpResponse(hrp);
-		free(hrp);
 	}
 
 	// delete HttpRequest Object
 	deleteHttpRequest(hrq);
-	free(hrq);
 }
