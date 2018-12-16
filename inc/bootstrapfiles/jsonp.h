@@ -12,7 +12,7 @@ enum json_node_type
 	NUMBER_JSON,
 	NULL_JSON,
 	TRUE_JSON,
-	FALSE_JSON
+	FALSE_JSON,
 	ARRAY_JSON,
 	OBJECT_JSON
 };
@@ -58,7 +58,7 @@ enum json_error
 
 json_node* json_parse(char* json,json_error* error);
 
-void json_print(json_node* node,char* json_str);
+void json_print(json_node* node,int n_spaces);
 
 void json_delete(json_node* node);
 

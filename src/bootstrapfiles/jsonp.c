@@ -1,6 +1,6 @@
 #include<jsonp.h>
 
-json_error json_parse(char* json,json_error* error)
+json_node* json_parse(char* json,json_error* error)
 {
 	json_node* node;
 
@@ -15,7 +15,7 @@ void print_n_spaces(int n)
 	}
 }
 
-void json_print(json_node* node,char* json_str,int n_spaces)
+void json_print(json_node* node,int n_spaces)
 {
 	print_n_spaces(n_spaces);
 	if( node->is_key == 0 )
@@ -27,7 +27,7 @@ void json_print(json_node* node,char* json_str,int n_spaces)
 				printf("[]%d->",node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					json_print(node->children[i],json_str,n_spaces+5);
+					json_print(node->children[i],n_spaces+5);
 				}
 				break;
 			}
@@ -36,26 +36,26 @@ void json_print(json_node* node,char* json_str,int n_spaces)
 				printf("{}%d->",node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					json_print(node->children[i],json_str,n_spaces+5);
+					json_print(node->children[i],n_spaces+5);
 				}
 				break;
 			}
 			default :
 			{
-				char* prev_end = json_str[node->end_index];
-				json_str[node->end_index] = '\0';
-				printf("%s\n");
-				json_str[node->end_index] = prev_end;
+				char prev_end = (*(node->end_index));
+				(*(node->end_index)) = '\0';
+				printf("%s\n",node->end_index);
+				(*(node->end_index)) = prev_end;
 				break;
 			}
 		}
 	}
 	else
 	{
-		char* prev_end = json_str[node->end_index];
-		json_str[node->end_index] = '\0';
-		printf("key=%s=>\n");
-		json_str[node->end_index] = prev_end;
+		char prev_end = (*(node->end_index));
+		(*(node->end_index)) = '\0';
+		printf("key=%s=>\n",node->end_index);
+		(*(node->end_index)) = prev_end;
 	}
 }
 
