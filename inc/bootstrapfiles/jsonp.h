@@ -30,10 +30,10 @@ enum json_node_type
 	type will specify what each of node is
 	example
 	: {"x":"y","z":3,"w":[{"q":true},2]}
-	{}->S"x"->S"y"
-		S"z"->N3
-		S"w"->[]->{}->Sq->true
-		        ->N2
+	{}3->S"x"->S"y"
+		 S"z"->N3
+		 S"w"->[]2->{}->Sq->true
+		          ->N2
 */
 
 typedef struct json_node json_node;
@@ -58,7 +58,7 @@ enum json_error
 
 json_node* json_parse(char* json,json_error* error);
 
-void json_print(json_node* node);
+void json_print(json_node* node,char* json_str);
 
 void json_delete(json_node* node);
 
