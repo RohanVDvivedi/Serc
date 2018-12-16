@@ -41,8 +41,8 @@ int main()
 	json_node* root = json_parse(json,&error);
 	if(error == NO_ERROR)
 	{
-		json_print(root);
+		json_print(root,0);
 	}
-	json_delete();
+	json_delete(root);
 	return 0;
 }
