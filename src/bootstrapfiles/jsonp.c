@@ -77,5 +77,6 @@ void json_delete(json_node* node)
 		}
 		free(node->children);
 	}
+	free(node);
 	return;
 }
