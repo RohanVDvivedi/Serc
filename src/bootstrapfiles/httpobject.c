@@ -1108,6 +1108,10 @@ void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr)
 
 void deleteHttpRequest(HttpRequest* hr)
 {
+	if(hr == NULL)
+	{
+		return;
+	}
 	if(hr->Path!=NULL)
 	{
 		free(hr->Path);
@@ -1136,10 +1140,15 @@ void deleteHttpRequest(HttpRequest* hr)
 	{
 		free(hr->RequestBody);
 	}
+	free(hr);
 }
 
 void deleteHttpResponse(HttpResponse* hr)
 {
+	if(hr == NULL)
+	{
+		return;
+	}
 	for(int i=0;i<hr->HeaderCount;i++)
 	{
 		free(hr->Headers[i]->Key);
@@ -1154,6 +1163,7 @@ void deleteHttpResponse(HttpResponse* hr)
 	{
 		free(hr->ResponseBody);
 	}
+	free(hr);
 }
 
 
