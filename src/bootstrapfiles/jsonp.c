@@ -1,5 +1,22 @@
 #include<jsonp.h>
 
+json_node* get_new_json_node()
+{
+	json_node* node = (json_node*) calloc(1,sizeOf(json_node));
+	node->children = NULL;
+	node->child = NULL;
+	node->parent = NULL;
+	node->start_index = NULL;
+	node->end_index = NULL;
+	node->child_count = 0;
+	node->type = NULL_JSON;
+	node->is_key = 0;
+	return node;
+}
+
+// return 0 is success and return -1 is failure
+int add_child(json_node* parent,json_node* child);
+
 json_node* json_parse(char* json,json_error* error)
 {
 	json_node* node;
