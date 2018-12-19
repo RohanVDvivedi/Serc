@@ -9,6 +9,7 @@ json_node* get_new_json_node()
 	node->start_index = NULL;
 	node->end_index = NULL;
 	node->child_count = 0;
+	node->child_container_size = 0;
 	node->type = NULL_JSON;
 	node->is_key = 0;
 	return node;
@@ -96,4 +97,25 @@ void json_delete(json_node* node)
 	}
 	free(node);
 	return;
+}
+
+// return 0 is success and return -1 is failure
+int add_child(json_node* parent,json_node* child)
+{
+	if( parent==NULL || child==NULL )
+	{
+		return -1;
+	}
+	else if( parent->type == ARRAY_JSON || parent->type == OBJECT_JSON )
+	{
+
+	}
+	else if(parent->is_key == 1)
+	{
+
+	}
+	else
+	{
+		return -1;
+	}
 }

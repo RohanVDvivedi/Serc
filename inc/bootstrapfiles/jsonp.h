@@ -45,6 +45,7 @@ struct json_node
 	char* start_index;
 	char* end_index;
 	int child_count;
+	int child_container_size;
 	json_node_type type;
 	int is_key;
 };
