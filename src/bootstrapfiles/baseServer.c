@@ -24,7 +24,7 @@ void interrupt(int dummy)
 	servicerequests = 0;
 }
 
-int main()
+int main_()
 {
 	int err;
 
