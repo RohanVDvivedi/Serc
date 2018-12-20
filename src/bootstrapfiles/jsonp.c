@@ -2,7 +2,7 @@
 
 json_node* get_new_json_node()
 {
-	json_node* node = (json_node*) calloc(1,sizeOf(json_node));
+	json_node* node = (json_node*) calloc(1,sizeof(json_node));
 	node->children = NULL;
 	node->child = NULL;
 	node->parent = NULL;
@@ -131,35 +131,36 @@ int add_child(json_node* parent,json_node* child)
 	}
 	else if( ( parent->type == ARRAY_JSON && child->is_key == 0 ) || ( parent->type == OBJECT_JSON && child->is_key == 1 ) )
 	{
-		remove_child(node);
-		if(node->child_container_size <= node->child_count || node->child_container_size == 0)
+		remove_child(parent);
+		if(parent->child_container_size <= parent->child_count || parent->child_container_size == 0)
 		{
-			int new_child_container_size = 2 * node->child_container_size + 3;
+			int new_child_container_size = 2 * parent->child_container_size + 3;
 			json_node** new_children = (json_node**) calloc(new_child_container_size,sizeof(json_node*));
-			for(int i=0;i<node->child_count;i++)
+			for(int i=0;i<parent->child_count;i++)
 			{
-				new_children[i] = node->children[i];
+				new_children[i] = parent->children[i];
 			}
-			if(node->children != NULL)
+			if(parent->children != NULL)
 			{
-				free(node->children);
+				free(parent->children);
 			}
-			node->children = new_children;
-			node->child_container_size = new_child_container_size;
+			parent->children = new_children;
+			parent->child_container_size = new_child_container_size;
 		}
-		if(node->child_container_size > node->child_count)
+		if(parent->child_container_size > parent->child_count)
 		{
-			node->children[node->child_count++] = child;
+			parent->children[parent->child_count++] = child;
 		}
 	}
 	else if(parent->is_key == 1 && parent->type == STRING_JSON)
 	{
-		remove_child(node);
-		remove_children(node);
-		node->child = child;
+		remove_child(parent);
+		remove_children(parent);
+		parent->child = child;
 	}
 	else
 	{
 		return -1;
 	}
+	return 0;
 }
