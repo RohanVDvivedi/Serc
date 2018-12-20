@@ -20,11 +20,56 @@ int add_child(json_node* parent,json_node* child);
 
 json_node* json_parse(char* json,json_error* error)
 {
-	json_node* node = NULL;
+	json_node* root_node = get_new_json_node();
+	json_node* node = root_node;
 
+	while(json!='\0')
+	{
 
+		switch( (*json) )
+		{
+			case '[' :
+			{
+				break;
+			}
+			case ']' :
+			{
+				break;
+			}
+			case '{' :
+			{
+				break;
+			}
+			case '}' :
+			{
+				break;
+			}
+			case ':' :
+			{
+				break;
+			}
+			case ',' :
+			{
+				break;
+			}
+			case '\"' :
+			{
+				break;
+			}
+			case '\'' :
+			{
+				break;
+			}
+			default :
+			{
+				break;
+			}
+		}
 
-	return node;
+		json++;
+	}
+
+	return root_node;
 }
 
 void print_n_spaces(int n)
