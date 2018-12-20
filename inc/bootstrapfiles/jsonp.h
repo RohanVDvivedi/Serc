@@ -21,8 +21,10 @@ enum json_node_type
 	every node contents will start and end with an index
 	object start and end index will always be at characters { and }
 	object will always be consisting of key:value pair but not values directly
+	i.e. all of the children of the json_node of type OBJECT_JSON will be json_node with is_key = 1 and type = STRING_JSON
 	array start and end index will always be at characters [ and ]
 	none of array element can be a key:value pair
+	i.e. none of children of the json_node of type ARRAY_JSON can be a json_node with is_key = 1
 	note : key can only be a string token
 	if child_count is 1, child will get popinted to by child pointer
 	if child_count is more than one in case of object or array
