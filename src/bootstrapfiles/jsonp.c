@@ -18,10 +18,54 @@ json_node* get_new_json_node()
 // return 0 is success and return -1 is failure
 int add_child(json_node* parent,json_node* child);
 
+// return 0, -1 means error
+int pop(char* stack,int* stack_count,int stack_size)
+{
+	if( (*stack_count) <= 0 || (*stack_count) > stack_size )
+	{
+		return -1;
+	}
+	(*stack_count)--;
+	return 0;
+}
+
+char top(char* stack,int* stack_count,int stack_size)
+{
+	if( (*stack_count) <= 0 || (*stack_count) > stack_size )
+	{
+		return '\0';
+	}
+	return stack[(*stack_count)-1];
+}
+
+// return 0, -1 means error
+int push(char* stack,int* stack_count,int stack_size,char push_char)
+{
+	if( (*stack_count) < 0 || (*stack_count) >= stack_size )
+	{
+		return -1;
+	}
+	stack[(*stack_count)++] = push_char;
+	return 0;
+}
+
 json_node* json_parse(char* json,json_error* error)
 {
 	json_node* root_node = get_new_json_node();
 	json_node* node = root_node;
+
+	int stack_size = 0;
+	int stack_count = 0;
+
+	char* temp = json;
+	while( (*temp) != '\0' )
+	{
+		if( (*temp)!='{' || (*temp)!='[' || (*temp)!=']' || (*temp)!='}' || (*temp)!='\'' || (*temp)!='\"' || (*temp)!=':' )
+		{
+			stack_size++;
+		}
+	}
+	char* stack = (char*) malloc(sizeof(char)*stack_size);
 
 	while(json!='\0')
 	{
