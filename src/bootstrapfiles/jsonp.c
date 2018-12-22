@@ -110,7 +110,10 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case ',' :
 			{
-				node = node->parent;
+				if(node->type!=OBJECT_JSON || node->type!=ARRAY_JSON || node->type!=STRING_JSON)
+				{
+					node = node->parent;
+				}
 				break;
 			}
 			case '\"' :
