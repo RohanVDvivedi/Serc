@@ -172,6 +172,8 @@ json_node* json_parse(char* json,json_error* error)
 					json_node* new_node = get_new_json_node();
 					new_node->type = STRING_JSON;
 					new_node->start_index = json;
+					add_child(node,new_node);
+					node = new_node;
 				}
 				break;
 			}
