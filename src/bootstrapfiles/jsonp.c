@@ -139,11 +139,18 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case ':' :
 			{
+				printf("entered\n");
+				if(node == NULL)
+				{
+					printf("node is null\n");
+				}
 				if(node->type == OBJECT_JSON)
 				{
+					printf("in logic\n");
 					node = node->children[(node->child_count)-1];
 					node->is_key = 1;
 				}
+				printf("exit\n");
 				break;
 			}
 			case ',' :
@@ -362,6 +369,7 @@ int add_child(json_node* parent,json_node* child)
 		if(parent->child_container_size > parent->child_count)
 		{
 			parent->children[parent->child_count++] = child;
+			child->parent = parent;
 		}
 	}
 	else if(parent->is_key == 1 && parent->type == STRING_JSON)
@@ -369,6 +377,7 @@ int add_child(json_node* parent,json_node* child)
 		remove_child(parent);
 		remove_children(parent);
 		parent->child = child;
+		child->parent = parent;
 	}
 	else
 	{
