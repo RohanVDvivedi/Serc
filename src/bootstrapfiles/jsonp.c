@@ -64,11 +64,21 @@ json_node* json_parse(char* json,json_error* error)
 		{
 			stack_size++;
 		}
+		temp++;
 	}
 	char* stack = (char*) malloc(sizeof(char)*stack_size);
 
+	int skip_char = 0;
+
 	while(json!='\0')
 	{
+		if(skip_char == 1)
+		{
+			json++;
+			skip_char = 0;
+			continue;
+		}
+		printf("---+++\n");
 		switch( (*json) )
 		{
 			case '[' :
@@ -85,7 +95,14 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
-				node = node->parent;
+				if( node->type != STRING_JSON && node->type != OBJECT_JSON && node->type != ARRAY_JSON )
+				{
+					node = node->parent;
+				}
+				else
+				{
+					node = node->parent->parent;
+				}
 				break;
 			}
 			case '{' :
@@ -102,12 +119,23 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
-				node = node->parent;
+				if( node->type != STRING_JSON && node->type != OBJECT_JSON && node->type != ARRAY_JSON )
+				{
+					node = node->parent->parent;
+				}
+				else
+				{
+					node = node->parent->parent->parent;
+				}
 				break;
 			}
 			case ':' :
 			{
-				node->is_key = 1;
+				if(node->type == OBJECT_JSON)
+				{
+					node = node->children[(node->child_count)-1];
+					node->is_key = 1;
+				}
 				break;
 			}
 			case ',' :
@@ -115,6 +143,10 @@ json_node* json_parse(char* json,json_error* error)
 				if(node->type!=OBJECT_JSON || node->type!=ARRAY_JSON || node->type!=STRING_JSON)
 				{
 					node = node->parent;
+					if( node->is_key == 1 && node->type == STRING_JSON )
+					{
+						node = node->parent;
+					}
 				}
 				break;
 			}
@@ -161,6 +193,10 @@ json_node* json_parse(char* json,json_error* error)
 				else
 				{
 					node->end_index = json;
+				}
+				if((*json)=='\\')
+				{
+					skip_char = 1;
 				}
 				break;
 			}
