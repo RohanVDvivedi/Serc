@@ -99,6 +99,11 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
+				if(node->type == NULL_JSON)
+				{
+					node->end_index = json-1;
+					node = node->parent;
+				}
 				node = node->parent;
 				if(node->is_key == 1)
 				{
@@ -124,6 +129,15 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
+				if(node->type == NULL_JSON)
+				{
+					node->end_index = json-1;
+					node = node->parent;
+					if(node->is_key == 1)
+					{
+						node = node->parent;
+					}
+				}
 				node = node->parent;
 				if(node->is_key == 1)
 				{
@@ -142,21 +156,18 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case ',' :
 			{
-				if(node->type!=OBJECT_JSON && node->type!=ARRAY_JSON && node->type!=STRING_JSON)
+				if( node->type==NULL_JSON )
 				{
-					if(node->start_index != NULL)
-					{
-						node->end_index = json - 1;
-					}
+					node->end_index = json - 1;
 					node = node->parent;
-					if( node->is_key == 1 && node->type == STRING_JSON )
+					if( node->is_key == 1 )
 					{
 						node = node->parent;
 					}
 				}
 				else
 				{
-					if( node->is_key == 1 && node->type == STRING_JSON )
+					if( node->is_key == 1 )
 					{
 						node = node->parent;
 					}
