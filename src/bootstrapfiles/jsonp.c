@@ -51,7 +51,7 @@ int push(char* stack,int* stack_count,int stack_size,char push_char)
 
 json_node* json_parse(char* json,json_error* error)
 {
-	json_node* root_node = get_new_json_node();
+	json_node* root_node = NULL;
 	json_node* node = root_node;
 
 	int stack_size = 0;
@@ -78,7 +78,7 @@ json_node* json_parse(char* json,json_error* error)
 			skip_char = 0;
 			continue;
 		}
-		printf("---+++\n");
+		printf("---%c---\n",(*json));
 		switch( (*json) )
 		{
 			case '[' :
@@ -89,6 +89,10 @@ json_node* json_parse(char* json,json_error* error)
 				new_node->start_index = json;
 				add_child(node,new_node);
 				node = new_node;
+				if(root_node == NULL)
+				{
+					root_node = node;
+				}
 				break;
 			}
 			case ']' :
@@ -113,6 +117,10 @@ json_node* json_parse(char* json,json_error* error)
 				new_node->start_index = json;
 				add_child(node,new_node);
 				node = new_node;
+				if(root_node == NULL)
+				{
+					root_node = node;
+				}
 				break;
 			}
 			case '}' :
@@ -201,10 +209,12 @@ json_node* json_parse(char* json,json_error* error)
 				break;
 			}
 		}
-
+		json_print(root_node,0);
+		printf("\n\n");
 		json++;
 	}
 
+	free(stack);
 	return root_node;
 }
 
