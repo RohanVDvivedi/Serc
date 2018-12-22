@@ -101,11 +101,11 @@ json_node* json_parse(char* json,json_error* error)
 				node->end_index = json;
 				if( node->type != STRING_JSON && node->type != OBJECT_JSON && node->type != ARRAY_JSON )
 				{
-					node = node->parent;
+					node = node->parent->parent;
 				}
 				else
 				{
-					node = node->parent->parent;
+					node = node->parent;
 				}
 				break;
 			}
@@ -247,20 +247,22 @@ void print_n_spaces(int n)
 {
 	for(int i=0;i<n;i++)
 	{
-		printf(" ");
+		printf(".");
 	}
 }
 
 void json_print(json_node* node,int n_spaces)
 {
-
-	print_n_spaces(n_spaces);
 	if( node->is_key == 0 )
 	{
 		switch(node->type)
 		{
 			case ARRAY_JSON :
 			{
+				if( node->parent != NULL && node->parent->type == ARRAY_JSON && node!=node->parent->children[0] )
+				{
+					print_n_spaces(n_spaces);
+				}
 				printf("[]%d->",node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
@@ -271,6 +273,10 @@ void json_print(json_node* node,int n_spaces)
 			}
 			case OBJECT_JSON :
 			{
+				if( node->parent != NULL && node->parent->type == ARRAY_JSON && node!=node->parent->children[0] )
+				{
+					print_n_spaces(n_spaces);
+				}
 				printf("{}%d->",node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
@@ -281,6 +287,10 @@ void json_print(json_node* node,int n_spaces)
 			}
 			default :
 			{
+				if( node->parent->type == ARRAY_JSON && node!=node->parent->children[0] )
+				{
+					print_n_spaces(n_spaces);
+				}
 				if(node->end_index != NULL)
 				{
 					char prev_end = (*(node->end_index+1));
@@ -298,6 +308,7 @@ void json_print(json_node* node,int n_spaces)
 	}
 	else
 	{
+		print_n_spaces(n_spaces);
 		if(node->end_index != NULL)
 		{
 			char prev_end = (*(node->end_index+1));
@@ -305,7 +316,7 @@ void json_print(json_node* node,int n_spaces)
 			printf("key=%s=>",node->start_index);
 			if(node->child!=NULL)
 			{
-				json_print(node->child,0);
+				json_print(node->child,n_spaces+6+node->end_index-node->start_index+1);
 			}
 			else
 			{
