@@ -84,6 +84,7 @@ json_node* json_parse(char* json,json_error* error)
 			case ']' :
 			{
 				pop(stack,&stack_count,stack_size);
+				node->end_index = json;
 				node = node->parent;
 				break;
 			}
@@ -100,6 +101,7 @@ json_node* json_parse(char* json,json_error* error)
 			case '}' :
 			{
 				pop(stack,&stack_count,stack_size);
+				node->end_index = json;
 				node = node->parent;
 				break;
 			}
@@ -118,14 +120,48 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case '\"' :
 			{
+				if(top(stack,&stack_count,stack_size) == (*json))
+				{
+					pop(stack,&stack_count,stack_size);
+					node->end_index = json;
+					node = node->parent;
+				}
+				else	// means it is starting quotation
+				{
+					push(stack,&stack_count,stack_size,(*json));
+					json_node* new_node = get_new_json_node();
+					new_node->type = STRING_JSON;
+					new_node->start_index = json;
+				}
 				break;
 			}
 			case '\'' :
 			{
+				if(top(stack,&stack_count,stack_size) == (*json))
+				{
+					pop(stack,&stack_count,stack_size);
+					node->end_index = json;
+					node = node->parent;
+				}
+				else	// means it is starting quotation
+				{
+					push(stack,&stack_count,stack_size,(*json));
+					json_node* new_node = get_new_json_node();
+					new_node->type = STRING_JSON;
+					new_node->start_index = json;
+				}
 				break;
 			}
 			default :
 			{
+				if(node->start_index == NULL)
+				{
+					node->start_index = json;
+				}
+				else
+				{
+					node->end_index = json;
+				}
 				break;
 			}
 		}
