@@ -262,10 +262,10 @@ void json_print(json_node* node,int n_spaces)
 			{
 				if(node->end_index != NULL)
 				{
-					char prev_end = (*(node->end_index));
-					(*(node->end_index)) = '\0';
+					char prev_end = (*(node->end_index+1));
+					(*(node->end_index+1)) = '\0';
 					printf("%s\n",node->start_index);
-					(*(node->end_index)) = prev_end;
+					(*(node->end_index+1)) = prev_end;
 				}
 				else
 				{
@@ -279,10 +279,10 @@ void json_print(json_node* node,int n_spaces)
 	{
 		if(node->end_index != NULL)
 		{
-			char prev_end = (*(node->end_index));
-			(*(node->end_index)) = '\0';
+			char prev_end = (*(node->end_index+1));
+			(*(node->end_index+1)) = '\0';
 			printf("key=%s=>\n",node->start_index);
-			(*(node->end_index)) = prev_end;
+			(*(node->end_index+1)) = prev_end;
 		}
 		else
 		{
