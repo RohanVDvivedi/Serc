@@ -36,7 +36,9 @@ int main()
 	deleteHttpRequest(hr);
 	return 0;*/
 
-	char* json = "{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}";
+	char* temp = "{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}";
+	char* json = malloc((sizeof(char)*strlen(temp))+1);
+	strcpy(json,temp);
 	json_error error = NO_ERROR;
 	printf("printing json string\n\n%s",json);
 	printf("\n\ngoing into parsing phase\n\n");
