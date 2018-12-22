@@ -258,20 +258,34 @@ void json_print(json_node* node,int n_spaces)
 			}
 			default :
 			{
-				char prev_end = (*(node->end_index));
-				(*(node->end_index)) = '\0';
-				printf("%s\n",node->end_index);
-				(*(node->end_index)) = prev_end;
+				if(node->end_index != NULL)
+				{
+					char prev_end = (*(node->end_index));
+					(*(node->end_index)) = '\0';
+					printf("%s\n",node->start_index);
+					(*(node->end_index)) = prev_end;
+				}
+				else
+				{
+					printf("%s\n","ut");
+				}
 				break;
 			}
 		}
 	}
 	else
 	{
-		char prev_end = (*(node->end_index));
-		(*(node->end_index)) = '\0';
-		printf("key=%s=>\n",node->end_index);
-		(*(node->end_index)) = prev_end;
+		if(node->end_index != NULL)
+		{
+			char prev_end = (*(node->end_index));
+			(*(node->end_index)) = '\0';
+			printf("key=%s=>\n",node->start_index);
+			(*(node->end_index)) = prev_end;
+		}
+		else
+		{
+			printf("%s\n","ut");
+		}
 	}
 }
 
@@ -321,6 +335,7 @@ void json_delete(json_node* node)
 // return 0 is success and return -1 is failure
 int add_child(json_node* parent,json_node* child)
 {
+	printf("-- enter\n");
 	if( parent==NULL || child==NULL )
 	{
 		return -1;
@@ -358,5 +373,6 @@ int add_child(json_node* parent,json_node* child)
 	{
 		return -1;
 	}
+	printf("-- exit\n");
 	return 0;
 }
