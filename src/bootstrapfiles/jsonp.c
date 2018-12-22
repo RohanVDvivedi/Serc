@@ -191,6 +191,8 @@ json_node* json_parse(char* json,json_error* error)
 					json_node* new_node = get_new_json_node();
 					new_node->type = STRING_JSON;
 					new_node->start_index = json;
+					add_child(node,new_node);
+					node = new_node;
 				}
 				break;
 			}
@@ -230,6 +232,7 @@ void print_n_spaces(int n)
 
 void json_print(json_node* node,int n_spaces)
 {
+
 	print_n_spaces(n_spaces);
 	if( node->is_key == 0 )
 	{
@@ -322,7 +325,7 @@ int add_child(json_node* parent,json_node* child)
 	{
 		return -1;
 	}
-	else if( ( parent->type == ARRAY_JSON && child->is_key == 0 ) || ( parent->type == OBJECT_JSON && child->is_key == 1 ) )
+	else if( ( parent->type == ARRAY_JSON && child->is_key == 0 ) || ( parent->type == OBJECT_JSON ) )
 	{
 		remove_child(parent);
 		if(parent->child_container_size <= parent->child_count || parent->child_container_size == 0)
