@@ -99,11 +99,8 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
-				if( node->type != STRING_JSON && node->type != OBJECT_JSON && node->type != ARRAY_JSON )
-				{
-					node = node->parent->parent;
-				}
-				else
+				node = node->parent;
+				if(node->is_key == 1)
 				{
 					node = node->parent;
 				}
@@ -127,13 +124,10 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
-				if( node->type != STRING_JSON && node->type != OBJECT_JSON && node->type != ARRAY_JSON )
+				node = node->parent;
+				if(node->is_key == 1)
 				{
-					node = node->parent->parent;
-				}
-				else
-				{
-					node = node->parent->parent->parent;
+					node = node->parent;
 				}
 				break;
 			}
@@ -199,6 +193,10 @@ json_node* json_parse(char* json,json_error* error)
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
 					node = node->parent;
+					if( node->is_key == 1 && node->type == STRING_JSON )
+					{
+						node = node->parent;
+					}
 				}
 				else	// means it is starting quotation
 				{
