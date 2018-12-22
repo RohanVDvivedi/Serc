@@ -69,31 +69,48 @@ json_node* json_parse(char* json,json_error* error)
 
 	while(json!='\0')
 	{
-
 		switch( (*json) )
 		{
 			case '[' :
 			{
+				push(stack,&stack_count,stack_size,(*json));
+				json_node* new_node = get_new_json_node();
+				new_node->type = ARRAY_JSON;
+				new_node->start_index = json;
+				add_child(node,new_node);
+				node = new_node;
 				break;
 			}
 			case ']' :
 			{
+				pop(stack,&stack_count,stack_size);
+				node = node->parent;
 				break;
 			}
 			case '{' :
 			{
+				push(stack,&stack_count,stack_size,(*json));
+				json_node* new_node = get_new_json_node();
+				new_node->type = OBJECT_JSON;
+				new_node->start_index = json;
+				add_child(node,new_node);
+				node = new_node;
 				break;
 			}
 			case '}' :
 			{
+				pop(stack,&stack_count,stack_size);
+				node = node->parent;
 				break;
 			}
 			case ':' :
 			{
+				node->is_key = 1;
 				break;
 			}
 			case ',' :
 			{
+				node = node->parent;
 				break;
 			}
 			case '\"' :
