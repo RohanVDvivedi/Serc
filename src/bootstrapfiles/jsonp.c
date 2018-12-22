@@ -148,9 +148,20 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case ',' :
 			{
-				if(node->type!=OBJECT_JSON || node->type!=ARRAY_JSON || node->type!=STRING_JSON)
+				if(node->type!=OBJECT_JSON && node->type!=ARRAY_JSON && node->type!=STRING_JSON)
 				{
+					if(node->start_index != NULL)
+					{
+						node->end_index = json - 1;
+					}
 					node = node->parent;
+					if( node->is_key == 1 && node->type == STRING_JSON )
+					{
+						node = node->parent;
+					}
+				}
+				else
+				{
 					if( node->is_key == 1 && node->type == STRING_JSON )
 					{
 						node = node->parent;
@@ -165,6 +176,10 @@ json_node* json_parse(char* json,json_error* error)
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
 					node = node->parent;
+					if(node->is_key == 1)
+					{
+						node = node->parent;
+					}
 				}
 				else	// means it is starting quotation
 				{
@@ -198,6 +213,12 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			default :
 			{
+				if(node->is_key == 1 && ( (*node->end_index) == (*node->start_index) ) )
+				{
+					json_node* new_node = get_new_json_node();
+					add_child(node,new_node);
+					node = new_node;
+				}
 				if(node->start_index == NULL)
 				{
 					node->start_index = json;
@@ -281,12 +302,20 @@ void json_print(json_node* node,int n_spaces)
 		{
 			char prev_end = (*(node->end_index+1));
 			(*(node->end_index+1)) = '\0';
-			printf("key=%s=>\n",node->start_index);
+			printf("key=%s=>",node->start_index);
+			if(node->child!=NULL)
+			{
+				json_print(node->child,0);
+			}
+			else
+			{
+				printf("\n");
+			}
 			(*(node->end_index+1)) = prev_end;
 		}
 		else
 		{
-			printf("%s\n","ut");
+			printf("key=%s=>\n","uky");
 		}
 	}
 }
