@@ -139,18 +139,11 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case ':' :
 			{
-				printf("entered\n");
-				if(node == NULL)
-				{
-					printf("node is null\n");
-				}
 				if(node->type == OBJECT_JSON)
 				{
-					printf("in logic\n");
 					node = node->children[(node->child_count)-1];
 					node->is_key = 1;
 				}
-				printf("exit\n");
 				break;
 			}
 			case ',' :
