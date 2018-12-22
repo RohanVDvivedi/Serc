@@ -243,7 +243,8 @@ void json_print(json_node* node,int n_spaces)
 				printf("[]%d->",node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					json_print(node->children[i],n_spaces+5);
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+5 );
+					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
 			}
@@ -252,7 +253,8 @@ void json_print(json_node* node,int n_spaces)
 				printf("{}%d->",node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					json_print(node->children[i],n_spaces+5);
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+5 );
+					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
 			}
@@ -267,7 +269,7 @@ void json_print(json_node* node,int n_spaces)
 				}
 				else
 				{
-					printf("%s\n","ut");
+					printf("%s\n","uky");
 				}
 				break;
 			}
@@ -335,7 +337,6 @@ void json_delete(json_node* node)
 // return 0 is success and return -1 is failure
 int add_child(json_node* parent,json_node* child)
 {
-	printf("-- enter\n");
 	if( parent==NULL || child==NULL )
 	{
 		return -1;
@@ -373,6 +374,5 @@ int add_child(json_node* parent,json_node* child)
 	{
 		return -1;
 	}
-	printf("-- exit\n");
 	return 0;
 }
