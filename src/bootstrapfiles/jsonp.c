@@ -49,10 +49,12 @@ int push(char* stack,int* stack_count,int stack_size,char push_char)
 	return 0;
 }
 
-json_node* get_non_key_parent_node(json_node* node);
+json_node* get_non_key_parent_node(json_node* node,json_error* error);
 
 json_node* json_parse(char* json,json_error* error)
 {
+	char* string_base = json;
+
 	json_node* root_node = NULL;
 	json_node* node = root_node;
 
@@ -105,7 +107,11 @@ json_node* json_parse(char* json,json_error* error)
 					node->end_index = json-1;
 					node = node->parent;
 				}
-				node = get_non_key_parent_node(node);
+				node = get_non_key_parent_node(node,error);
+				if( (*error) != NO_ERROR)
+				{
+					goto END;
+				}
 				break;
 			}
 			case '{' :
@@ -129,9 +135,17 @@ json_node* json_parse(char* json,json_error* error)
 				if(node->type == NULL_JSON)
 				{
 					node->end_index = json-1;
-					node = get_non_key_parent_node(node);
+					node = get_non_key_parent_node(node,error);
+					if((*error) != NO_ERROR)
+					{
+						goto END;
+					}
 				}
-				node = get_non_key_parent_node(node);
+				node = get_non_key_parent_node(node,error);
+				if((*error) != NO_ERROR)
+				{
+					goto END;
+				}
 				break;
 			}
 			case ':' :
@@ -141,6 +155,11 @@ json_node* json_parse(char* json,json_error* error)
 					node = node->children[(node->child_count)-1];
 					node->is_key = 1;
 				}
+				else if(node->type == ARRAY_JSON)
+				{
+					(*error) = ARRAY_ELEMENT_CAN_NOT_BE_KEY_VALUE;
+					goto END;
+				}
 				break;
 			}
 			case ',' :
@@ -148,13 +167,10 @@ json_node* json_parse(char* json,json_error* error)
 				if( node->type==NULL_JSON )
 				{
 					node->end_index = json - 1;
-					node = get_non_key_parent_node(node);
-				}
-				else
-				{
-					if( node->is_key == 1 )
+					node = get_non_key_parent_node(node,error);
+					if((*error) != NO_ERROR)
 					{
-						node = node->parent;
+						goto END;
 					}
 				}
 				break;
@@ -165,7 +181,11 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
-					node = get_non_key_parent_node(node);
+					node = get_non_key_parent_node(node,error);
+					if((*error) != NO_ERROR)
+					{
+						goto END;
+					}
 				}
 				else	// means it is starting quotation
 				{
@@ -184,7 +204,11 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
-					node = get_non_key_parent_node(node);
+					node = get_non_key_parent_node(node,error);
+					if((*error) != NO_ERROR)
+					{
+						goto END;
+					}
 				}
 				else	// means it is starting quotation
 				{
@@ -223,11 +247,13 @@ json_node* json_parse(char* json,json_error* error)
 		json++;
 	}
 
-	free(stack);
+	END: free(stack);
+	printf("%ld-%c\n",json-string_base,*json);
+	json_print(root_node,0);
 	return root_node;
 }
 
-json_node* get_non_key_parent_node(json_node* node)
+json_node* get_non_key_parent_node(json_node* node,json_error* error)
 {
 	json_node* result = node;
 	if(result != NULL && result->parent != NULL)
@@ -236,6 +262,10 @@ json_node* get_non_key_parent_node(json_node* node)
 		if(result->is_key==1 && result->type==STRING_JSON && result->parent!=NULL)
 		{
 			result = result->parent;
+		}
+		else if(result->is_key==0 && result->parent!=NULL && result->parent->type==OBJECT_JSON)
+		{
+			(*error) = OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE;
 		}
 	}
 	return result;
