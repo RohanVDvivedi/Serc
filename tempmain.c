@@ -36,7 +36,7 @@ int main()
 	deleteHttpRequest(hr);
 	return 0;*/
 
-	char* temp = "[121,130.12,{\"name\":\"rohan\",\"age\":23,\"interests\":[\"coding\",\"hardware design\",\"iot\"]},true,null,false,[3,\"yay\",true],{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}]";
+	char* temp = "[\r\n  121,\r\n  130.12,\r\n  {\r\n    \"name\": \"rohan\",\r\n    \"age\": 23,\r\n    \"interests\": [\r\n      \"coding\",\r\n      \"hardware design\",\r\n      \"iot\"\r\n    ]\r\n  },\r\n  true,\r\n  null,\r\n  false,\r\n  [\r\n    3,\r\n    \"yay\",\r\n    true\r\n  ],\r\n  {\r\n    \"myint\": 1,\r\n    \"mylongint\": 2,\r\n    \"myuint\": 3,\r\n    \"myulongint\": 4,\r\n    \"mystring\": \"hello\",\r\n    \"my_bool\": false,\r\n    \"myfloat\": 6.9987,\r\n    \"mydouble\": 5.987658,\r\n    \"my_array\": [\r\n      1001,\r\n      10.101,\r\n      false,\r\n      null,\r\n      \"world\",\r\n      [\r\n        10,\r\n        0.101,\r\n        true,\r\n        null,\r\n        \"India to canada\"\r\n      ],\r\n      {\r\n        \"a\": 69,\r\n        \"b\": \"hello sexy\"\r\n      }\r\n    ],\r\n    \"my_sub\": {\r\n      \"a\": 500,\r\n      \"b\": \"world\"\r\n    }\r\n  }\r\n]";
 	char* json = malloc((sizeof(char)*strlen(temp))+1);
 	strcpy(json,temp);
 	json_error error = NO_ERROR;
