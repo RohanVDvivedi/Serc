@@ -82,6 +82,10 @@ json_node* json_parse(char* json,json_error* error)
 			skip_char = 0;
 			continue;
 		}
+		if( (top(stack,&stack_count,stack_size) == '\"' && (*json) != '\"' ) || ( top(stack,&stack_count,stack_size) == '\'' && (*json) != '\'' ) )
+		{
+			goto DEFAULT_CASE;
+		}
 		switch( (*json) )
 		{
 			case '[' :
@@ -240,6 +244,7 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			default :
 			{
+				DEFAULT_CASE :
 				if((node->is_key == 1 && ( (*node->end_index) == (*node->start_index) ) ) || (node->is_key == 0 && (node->type == ARRAY_JSON || node->type == OBJECT_JSON) ) )
 				{
 					json_node* new_node = get_new_json_node();
@@ -413,7 +418,7 @@ void re_evaluate(json_node* node)
 			}
 			else
 			{
-				
+
 			}
 			(*(node->end_index+1)) = prev_end;
 			break;
