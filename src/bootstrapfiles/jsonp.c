@@ -80,7 +80,6 @@ json_node* json_parse(char* json,json_error* error)
 			skip_char = 0;
 			continue;
 		}
-		printf("---%c---\n",(*json));
 		switch( (*json) )
 		{
 			case '[' :
@@ -221,9 +220,6 @@ json_node* json_parse(char* json,json_error* error)
 				break;
 			}
 		}
-		printf("printing tree :\n");
-		json_print(root_node,0);
-		printf("\n\n");
 		json++;
 	}
 
@@ -249,7 +245,7 @@ void print_n_spaces(int n)
 {
 	for(int i=0;i<n;i++)
 	{
-		printf(".");
+		printf(" ");
 	}
 }
 
