@@ -248,7 +248,7 @@ json_node* json_parse(char* json,json_error* error)
 			default :
 			{
 				DEFAULT_CASE :
-				if((node->is_key == 1 && ( (*node->end_index) == (*node->start_index) ) ) || (node->is_key == 0 && (node->type == ARRAY_JSON || node->type == OBJECT_JSON) ) )
+				if( (node->is_key == 1 && ( (*node->end_index) == (*node->start_index) ) ) || (node->is_key == 0 && (node->type == ARRAY_JSON || node->type == OBJECT_JSON) ) )
 				{
 					json_node* new_node = get_new_json_node();
 					add_child(node,new_node);
