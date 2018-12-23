@@ -78,14 +78,14 @@ json_node* json_parse(char* json,json_error* error)
 
 	while((*json)!='\0')
 	{
-		if(skip_char == 1)
+		if( is_white_space((*json)) )
 		{
 			json++;
-			skip_char = 0;
 			continue;
 		}
-		if( (top(stack,&stack_count,stack_size) == '\"' && (*json) != '\"' ) || ( top(stack,&stack_count,stack_size) == '\'' && (*json) != '\'' ) || is_white_space((*json)) )
+		if( (top(stack,&stack_count,stack_size) == '\"' && (*json) != '\"' ) || ( top(stack,&stack_count,stack_size) == '\'' && (*json) != '\'' ) || skip_char == 1)
 		{
+			skip_char = 0;
 			goto DEFAULT_CASE;
 		}
 		switch( (*json) )
@@ -107,12 +107,13 @@ json_node* json_parse(char* json,json_error* error)
 			case ']' :
 			{
 				pop(stack,&stack_count,stack_size);
-				node->end_index = json;
 				if(node->type == NULL_JSON)
 				{
-					node->end_index = json-1;
 					node = node->parent;
 				}
+				// at this point the node points to current ARRAY_JSON node
+				node->end_index = json;
+				// then we go to its parent
 				node = get_non_key_parent_node(node);
 				break;
 			}
@@ -133,12 +134,12 @@ json_node* json_parse(char* json,json_error* error)
 			case '}' :
 			{
 				pop(stack,&stack_count,stack_size);
-				node->end_index = json;
 				if(node->type == NULL_JSON)
 				{
-					node->end_index = json-1;
 					node = get_non_key_parent_node(node);
 				}
+				// by now the node points to the current OBJECT_JSON node
+				node->end_index = json;
 				// by here the node is now at the corresponding OBJECT_JSON type node whose all children we all jsu saw
 				// so now we throw in some code that tests if the last element of the object is a key value
 				if( node->type == OBJECT_JSON && node->children[node->child_count-1]->is_key == 0 )
@@ -257,11 +258,8 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					node->start_index = json;
 				}
-				else
-				{
-					node->end_index = json;
-				}
-				if((*json)=='\\')
+				node->end_index = json;
+				if( (*json) == '\\' )
 				{
 					skip_char = 1;
 				}
@@ -309,7 +307,7 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("[]%d->",node->child_count);
+				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
 					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+5 );
@@ -323,7 +321,7 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("{}%d->",node->child_count);
+				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
 					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+5 );
