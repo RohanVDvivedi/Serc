@@ -133,6 +133,14 @@ json_node* json_parse(char* json,json_error* error)
 					node->end_index = json-1;
 					node = get_non_key_parent_node(node);
 				}
+				// by here the node is now at the corresponding OBJECT_JSON type node whose all children we all jsu saw
+				// so now we throw in some code that tests if the last element of the object is a key value
+				if( node->type == OBJECT_JSON && node->children[node->child_count-1]->is_key == 0 )
+				{
+					(*error) = OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE;
+					goto END;
+				}
+				// then we just go to non key parent of the node
 				node = get_non_key_parent_node(node);
 				break;
 			}
@@ -140,22 +148,55 @@ json_node* json_parse(char* json,json_error* error)
 			{
 				if(node->type == OBJECT_JSON)
 				{
+					// pick up the last node and we know that this thing is a key
 					node = node->children[(node->child_count)-1];
 					node->is_key = 1;
+					// since it is key it has to be a STRING_JSON type
+					// we reach here when it is ARRAY_JSON or OBJECT_JSON
+					if(node->type != STRING_JSON)
+					{
+						(*error) = KEY_HAS_TO_BE_STRING;
+						goto END;
+					}
 				}
 				else if(node->type == ARRAY_JSON)
 				{
 					(*error) = ARRAY_ELEMENT_CAN_NOT_BE_KEY_VALUE;
 					goto END;
 				}
+				// below condition evaluates when key is non string
+				// we reach here when it is NULL, TRUE, FALSE, or a number etc
+				else if( node->type == NULL_JSON)
+				{
+					node->end_index = json - 1;
+					// since it is key it has to be a STRING_JSON type
+					if(node->type != STRING_JSON)
+					{
+						(*error) = KEY_HAS_TO_BE_STRING;
+						goto END;
+					}
+				}
 				break;
 			}
 			case ',' :
 			{
+				// below block basically brings us out of everythi9ng into block in which corresponding , belongs
 				if( node->type==NULL_JSON )
 				{
 					node->end_index = json - 1;
 					node = get_non_key_parent_node(node);
+				}
+
+				// since we are already out now we test if the last added child is as per requirement of the ARRAY_JSON or OBJECT_JSON respectively
+				if( node->type == ARRAY_JSON && node->children[node->child_count-1]->is_key == 1 )
+				{
+					(*error) = ARRAY_ELEMENT_CAN_NOT_BE_KEY_VALUE;
+					goto END;
+				}
+				else if( node->type == OBJECT_JSON && node->children[node->child_count-1]->is_key == 0 )
+				{
+					(*error) = OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE;
+					goto END;
 				}
 				break;
 			}
