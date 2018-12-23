@@ -62,6 +62,8 @@ enum json_error
 	KEY_HAS_TO_BE_STRING = -4
 };
 
+extern char error_strings[5][47];
+
 json_node* json_parse(char* json,json_error* error);
 
 void json_print(json_node* node,int n_spaces);

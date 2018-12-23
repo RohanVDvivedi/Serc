@@ -457,3 +457,11 @@ int add_child(json_node* parent,json_node* child)
 	}
 	return 0;
 }
+
+char error_strings[5][47] = {
+	"no error",
+	"unknown error",
+	"array element can not be key value pair type",
+	"object element must be key value pair type",
+	"key has to be strinh value"
+};

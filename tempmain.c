@@ -36,8 +36,7 @@ int main()
 	deleteHttpRequest(hr);
 	return 0;*/
 
-	char* temp = "{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}";
-	temp = "[121,130.12,{\"name\":\"rohan\",\"age\":23,\"interests\":[\"coding\",\"hardware design\",\"iot\"]},true,null,false,[3,\"yay\",true],{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}]";
+	char* temp = "[121,130.12,{\"name\":\"rohan\",\"age\":23,\"interests\":[\"coding\",\"hardware design\",\"iot\"]},true,null,false,[3,\"yay\",true],{\"myint\":1,\"mylongint\":2,\"myuint\":3,\"myulongint\":4,\"mystring\":\"hello\",\"my_bool\":false,\"myfloat\":6.998700,\"mydouble\":5.987658,\"my_array\":[1001,10.101000,false,null,\"world\",[10,0.101000,true,null,\"India to canada\"],{\"a\":69,\"b\":\"hello sexy\"}],\"my_sub\":{\"a\":500,\"b\":\"world\"}}]";
 	char* json = malloc((sizeof(char)*strlen(temp))+1);
 	strcpy(json,temp);
 	json_error error = NO_ERROR;
@@ -45,14 +44,8 @@ int main()
 	printf("\n\ngoing into parsing phase\n\n");
 	json_node* root = json_parse(json,&error);
 	printf("parsing done going into printing phase\n\n");
-	if(error == NO_ERROR)
-	{
-		json_print(root,0);
-	}
-	else
-	{
-		printf("ERROR = %d\n",error);
-	}
+	json_print(root,0);
+	printf("ERROR = %s\n",error_strings[-error]);
 	printf("\n\nprinting done going into deleting phase\n\n");
 	json_delete(root);
 	return 0;
