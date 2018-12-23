@@ -370,6 +370,60 @@ void json_print(json_node* node,int n_spaces)
 	}
 }
 
+void re_evaluate(json_node* node)
+{
+	if(node==NULL)
+	{
+		return;
+	}
+	switch(node->type)
+	{
+		case OBJECT_JSON :
+		case ARRAY_JSON :
+		{
+			for(int i=0;i<node->child_count;i++)
+			{
+				re_evaluate(node->children[i]);
+			}
+			break;
+		}
+		case STRING_JSON :
+		{
+			if(node->is_key == 1)
+			{
+				re_evaluate(node->child);
+			}
+			break;
+		}
+		case NULL_JSON :
+		{
+			char prev_end = (*(node->end_index+1));
+			(*(node->end_index+1)) = '\0';
+			if(strcmp("null",node->start_index)==0)
+			{
+				node->type = NULL_JSON;
+			}
+			else if(strcmp("true",node->start_index)==0)
+			{
+				node->type = TRUE_JSON;
+			}
+			else if(strcmp("false",node->start_index)==0)
+			{
+				node->type = FALSE_JSON;
+			}
+			else
+			{
+				
+			}
+			(*(node->end_index+1)) = prev_end;
+			break;
+		}
+		default :
+		{
+		}
+	}
+}
+
 void remove_child(json_node* node)
 {
 	if(node->child != NULL)
