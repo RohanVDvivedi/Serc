@@ -72,7 +72,7 @@ json_node* json_parse(char* json,json_error* error)
 
 	int skip_char = 0;
 
-	while(json!='\0')
+	while((*json)!='\0')
 	{
 		if(skip_char == 1)
 		{
@@ -125,7 +125,6 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case '}' :
 			{
-				printf("LOL1\n");
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
 				if(node->type == NULL_JSON)
@@ -133,12 +132,7 @@ json_node* json_parse(char* json,json_error* error)
 					node->end_index = json-1;
 					node = get_non_key_parent_node(node);
 				}
-				node = node->parent;
-				if(node->is_key == 1)
-				{
-					node = node->parent;
-				}
-				printf("LOL2\n");
+				node = get_non_key_parent_node(node);
 				break;
 			}
 			case ':' :
