@@ -49,7 +49,7 @@ int push(char* stack,int* stack_count,int stack_size,char push_char)
 	return 0;
 }
 
-json_node* get_non_key_parent_node(json_node* node,json_error* error);
+json_node* get_non_key_parent_node(json_node* node);
 
 json_node* json_parse(char* json,json_error* error)
 {
