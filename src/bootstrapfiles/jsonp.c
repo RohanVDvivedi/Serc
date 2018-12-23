@@ -265,8 +265,6 @@ json_node* json_parse(char* json,json_error* error)
 	}
 
 	END: free(stack);
-	printf("%ld-%c\n",json-string_base,*json);
-	json_print(root_node,0);
 	return root_node;
 }
 
