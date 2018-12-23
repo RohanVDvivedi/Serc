@@ -62,14 +62,30 @@ enum json_error
 	KEY_HAS_TO_BE_STRING = -4
 };
 
+// below variable holds conversion fron error to printable error string as given by the json_parse function
 extern char error_strings[5][47];
 
+// below function is the main function that takes care to build the tree
+// it distinguishes and builds tree only using node types 
+// STRING_JSON, ARRAY_JSON, OBJECT_JSON, NULL_JSON only
+// all other string data is provided node type NULL_JSON
+// hence all of true, false, null, 11, 11,2375, ox1fa2 all are of node type NULL_JSON
+// below function does the task in loop
 json_node* json_parse(char* json,json_error* error);
 
+// the below function is generally required to be used to transform node type from NULL_JSON to
+// TRUE_JSON if string is true
+// FALSE_JSON if string is false
+// NULL_JSON if string is null
+// NUMBER_JSON with the corresponding number value attached
+// below function is recursive implementation
+void re_evaluate(json_node* node);
+
+// below function prints indented version of the json parse tree that we get after parsing
+// below function is recursive implemented
 void json_print(json_node* node,int n_spaces);
 
+// this function deletes the json_node recusively
 void json_delete(json_node* node);
-
-void re_evaluate(json_node* node);
 
 #endif
