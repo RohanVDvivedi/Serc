@@ -51,6 +51,8 @@ int push(char* stack,int* stack_count,int stack_size,char push_char)
 
 json_node* get_non_key_parent_node(json_node* node);
 
+int is_white_space(char c);
+
 json_node* json_parse(char* json,json_error* error)
 {
 	char* string_base = json;
@@ -82,7 +84,7 @@ json_node* json_parse(char* json,json_error* error)
 			skip_char = 0;
 			continue;
 		}
-		if( (top(stack,&stack_count,stack_size) == '\"' && (*json) != '\"' ) || ( top(stack,&stack_count,stack_size) == '\'' && (*json) != '\'' ) )
+		if( (top(stack,&stack_count,stack_size) == '\"' && (*json) != '\"' ) || ( top(stack,&stack_count,stack_size) == '\'' && (*json) != '\'' ) || is_white_space((*json)) )
 		{
 			goto DEFAULT_CASE;
 		}
@@ -524,3 +526,8 @@ char error_strings[5][47] = {
 	"object element must be key value pair type",
 	"key has to be strinh value"
 };
+
+int is_white_space(char c)
+{
+	return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
+}
