@@ -49,6 +49,10 @@ int main()
 	{
 		json_print(root,0);
 	}
+	else
+	{
+		printf("ERROR = %d\n",error);
+	}
 	printf("\n\nprinting done going into deleting phase\n\n");
 	json_delete(root);
 	return 0;

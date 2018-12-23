@@ -26,7 +26,7 @@ enum json_node_type
 	none of array element can be a key:value pair
 	i.e. none of children of the json_node of type ARRAY_JSON can be a json_node with is_key = 1
 	note : key can only be a string token
-	if child_count is 1, child will get popinted to by child pointer
+	if child_count is 1, child will get pointed to by child pointer
 	if child_count is more than one in case of object or array
 	the children will be in children array each of which will point to each child individually
 	type will specify what each of node is
@@ -56,7 +56,9 @@ typedef enum json_error json_error;
 enum json_error
 {
 	NO_ERROR = 0,
-	UNKNOWN_ERROR = -1
+	UNKNOWN_ERROR = -1,
+	ARRAY_ELEMENT_CAN_NOT_BE_KEY_VALUE = -2,
+	OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE = -3
 };
 
 json_node* json_parse(char* json,json_error* error);
