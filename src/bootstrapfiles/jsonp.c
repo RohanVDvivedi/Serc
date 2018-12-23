@@ -49,6 +49,8 @@ int push(char* stack,int* stack_count,int stack_size,char push_char)
 	return 0;
 }
 
+json_node* get_non_key_parent_node(json_node* node);
+
 json_node* json_parse(char* json,json_error* error)
 {
 	json_node* root_node = NULL;
@@ -104,11 +106,7 @@ json_node* json_parse(char* json,json_error* error)
 					node->end_index = json-1;
 					node = node->parent;
 				}
-				node = node->parent;
-				if(node->is_key == 1)
-				{
-					node = node->parent;
-				}
+				node = get_non_key_parent_node(node);
 				break;
 			}
 			case '{' :
@@ -127,22 +125,20 @@ json_node* json_parse(char* json,json_error* error)
 			}
 			case '}' :
 			{
+				printf("LOL1\n");
 				pop(stack,&stack_count,stack_size);
 				node->end_index = json;
 				if(node->type == NULL_JSON)
 				{
 					node->end_index = json-1;
-					node = node->parent;
-					if(node->is_key == 1)
-					{
-						node = node->parent;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				node = node->parent;
 				if(node->is_key == 1)
 				{
 					node = node->parent;
 				}
+				printf("LOL2\n");
 				break;
 			}
 			case ':' :
@@ -159,11 +155,7 @@ json_node* json_parse(char* json,json_error* error)
 				if( node->type==NULL_JSON )
 				{
 					node->end_index = json - 1;
-					node = node->parent;
-					if( node->is_key == 1 )
-					{
-						node = node->parent;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				else
 				{
@@ -180,11 +172,7 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
-					node = node->parent;
-					if(node->is_key == 1)
-					{
-						node = node->parent;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				else	// means it is starting quotation
 				{
@@ -203,11 +191,7 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
-					node = node->parent;
-					if( node->is_key == 1 && node->type == STRING_JSON )
-					{
-						node = node->parent;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				else	// means it is starting quotation
 				{
@@ -243,6 +227,7 @@ json_node* json_parse(char* json,json_error* error)
 				break;
 			}
 		}
+		printf("printing tree :\n");
 		json_print(root_node,0);
 		printf("\n\n");
 		json++;
@@ -250,6 +235,20 @@ json_node* json_parse(char* json,json_error* error)
 
 	free(stack);
 	return root_node;
+}
+
+json_node* get_non_key_parent_node(json_node* node)
+{
+	json_node* result = node;
+	if(result != NULL && result->parent != NULL)
+	{
+		result = result->parent;
+		if(result->is_key==1 && result->type==STRING_JSON && result->parent!=NULL)
+		{
+			result = result->parent;
+		}
+	}
+	return result;
 }
 
 void print_n_spaces(int n)
