@@ -58,7 +58,8 @@ enum json_error
 	NO_ERROR = 0,
 	UNKNOWN_ERROR = -1,
 	ARRAY_ELEMENT_CAN_NOT_BE_KEY_VALUE = -2,
-	OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE = -3
+	OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE = -3,
+	KEY_HAS_TO_BE_STRING = -4
 };
 
 json_node* json_parse(char* json,json_error* error);

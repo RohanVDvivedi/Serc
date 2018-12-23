@@ -107,11 +107,7 @@ json_node* json_parse(char* json,json_error* error)
 					node->end_index = json-1;
 					node = node->parent;
 				}
-				node = get_non_key_parent_node(node,error);
-				if( (*error) != NO_ERROR)
-				{
-					goto END;
-				}
+				node = get_non_key_parent_node(node);
 				break;
 			}
 			case '{' :
@@ -135,17 +131,9 @@ json_node* json_parse(char* json,json_error* error)
 				if(node->type == NULL_JSON)
 				{
 					node->end_index = json-1;
-					node = get_non_key_parent_node(node,error);
-					if((*error) != NO_ERROR)
-					{
-						goto END;
-					}
+					node = get_non_key_parent_node(node);
 				}
-				node = get_non_key_parent_node(node,error);
-				if((*error) != NO_ERROR)
-				{
-					goto END;
-				}
+				node = get_non_key_parent_node(node);
 				break;
 			}
 			case ':' :
@@ -167,11 +155,7 @@ json_node* json_parse(char* json,json_error* error)
 				if( node->type==NULL_JSON )
 				{
 					node->end_index = json - 1;
-					node = get_non_key_parent_node(node,error);
-					if((*error) != NO_ERROR)
-					{
-						goto END;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				break;
 			}
@@ -181,11 +165,7 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
-					node = get_non_key_parent_node(node,error);
-					if((*error) != NO_ERROR)
-					{
-						goto END;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				else	// means it is starting quotation
 				{
@@ -204,11 +184,7 @@ json_node* json_parse(char* json,json_error* error)
 				{
 					pop(stack,&stack_count,stack_size);
 					node->end_index = json;
-					node = get_non_key_parent_node(node,error);
-					if((*error) != NO_ERROR)
-					{
-						goto END;
-					}
+					node = get_non_key_parent_node(node);
 				}
 				else	// means it is starting quotation
 				{
@@ -253,7 +229,7 @@ json_node* json_parse(char* json,json_error* error)
 	return root_node;
 }
 
-json_node* get_non_key_parent_node(json_node* node,json_error* error)
+json_node* get_non_key_parent_node(json_node* node)
 {
 	json_node* result = node;
 	if(result != NULL && result->parent != NULL)
@@ -262,10 +238,6 @@ json_node* get_non_key_parent_node(json_node* node,json_error* error)
 		if(result->is_key==1 && result->type==STRING_JSON && result->parent!=NULL)
 		{
 			result = result->parent;
-		}
-		else if(result->is_key==0 && result->parent!=NULL && result->parent->type==OBJECT_JSON)
-		{
-			(*error) = OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE;
 		}
 	}
 	return result;
