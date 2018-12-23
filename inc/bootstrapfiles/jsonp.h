@@ -70,4 +70,6 @@ void json_print(json_node* node,int n_spaces);
 
 void json_delete(json_node* node);
 
+void re_evaluate(json_node* node);
+
 #endif
