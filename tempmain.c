@@ -1,3 +1,7 @@
+// compilation tempmain command
+// gcc ./tempmain.c ./src/controllers/*.c ./src/DTOs_methods/*.c ./src/bootstrapfiles/*.c ./src/bootstrapfiles/DTOs/*.c ./src/bootstrapfiles/DTOs/DTOs_methods/*.c -I./inc/bootstrapfiles -I./inc/bootstrapfiles/DTOs -I./inc/DTOs_declarations -I./con
+
+
 #include<stdio.h>
 #include<stdlib.h>
 //#include<MyObject_json.h>
