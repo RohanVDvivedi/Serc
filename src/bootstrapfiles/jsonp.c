@@ -295,6 +295,21 @@ void print_n_spaces(int n)
 	}
 }
 
+int get_digits(int n)
+{
+	if(n==0)
+	{
+		return 1;
+	}
+	int digits = 0;
+	while(n>0)
+	{
+		n = n/10;
+		digits++;
+	}
+	return digits;
+}
+
 void json_print(json_node* node,int n_spaces)
 {
 	if( node->is_key == 0 )
@@ -310,7 +325,7 @@ void json_print(json_node* node,int n_spaces)
 				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+5 );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -324,7 +339,7 @@ void json_print(json_node* node,int n_spaces)
 				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+5 );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
