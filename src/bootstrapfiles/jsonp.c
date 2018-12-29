@@ -12,6 +12,7 @@ json_node* get_new_json_node()
 	node->child_container_size = 0;
 	node->type = NULL_JSON;
 	node->is_key = 0;
+	node->string_hash = 0;
 	return node;
 }
 
