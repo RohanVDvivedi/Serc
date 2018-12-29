@@ -323,10 +323,10 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
+				printf("%c%c%d -> ",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits_count(node->child_count) );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 6 + get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -337,10 +337,10 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
+				printf("%c%c%d -> ",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits_count(node->child_count) );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 6 + get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -380,10 +380,10 @@ void json_print(json_node* node,int n_spaces)
 		{
 			char prev_end = (*(node->end_index+1));
 			(*(node->end_index+1)) = '\0';
-			printf("key=%s=(%llu)=>",node->start_index,node->string_hash);
+			printf("key=%s=(%llu) => ",node->start_index,node->string_hash);
 			if(node->child!=NULL)
 			{
-				json_print(node->child,n_spaces + 9 + (node->end_index-node->start_index+1) + get_digits_count(node->string_hash) );
+				json_print(node->child,n_spaces + 11 + (node->end_index-node->start_index+1) + get_digits_count(node->string_hash) );
 			}
 			else
 			{
