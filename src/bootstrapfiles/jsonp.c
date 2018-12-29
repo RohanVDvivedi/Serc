@@ -417,6 +417,13 @@ void json_reevaluate(json_node* node)
 	switch(node->type)
 	{
 		case OBJECT_JSON :
+		{
+			for(int i=0;i<node->child_count;i++)
+			{
+				json_reevaluate(node->children[i]);
+			}
+			break;
+		}
 		case ARRAY_JSON :
 		{
 			for(int i=0;i<node->child_count;i++)
