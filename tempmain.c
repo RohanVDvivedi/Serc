@@ -47,7 +47,9 @@ int main()
 	printf("printing json string\n\n%s",json);
 	printf("\n\ngoing into parsing phase\n\n");
 	json_node* root = json_parse(json,&error);
-	printf("parsing done going into printing phase\n\n");
+	printf("parsing done going to reevaluate phase\n\n");
+	json_reevaluate(root);
+	printf("reevaluate done going into printing phase\n\n");
 	json_print(root,0);
 	printf("ERROR = %s\n",error_strings[-error]);
 	printf("\n\nprinting done going into deleting phase\n\n");
