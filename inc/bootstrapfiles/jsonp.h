@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<strhsh.h>
 
 typedef enum json_node_type json_node_type;
 enum json_node_type
