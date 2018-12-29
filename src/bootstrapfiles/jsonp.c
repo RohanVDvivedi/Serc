@@ -296,13 +296,13 @@ void print_n_spaces(int n)
 	}
 }
 
-int get_digits(int n)
+unsigned long long int get_digits_count(unsigned long long int n)
 {
 	if(n==0)
 	{
 		return 1;
 	}
-	int digits = 0;
+	unsigned long long int digits = 0;
 	while(n>0)
 	{
 		n = n/10;
@@ -326,7 +326,7 @@ void json_print(json_node* node,int n_spaces)
 				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits(node->child_count) );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -340,7 +340,7 @@ void json_print(json_node* node,int n_spaces)
 				printf("%c%c%d->",(*(node->start_index)),(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits(node->child_count) );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces+4+get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -355,7 +355,14 @@ void json_print(json_node* node,int n_spaces)
 				{
 					char prev_end = (*(node->end_index+1));
 					(*(node->end_index+1)) = '\0';
-					printf("%s\n",node->start_index);
+					if(node->type == STRING_JSON)
+					{
+						printf("%s=(%llu)\n",node->start_index,node->string_hash);
+					}
+					else
+					{
+						printf("%s\n",node->start_index);
+					}
 					(*(node->end_index+1)) = prev_end;
 				}
 				else
@@ -373,10 +380,10 @@ void json_print(json_node* node,int n_spaces)
 		{
 			char prev_end = (*(node->end_index+1));
 			(*(node->end_index+1)) = '\0';
-			printf("key=%s=>",node->start_index);
+			printf("key=%s=(%llu)=>",node->start_index,node->string_hash);
 			if(node->child!=NULL)
 			{
-				json_print(node->child,n_spaces+6+node->end_index-node->start_index+1);
+				json_print(node->child,n_spaces + 9 + (node->end_index-node->start_index+1) + get_digits_count(node->string_hash) );
 			}
 			else
 			{
@@ -404,7 +411,7 @@ void json_reevaluate(json_node* node)
 		{
 			for(int i=0;i<node->child_count;i++)
 			{
-				re_evaluate(node->children[i]);
+				json_reevaluate(node->children[i]);
 			}
 			break;
 		}
@@ -413,7 +420,7 @@ void json_reevaluate(json_node* node)
 			node->string_hash = getHashValueByLength(node->start_index + 1,node->end_index - node->start_index - 1);
 			if(node->is_key == 1)
 			{
-				re_evaluate(node->child);
+				json_reevaluate(node->child);
 			}
 			break;
 		}
@@ -540,6 +547,16 @@ char error_strings[5][47] = {
 	"array element can not be key value pair type",
 	"object element must be key value pair type",
 	"key has to be strinh value"
+};
+
+char json_type_strings[7][13] = {
+	"STRING_JSON",
+	"NUMBER_JSON",
+	"NULL_JSON",
+	"TRUE_JSON",
+	"FALSE_JSON",
+	"ARRAY_JSON",
+	"OBJECT_JSON"
 };
 
 int is_white_space(char c)

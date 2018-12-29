@@ -67,6 +67,8 @@ enum json_error
 // below variable holds conversion fron error to printable error string as given by the json_parse function
 extern char error_strings[5][47];
 
+extern char json_type_strings[7][13];
+
 // below function is the main function that takes care to build the tree
 // it distinguishes and builds tree only using node types 
 // STRING_JSON, ARRAY_JSON, OBJECT_JSON, NULL_JSON only
