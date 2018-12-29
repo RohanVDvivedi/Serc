@@ -5,4 +5,6 @@
 
 unsigned long long int getHashValue(char* s);
 
+unsigned long long int getHashValueByLength(char* s,int length);
+
 #endif
