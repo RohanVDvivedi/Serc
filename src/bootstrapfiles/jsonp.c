@@ -323,10 +323,10 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("%c%c%d -> ",(*(node->start_index)),(*(node->end_index)),node->child_count);
+				printf("%c%c%c%d -> ",(*(node->start_index)),json_type_strings[node->type][0],(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 6 + get_digits_count(node->child_count) );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 7 + get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -337,10 +337,10 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("%c%c%d -> ",(*(node->start_index)),(*(node->end_index)),node->child_count);
+				printf("%c%c%c%d -> ",(*(node->start_index)),json_type_strings[node->type][0],(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 6 + get_digits_count(node->child_count) );
+					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 7 + get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -357,11 +357,11 @@ void json_print(json_node* node,int n_spaces)
 					(*(node->end_index+1)) = '\0';
 					if(node->type == STRING_JSON)
 					{
-						printf("%s=(%llu)\n",node->start_index,node->string_hash);
+						printf("%s=(%llu)=(%s)\n",node->start_index,node->string_hash,json_type_strings[node->type]);
 					}
 					else
 					{
-						printf("%s\n",node->start_index);
+						printf("%s=(%s)\n",node->start_index,json_type_strings[node->type]);
 					}
 					(*(node->end_index+1)) = prev_end;
 				}
@@ -380,10 +380,10 @@ void json_print(json_node* node,int n_spaces)
 		{
 			char prev_end = (*(node->end_index+1));
 			(*(node->end_index+1)) = '\0';
-			printf("key=%s=(%llu) => ",node->start_index,node->string_hash);
+			printf("key=%s=(%llu)=(%s) -> ",node->start_index,node->string_hash,json_type_strings[node->type]);
 			if(node->child!=NULL)
 			{
-				json_print(node->child,n_spaces + 11 + (node->end_index-node->start_index+1) + get_digits_count(node->string_hash) );
+				json_print(node->child,n_spaces + 14 + (node->end_index-node->start_index+1) + get_digits_count(node->string_hash) + strlen(json_type_strings[node->type]) );
 			}
 			else
 			{
