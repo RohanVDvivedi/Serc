@@ -391,7 +391,7 @@ void json_print(json_node* node,int n_spaces)
 	}
 }
 
-void re_evaluate(json_node* node)
+void json_reevaluate(json_node* node)
 {
 	if(node==NULL)
 	{
@@ -410,6 +410,7 @@ void re_evaluate(json_node* node)
 		}
 		case STRING_JSON :
 		{
+			node->string_hash = getHashValueByLength(node->start_index + 1,node->end_index - node->start_index - 1);
 			if(node->is_key == 1)
 			{
 				re_evaluate(node->child);

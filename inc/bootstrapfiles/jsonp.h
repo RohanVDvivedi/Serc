@@ -81,7 +81,7 @@ json_node* json_parse(char* json,json_error* error);
 // NULL_JSON if string is null
 // NUMBER_JSON with the corresponding number value attached
 // below function is recursive implementation
-void re_evaluate(json_node* node);
+void json_reevaluate(json_node* node);
 
 // below function prints indented version of the json parse tree that we get after parsing
 // below function is recursive implemented
