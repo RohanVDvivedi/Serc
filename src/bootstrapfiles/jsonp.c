@@ -20,9 +20,9 @@ json_node* get_new_json_node()
 int add_child(json_node* parent,json_node* child);
 
 // return 0, -1 means error
-int pop(char* stack,int* stack_count,int stack_size)
+int pop(char* stack,unsigned long long int* stack_count,unsigned long long int stack_size)
 {
-	if( (*stack_count) <= 0 || (*stack_count) > stack_size )
+	if( (*stack_count) == 0 || (*stack_count) > stack_size )
 	{
 		return -1;
 	}
@@ -30,9 +30,9 @@ int pop(char* stack,int* stack_count,int stack_size)
 	return 0;
 }
 
-char top(char* stack,int* stack_count,int stack_size)
+char top(char* stack,unsigned long long int* stack_count,unsigned long long int stack_size)
 {
-	if( (*stack_count) <= 0 || (*stack_count) > stack_size )
+	if( (*stack_count) == 0 || (*stack_count) > stack_size )
 	{
 		return '\0';
 	}
@@ -40,9 +40,9 @@ char top(char* stack,int* stack_count,int stack_size)
 }
 
 // return 0, -1 means error
-int push(char* stack,int* stack_count,int stack_size,char push_char)
+int push(char* stack,unsigned long long int* stack_count,unsigned long long int stack_size,char push_char)
 {
-	if( (*stack_count) < 0 || (*stack_count) >= stack_size )
+	if( (*stack_count) >= stack_size )
 	{
 		return -1;
 	}
@@ -71,8 +71,8 @@ json_node* json_build_tree(char* json,json_error* error)
 	json_node* root_node = NULL;
 	json_node* node = root_node;
 
-	int stack_size = 0;
-	int stack_count = 0;
+	unsigned long long int stack_size = 0;
+	unsigned long long int stack_count = 0;
 
 	char* temp = json;
 	while( (*temp) != '\0' )
