@@ -56,7 +56,10 @@ int is_white_space(char c);
 
 json_node* json_parse(char* json,json_error* error)
 {
+	// build tree
 	json_node* root = json_build_tree(json,error);
+
+	// reevaluate tree in recursive flow to make required corrections
 	json_reevaluate(root);
 	return root;
 }

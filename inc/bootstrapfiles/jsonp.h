@@ -82,6 +82,7 @@ json_node* json_build_tree(char* json,json_error* error);
 // FALSE_JSON if string is false
 // NULL_JSON if string is null
 // NUMBER_JSON with the corresponding number value attached
+// also it figures out the string_hash that is required for the STRING_JSON node type
 // below function is recursive implementation
 void json_reevaluate(json_node* node);
 
