@@ -624,3 +624,37 @@ void merge_sort(json_node** s,json_node** l)
 	merge_sort(m+1,l);
 	merge(s,m,l);
 }
+
+json_node* find_key(json_node* object,char* key)
+{
+	if( object->type != OBJECT_JSON || object->child_count == 0 )
+	{
+		return NULL;
+	}
+	unsigned long long int hash = getHashValue(key);
+	unsigned long long int l = 0;
+	unsigned long long int r = object->child_count - 1;
+	unsigned long long int m;
+	json_node* node = NULL;
+	while(l<r)
+	{
+		m = (l+r)/2;
+		char* key_str = object->start_index + 1;
+		char prev_char = (*(object->children[m]->end_index));
+		(*(object->children[m]->end_index)) = '\0';
+		if( object->children[m]->string_hash == hash )
+		{
+
+		}
+		else if( object->children[m]->string_hash <= hash )
+		{
+
+		}
+		else if( object->children[m]->string_hash >= hash )
+		{
+			
+		}
+		(*(object->children[m]->end_index)) = prev_char;
+	}
+	return node;
+}
