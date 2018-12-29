@@ -51,6 +51,7 @@ struct json_node
 	int child_container_size;
 	json_node_type type;
 	int is_key;
+	unsigned long long int string_hash;
 };
 
 typedef enum json_error json_error;
