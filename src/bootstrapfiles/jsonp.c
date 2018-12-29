@@ -408,7 +408,7 @@ void json_print(json_node* node,unsigned long long int n_spaces)
 	}
 }
 
-void merge_sort(json_node** s,json_node** l);
+void sort(json_node** children,unsigned long long int length);
 
 void json_reevaluate(json_node* node)
 {
@@ -426,7 +426,7 @@ void json_reevaluate(json_node* node)
 			}
 			if(node->child_count > 1)
 			{
-				merge_sort(node->children,node->children + node->child_count - 1);
+				sort(node->children,node->child_count);
 			}
 			break;
 		}
@@ -587,12 +587,11 @@ int is_white_space(char c)
 	return c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r';
 }
 
-void merge(json_node** s,json_node** m,json_node** l)
+void merge(json_node** s,json_node** m,json_node** l,json_node** temp)
 {
 	int n = l - s + 1;
 	json_node** s1 = s, **l1 = m, **t1 = s1;
 	json_node** s2 = m+1, **l2 = l, **t2 = s2;
-	json_node** temp = (json_node**) malloc(sizeof(json_node*)*n);
 	for(int i=0;i<n;i++)
 	{
 		if( ( t2 > l2 ) || ( t1 <= l1 && (*t1)->string_hash <= (*t2)->string_hash ) )
@@ -610,19 +609,24 @@ void merge(json_node** s,json_node** m,json_node** l)
 	{
 		s[i] = temp[i];
 	}
-	free(temp);
 }
 
-void merge_sort(json_node** s,json_node** l)
+void merge_sort(json_node** s,json_node** l,json_node** replacement)
 {
 	if(s == l || l < s)
 	{
 		return;
 	}
 	json_node** m = s + ( (l - s) / 2 );
-	merge_sort(s,m);
-	merge_sort(m+1,l);
-	merge(s,m,l);
+	merge_sort(s,m,replacement);
+	merge_sort(m+1,l,replacement);
+	merge(s,m,l,replacement);
+}
+
+void sort(json_node** children,unsigned long long int length)
+{
+	json_node** replacement = (json_node**) malloc(sizeof(json_node*)*length);
+	merge_sort(children,children + length - 1,replacement);
 }
 
 json_node* find_key(json_node* object,char* key)
@@ -635,7 +639,7 @@ json_node* find_key(json_node* object,char* key)
 	unsigned long long int l = 0;
 	unsigned long long int r = object->child_count - 1;
 	unsigned long long int m;
-	json_node* node = NULL;
+	json_node* result_node = NULL;
 	while(l<r)
 	{
 		m = (l+r)/2;
@@ -647,9 +651,9 @@ json_node* find_key(json_node* object,char* key)
 		char prev_char = (*(test_node->end_index));
 		(*(test_node->end_index)) = '\0';
 
-		if( test_node->string_hash == hash && strcmp(key_str,object) == 0 )
+		if( test_node->string_hash == hash && strcmp(key_str,key) == 0 )
 		{
-
+			result_node = test_node;
 		}
 		else if( test_node->string_hash <= hash )
 		{
@@ -662,5 +666,5 @@ json_node* find_key(json_node* object,char* key)
 
 		(*(test_node->end_index)) = prev_char;
 	}
-	return node;
+	return result_node;
 }
