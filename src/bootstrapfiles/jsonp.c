@@ -56,6 +56,13 @@ int is_white_space(char c);
 
 json_node* json_parse(char* json,json_error* error)
 {
+	json_node* root = json_build_tree(json,error);
+	json_reevaluate(root);
+	return root;
+}
+
+json_node* json_build_tree(char* json,json_error* error)
+{
 	char* string_base = json;
 
 	json_node* root_node = NULL;
