@@ -452,7 +452,7 @@ void json_reevaluate(json_node* node)
 			}
 			else
 			{
-
+				node->type = NUMBER_JSON;
 			}
 			(*(node->end_index+1)) = prev_end;
 			break;
