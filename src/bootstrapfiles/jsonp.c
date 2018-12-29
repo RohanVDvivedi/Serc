@@ -639,22 +639,28 @@ json_node* find_key(json_node* object,char* key)
 	while(l<r)
 	{
 		m = (l+r)/2;
-		char* key_str = object->start_index + 1;
-		char prev_char = (*(object->children[m]->end_index));
-		(*(object->children[m]->end_index)) = '\0';
-		if( object->children[m]->string_hash == hash )
+
+		json_node* test_node = object->children[m];
+
+		char* key_str = test_node->start_index + 1;
+
+		char prev_char = (*(test_node->end_index));
+		(*(test_node->end_index)) = '\0';
+
+		if( test_node->string_hash == hash && strcmp(key_str,object) == 0 )
 		{
 
 		}
-		else if( object->children[m]->string_hash <= hash )
+		else if( test_node->string_hash <= hash )
 		{
 
 		}
-		else if( object->children[m]->string_hash >= hash )
+		else if( test_node->string_hash >= hash )
 		{
 			
 		}
-		(*(object->children[m]->end_index)) = prev_char;
+
+		(*(test_node->end_index)) = prev_char;
 	}
 	return node;
 }
