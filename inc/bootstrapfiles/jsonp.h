@@ -75,7 +75,7 @@ extern char json_type_strings[7][13];
 // all other string data is provided node type NULL_JSON
 // hence all of true, false, null, 11, 11,2375, ox1fa2 all are of node type NULL_JSON
 // below function does the task in loop
-json_node* json_parse(char* json,json_error* error);
+json_node* json_build_tree(char* json,json_error* error);
 
 // the below function is generally required to be used to transform node type from NULL_JSON to
 // TRUE_JSON if string is true
@@ -84,6 +84,10 @@ json_node* json_parse(char* json,json_error* error);
 // NUMBER_JSON with the corresponding number value attached
 // below function is recursive implementation
 void json_reevaluate(json_node* node);
+
+// this is the function that builds the total parse tree
+// it calls both the json_build_tree and json_reevaluate function
+json_node* json_parse(char* json,json_error* error);
 
 // below function prints indented version of the json parse tree that we get after parsing
 // below function is recursive implemented
