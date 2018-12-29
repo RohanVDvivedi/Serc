@@ -298,9 +298,9 @@ json_node* get_non_key_parent_node(json_node* node)
 	return result;
 }
 
-void print_n_spaces(int n)
+void print_n_spaces(unsigned long long int n)
 {
-	for(int i=0;i<n;i++)
+	for(unsigned long long int i=0;i<n;i++)
 	{
 		printf(" ");
 	}
@@ -321,7 +321,7 @@ unsigned long long int get_digits_count(unsigned long long int n)
 	return digits;
 }
 
-void json_print(json_node* node,int n_spaces)
+void json_print(json_node* node,unsigned long long int n_spaces)
 {
 	if( node->is_key == 0 )
 	{
@@ -333,10 +333,10 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("%c%c%c%d -> ",(*(node->start_index)),json_type_strings[node->type][0],(*(node->end_index)),node->child_count);
+				printf("%c%c%c%llu -> ",(*(node->start_index)),json_type_strings[node->type][0],(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 7 + get_digits_count(node->child_count) );
+					unsigned long long int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 7 + get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -347,10 +347,10 @@ void json_print(json_node* node,int n_spaces)
 				{
 					print_n_spaces(n_spaces);
 				}
-				printf("%c%c%c%d -> ",(*(node->start_index)),json_type_strings[node->type][0],(*(node->end_index)),node->child_count);
+				printf("%c%c%c%llu -> ",(*(node->start_index)),json_type_strings[node->type][0],(*(node->end_index)),node->child_count);
 				for(int i=0;i<node->child_count;i++)
 				{
-					int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 7 + get_digits_count(node->child_count) );
+					unsigned long long int sub_object_spaces = ( (i == 0) ? 0 : n_spaces + 7 + get_digits_count(node->child_count) );
 					json_print(node->children[i],sub_object_spaces);
 				}
 				break;
@@ -476,7 +476,7 @@ void remove_children(json_node* node)
 {
 	if(node->children != NULL)
 	{
-		for(int i=0;i<node->child_count;i++)
+		for(unsigned long long int i=0;i<node->child_count;i++)
 		{
 			if(node->children[i] != NULL)
 			{
@@ -518,9 +518,9 @@ int add_child(json_node* parent,json_node* child)
 		remove_child(parent);
 		if(parent->child_container_size <= parent->child_count || parent->child_container_size == 0)
 		{
-			int new_child_container_size = 2 * parent->child_container_size + 3;
+			unsigned long long int new_child_container_size = 2 * parent->child_container_size + 3;
 			json_node** new_children = (json_node**) calloc(new_child_container_size,sizeof(json_node*));
-			for(int i=0;i<parent->child_count;i++)
+			for(unsigned long long int i=0;i<parent->child_count;i++)
 			{
 				new_children[i] = parent->children[i];
 			}

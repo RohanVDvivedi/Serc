@@ -47,10 +47,10 @@ struct json_node
 	json_node* parent;
 	char* start_index;
 	char* end_index;
-	int child_count;
-	int child_container_size;
+	unsigned long long int child_count;
+	unsigned long long int child_container_size;
 	json_node_type type;
-	int is_key;
+	unsigned char is_key;
 	unsigned long long int string_hash;
 };
 
@@ -92,7 +92,7 @@ json_node* json_parse(char* json,json_error* error);
 
 // below function prints indented version of the json parse tree that we get after parsing
 // below function is recursive implemented
-void json_print(json_node* node,int n_spaces);
+void json_print(json_node* node,unsigned long long int n_spaces);
 
 // this function deletes the json_node recusively
 void json_delete(json_node* node);
