@@ -642,7 +642,7 @@ json_node* find_key(json_node* object,char* key)
 	json_node* result_node = NULL;
 
 	int found_hash = 0;
-	while(l<r)
+	while(l<=r)
 	{
 		m = (l+r)/2;
 
