@@ -40,7 +40,8 @@ int main()
 	deleteHttpRequest(hr);
 	return 0;*/
 
-	char* temp = "[\r\n  121,\r\n  130.12,\r\n  {\r\n    \"name\": \"rohan\",\r\n    \"age\": 23,\r\n    \"interests\": [\r\n      \"coding\",\r\n      \"hardware design\",\r\n      \"iot\"\r\n    ]\r\n  },\r\n  true,\r\n  null,\r\n  false,\r\n  [\r\n    3,\r\n    \"yay\",\r\n    true\r\n  ],\r\n  {\r\n    \"myint\": 1,\r\n    \"mylongint\": 2,\r\n    \"myuint\": 3,\r\n    \"myulongint\": 4,\r\n    \"mystring\": \"hello\",\r\n    \"my_bool\": false,\r\n    \"myfloat\": 6.9987,\r\n    \"mydouble\": 5.987658,\r\n    \"my_array\": [\r\n      1001,\r\n      10.101,\r\n      false,\r\n      null,\r\n      \"world\",\r\n      [\r\n        10,\r\n        0.101,\r\n        true,\r\n        null,\r\n        \"India to canada\"\r\n      ],\r\n      {\r\n        \"a\": 69,\r\n        \"b\": \"hello sexy\"\r\n      }\r\n    ],\r\n    \"my_sub\": {\r\n      \"a\": 500,\r\n      \"b\": \"world\"\r\n    }\r\n  }\r\n]";
+	// char* temp = "[\r\n  121,\r\n  130.12,\r\n  {\r\n    \"name\": \"rohan\",\r\n    \"age\": 23,\r\n    \"interests\": [\r\n      \"coding\",\r\n      \"hardware design\",\r\n      \"iot\"\r\n    ]\r\n  },\r\n  true,\r\n  null,\r\n  false,\r\n  [\r\n    3,\r\n    \"yay\",\r\n    true\r\n  ],\r\n  {\r\n    \"myint\": 1,\r\n    \"mylongint\": 2,\r\n    \"myuint\": 3,\r\n    \"myulongint\": 4,\r\n    \"mystring\": \"hello\",\r\n    \"my_bool\": false,\r\n    \"myfloat\": 6.9987,\r\n    \"mydouble\": 5.987658,\r\n    \"my_array\": [\r\n      1001,\r\n      10.101,\r\n      false,\r\n      null,\r\n      \"world\",\r\n      [\r\n        10,\r\n        0.101,\r\n        true,\r\n        null,\r\n        \"India to canada\"\r\n      ],\r\n      {\r\n        \"a\": 69,\r\n        \"b\": \"hello sexy\"\r\n      }\r\n    ],\r\n    \"my_sub\": {\r\n      \"a\": 500,\r\n      \"b\": \"world\"\r\n    }\r\n  }\r\n]";
+	char* temp = "{\"a\":1,\"ab\":2,\"c\":3,\"bc\":4,\"b\":5,\"ca\":6,\"ba\":7,\"abc\":8,\"cab\":9,\"x\":10}";
 	char* json = malloc((sizeof(char)*strlen(temp))+1);
 	strcpy(json,temp);
 	json_error error = NO_ERROR;
@@ -50,6 +51,7 @@ int main()
 	printf("parsing done going into printing phase\n\n");
 	json_print(root,0);
 	printf("ERROR = %s\n",error_strings[-error]);
+	json_print(find_key(root,"x"),0);
 	printf("\n\nprinting done going into deleting phase\n\n");
 	json_delete(root);
 	return 0;

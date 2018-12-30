@@ -97,4 +97,6 @@ void json_print(json_node* node,unsigned long long int n_spaces);
 // this function deletes the json_node recusively
 void json_delete(json_node* node);
 
+json_node* find_key(json_node* object,char* key);
+
 #endif
