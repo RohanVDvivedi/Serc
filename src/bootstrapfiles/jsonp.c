@@ -680,6 +680,8 @@ json_node* find_key(json_node* object,char* key)
 		unsigned long long int temp = m-1;
 		while( object->children[temp]->string_hash == hash )
 		{
+			json_node* test_node = object->children[m];
+
 			char* key_str = test_node->start_index + 1;
 
 			char prev_char = (*(test_node->end_index));
@@ -706,6 +708,8 @@ json_node* find_key(json_node* object,char* key)
 		unsigned long long int temp = m+1;
 		while( object->children[temp]->string_hash == hash )
 		{
+			json_node* test_node = object->children[m];
+
 			char* key_str = test_node->start_index + 1;
 
 			char prev_char = (*(test_node->end_index));
@@ -718,7 +722,7 @@ json_node* find_key(json_node* object,char* key)
 			}
 
 			(*(test_node->end_index)) = prev_char;
-			
+
 			if(temp == object->child_count-1)
 			{
 				break;
