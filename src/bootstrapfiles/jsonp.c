@@ -201,7 +201,10 @@ json_node* json_build_tree(char* json,json_error* error)
 				// below block basically brings us out of everythi9ng into block in which corresponding , belongs
 				if( node->type==NULL_JSON )
 				{
-					node->end_index = json - 1;
+					if(node->end_index == NULL)
+					{
+						node->end_index = json - 1;
+					}
 					node = get_non_key_parent_node(node);
 				}
 
