@@ -8,6 +8,7 @@
 #include<responseStrings.h>
 #include<sys/socket.h>
 
+#include<ctype.h>
 #include<combined.h>
 
 typedef enum HttpMethodType HttpMethodType;

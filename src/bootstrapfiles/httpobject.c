@@ -695,7 +695,7 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 				{
 					expectedBodyLength = readInt(hr->Headers[hr->HeaderCount - 1]->Value);
 				}
-				if( expectedBodyLength == -1 && strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"Transfer-Encoding") == 0 && strcmp(hr->Headers[hr->HeaderCount - 1]->Value,"chunked") == 0 )
+				if( expectedBodyLength == -1 && strcmp(hr->Headers[hr->HeaderCount - 1]->Key,"transfer-encoding") == 0 && strcmp(hr->Headers[hr->HeaderCount - 1]->Value,"chunked") == 0 )
 				{
 					expectedBodyLength = -2;
 				}
@@ -1019,6 +1019,14 @@ int estimateResponseObjectSize(HttpResponse* hr)
 	return result;
 }
 
+void lowercaseString(char* str)
+{
+	for( ; (*str)!='\0' ; str++ )
+	{
+		*str = (char)tolower(((int)(*str)));
+	}
+}
+
 void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr)
 {
 	if(hr->HeaderCount == hr->HeaderSize || hr->HeaderSize == 0)
@@ -1044,8 +1052,10 @@ void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr)
 	hr->Headers[hr->HeaderCount - 1] = (keyvaluepair*) malloc(sizeof(keyvaluepair));
 	hr->Headers[hr->HeaderCount - 1]->Key = (char*) malloc(sizeof(char)*(strlen(Key)+1));
 	strcpy(hr->Headers[hr->HeaderCount - 1]->Key,Key);
+	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Key);
 	hr->Headers[hr->HeaderCount - 1]->Value = (char*) malloc(sizeof(char)*(strlen(Value)+1));
 	strcpy(hr->Headers[hr->HeaderCount - 1]->Value,Value);
+	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Value);
 }
 
 void addPathParameterInHttpRequest(char* Key,char* Value,HttpRequest* hr)
@@ -1102,8 +1112,10 @@ void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr)
 	hr->Headers[hr->HeaderCount - 1] = (keyvaluepair*) malloc(sizeof(keyvaluepair));
 	hr->Headers[hr->HeaderCount - 1]->Key = (char*) malloc(sizeof(char)*(strlen(Key)+1));
 	strcpy(hr->Headers[hr->HeaderCount - 1]->Key,Key);
+	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Key);
 	hr->Headers[hr->HeaderCount - 1]->Value = (char*) malloc(sizeof(char)*(strlen(Value)+1));
 	strcpy(hr->Headers[hr->HeaderCount - 1]->Value,Value);
+	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Value);
 }
 
 void deleteHttpRequest(HttpRequest* hr)
