@@ -631,7 +631,7 @@ void sort(json_node** children,unsigned long long int length)
 
 json_node* find_key(json_node* object,char* key)
 {
-	if( object->type != OBJECT_JSON || object->child_count == 0 )
+	if( object == NULL || object->type != OBJECT_JSON || object->child_count == 0 )
 	{
 		return NULL;
 	}
