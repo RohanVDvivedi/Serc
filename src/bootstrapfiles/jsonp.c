@@ -153,7 +153,7 @@ json_node* json_build_tree(char* json,json_error* error)
 				node->end_index = json;
 				// by here the node is now at the corresponding OBJECT_JSON type node whose all children we all jsu saw
 				// so now we throw in some code that tests if the last element of the object is a key value
-				if( node->type == OBJECT_JSON && node->children[node->child_count-1]->is_key == 0 )
+				if( node->type == OBJECT_JSON && node->child_count > 0 && node->children[node->child_count-1]->is_key == 0 )
 				{
 					(*error) = OBJECT_ELEMENT_HAS_TO_BE_KEY_VALUE;
 					goto END;

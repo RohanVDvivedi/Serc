@@ -8,10 +8,11 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	json_error e;
 
 	json_node* node = json_parse(hrq->RequestBody,&e);
+	printf("ENTERED++++mmmm\n\n");
 
 	json_print(node,0);
 
-	json_delete(node);
+	
 
 	// setting up response object
 	MyObject* m = get_MyObject();
@@ -20,7 +21,15 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	m->mylongint = 2;
 	m->myuint = 3;
 	m->myulongint = 4;
-	m->mystring = "hello";
+	char page[200];
+	char* start_index = find_key(node,"page_no")->child->start_index;
+	char* end_index = find_key(node,"page_no")->child->end_index;
+	char p = *(end_index + 1);
+	*(end_index + 1) = '\0';
+	strcpy(page,start_index);
+	*(end_index + 1) = p;
+	printf("---------%s\n",page);
+	m->mystring = ((char*)page);
 	m->my_bool = 0;
 	m->myfloat = 6.9987;
 	m->mydouble = 5.9876577;
@@ -62,6 +71,8 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	setResponseBodyFromJsonObject(m,MYOBJECT_JSON,hrp);
 	// setResponseBodyFromJsonObject(m->my_array,ARRAY_JSON,hrp);
 	
+	json_delete(node);
+
 	delete_MyObject(m); 
 	//
 	return 0;
