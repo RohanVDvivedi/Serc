@@ -8,9 +8,8 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	json_error e;
 
 	json_node* node = json_parse(hrq->RequestBody,&e);
-	printf("ENTERED++++mmmm\n\n");
 
-	json_print(node,0);
+	// json_print(node,0);
 
 	
 
@@ -28,7 +27,6 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	*(end_index + 1) = '\0';
 	strcpy(page,start_index);
 	*(end_index + 1) = p;
-	printf("---------%s\n",page);
 	m->mystring = ((char*)page);
 	m->my_bool = 0;
 	m->myfloat = 6.9987;
