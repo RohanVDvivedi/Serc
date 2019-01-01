@@ -51,7 +51,15 @@ int main()
 	printf("parsing done going into printing phase\n\n");
 	json_print(root,0);
 	printf("ERROR = %s\n",error_strings[-error]);
-	json_print(find_key(root,"x"),0);
+	json_node* f = find_key(root,"xa");
+	if(f != NULL)
+	{
+		json_print(f,0);
+	}
+	else
+	{
+		printf("key not found");
+	}
 	printf("\n\nprinting done going into deleting phase\n\n");
 	json_delete(root);
 	return 0;
