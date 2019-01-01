@@ -60,6 +60,7 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	// setResponseBody("This is the first test",hrp);
 
 	setResponseBodyFromJsonObject(m,MYOBJECT_JSON,hrp);
+	// setResponseBodyFromJsonObject(m->my_array,ARRAY_JSON,hrp);
 	
 	delete_MyObject(m); 
 	//
