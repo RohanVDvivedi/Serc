@@ -4,12 +4,16 @@
 typedef enum Type_Support Type_Support;
 enum Type_Support
 {
-	 NULL_JSON
+	 STRING_JSON
+	,NUMBER_JSON
+	,NULL_JSON
+	,TRUE_JSON
+	,FALSE_JSON
+	,ARRAY_JSON
+	,OBJECT_JSON
 	,INTEGER_JSON
 	,DOUBLE_JSON
-	,STRING_JSON
 	,BOOLEAN_JSON
-	,ARRAY_JSON
 	/*,CLASSNAME_JSON*/
 //@add_enum
 };

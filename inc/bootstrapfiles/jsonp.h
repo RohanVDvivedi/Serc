@@ -5,18 +5,9 @@
 #include<stdlib.h>
 #include<string.h>
 #include<strhsh.h>
+#include<type_support.h>
 
-typedef enum json_node_type json_node_type;
-enum json_node_type
-{
-	STRING_JSON,
-	NUMBER_JSON,
-	NULL_JSON,
-	TRUE_JSON,
-	FALSE_JSON,
-	ARRAY_JSON,
-	OBJECT_JSON
-};
+typedef enum Type_Support json_node_type;
 
 /*
 	every node contents will start and end with an index

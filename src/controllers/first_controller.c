@@ -1,9 +1,18 @@
 #include<httpobject.h>
 #include<MyObject_json.h>
 #include<type_support.h>
+#include<jsonp.h>
 
 int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 {
+	json_error e;
+
+	json_node* node = json_parse(hrq->RequestBody,&e);
+
+	json_print(node,0);
+
+	json_delete(node);
+
 	// setting up response object
 	MyObject* m = get_MyObject();
 
