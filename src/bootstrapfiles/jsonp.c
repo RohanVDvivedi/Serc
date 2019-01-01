@@ -663,9 +663,9 @@ json_node* find_key(json_node* object,char* key)
 		}
 		else
 		{
+			found_hash = 1;
 			if( strcmp(key_str,key) == 0 )
 			{
-				found_hash = 1;
 				result_node = test_node;
 			}
 		}
@@ -676,9 +676,9 @@ json_node* find_key(json_node* object,char* key)
 	if( result_node == NULL && found_hash == 1 )
 	{
 		unsigned long long int temp = m-1;
-		while( object->children[temp]->string_hash == hash )
+		while( object->children[temp]->string_hash == hash  && result_node == NULL)
 		{
-			json_node* test_node = object->children[m];
+			json_node* test_node = object->children[temp];
 
 			char* key_str = test_node->start_index + 1;
 
@@ -688,7 +688,6 @@ json_node* find_key(json_node* object,char* key)
 			if( strcmp(key,key_str) == 0 )
 			{
 				result_node = object->children[temp];
-				break;
 			}
 
 			(*(test_node->end_index)) = prev_char;
@@ -704,9 +703,9 @@ json_node* find_key(json_node* object,char* key)
 	if( result_node == NULL && found_hash == 1 )
 	{
 		unsigned long long int temp = m+1;
-		while( object->children[temp]->string_hash == hash )
+		while( object->children[temp]->string_hash == hash && result_node == NULL)
 		{
-			json_node* test_node = object->children[m];
+			json_node* test_node = object->children[temp];
 
 			char* key_str = test_node->start_index + 1;
 
@@ -716,7 +715,6 @@ json_node* find_key(json_node* object,char* key)
 			if( strcmp(key,key_str) == 0 )
 			{
 				result_node = object->children[temp];
-				break;
 			}
 
 			(*(test_node->end_index)) = prev_char;
