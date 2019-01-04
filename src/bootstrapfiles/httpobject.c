@@ -481,16 +481,17 @@ int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* Rst
 	else if(*Rstate == IN_BODY)
 	{
 		addToRequestBody(temp,hr);
-		if(expectedBodyLength != -1 && expectedBodyLength <= hr->RequestBodyLength)
-		{
-			*Rstate = BODY_COMPLETE;
-			return 0;
-		}
-		else
-		{
-			*Rstate = IN_BODY;
-			return -2;
-		}
+	}
+
+	if(expectedBodyLength != -1 && expectedBodyLength <= hr->RequestBodyLength)
+	{
+		*Rstate = BODY_COMPLETE;
+		return 0;
+	}
+	else
+	{
+		*Rstate = IN_BODY;
+		return -2;
 	}
 
 	BC: return 0;
@@ -728,23 +729,16 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 	}
 	Tokens['\n'] = 0;Tokens['\r']=0;
 
-	HSC: IB: if(expectedBodyLength!=-2 && *Rstate == HEADERS_COMPLETE)
+	HSC: IB: if( expectedBodyLength !=-2 )
 	{
-		setResponseBody(temp,hr);
-		*Rstate = IN_BODY;
-	}
-	else if(expectedBodyLength!=-2 && *Rstate == IN_BODY)
-	{
-		addToResponseBody(temp,hr);
-		if(expectedBodyLength != -1 && expectedBodyLength <= hr->ResponseBodyLength)
+		if(*Rstate == HEADERS_COMPLETE)
 		{
-			*Rstate = BODY_COMPLETE;
-			return 0;
-		}
-		else
-		{
+			setResponseBody(temp,hr);
 			*Rstate = IN_BODY;
-			return -2;
+		}
+		else if(*Rstate == IN_BODY)
+		{
+			addToResponseBody(temp,hr);
 		}
 	}
 	else
@@ -847,6 +841,20 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 					max_count_br = 2;
 				}
 			}
+		}
+	}
+
+	if(expectedBodyLength != -2)
+	{
+		if(expectedBodyLength != -1 && expectedBodyLength <= hr->ResponseBodyLength)
+		{
+			*Rstate = BODY_COMPLETE;
+			return 0;
+		}
+		else
+		{
+			*Rstate = IN_BODY;
+			return -2;
 		}
 	}
 
