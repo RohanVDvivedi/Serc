@@ -112,7 +112,7 @@ int retrieveResponse(char* host,int port,HttpRequest* hrq,HttpResponse** hrpp)
 		// parse the RequestString to populate HttpRequest Object
 		error = stringToResponseObject(bufferResponse,hrp,&Rstate);
 
-		if(buffreadlength < buffersize-1 || Rstate == BODY_COMPLETE)
+		if(/*buffreadlength < buffersize-1 ||*/ Rstate == BODY_COMPLETE)
 		{
 			break;
 		}

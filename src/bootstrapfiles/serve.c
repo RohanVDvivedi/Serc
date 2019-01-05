@@ -39,7 +39,7 @@ void serve(int fd)
 		// parse the RequestString to populate HttpRequest Object
 		error = stringToRequestObject(bufferRequest,hrq,&Rstate);
 
-		if(buffreadlength < buffersize-1 || Rstate == BODY_COMPLETE)
+		if(/*buffreadlength < buffersize-1 ||*/ Rstate == BODY_COMPLETE)
 		{
 			break;
 		}
