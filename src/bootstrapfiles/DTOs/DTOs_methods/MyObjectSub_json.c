@@ -43,4 +43,13 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 }
 
 
-// here will go from function
+
+MyObjectSub* MyObjectSub_fromJson( char* json_str )
+{
+	if( json_str == NULL )
+	{
+		return NULL;
+	}
+	MyObjectSub* result = get_MyObjectSub();
+	return result;
+}

@@ -113,4 +113,13 @@ char* MyObject_toJson( MyObject* object )
 }
 
 
-// here will go from function
+
+MyObject* MyObject_fromJson( char* json_str )
+{
+	if( json_str == NULL )
+	{
+		return NULL;
+	}
+	MyObject* result = get_MyObject();
+	return result;
+}

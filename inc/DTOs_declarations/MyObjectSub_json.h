@@ -12,6 +12,8 @@ MyObjectSub* get_MyObjectSub();
 
 char* MyObjectSub_toJson(MyObjectSub* object);
 
+MyObjectSub* MyObjectSub_fromJson(char* json_str);
+
 void delete_MyObjectSub(MyObjectSub* object_p);
 
 #endif

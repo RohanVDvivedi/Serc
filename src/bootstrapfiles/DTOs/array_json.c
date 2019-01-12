@@ -9,7 +9,7 @@ array_json* get_array()
 	return new_array_json;
 }
 
-object_json* get(array_json* array_p, unsigned long long int i)
+object_json* get_object_at(array_json* array_p, unsigned long long int i)
 {
 	return (array_p!=NULL && array_p->size > i) ? array_p->objectList[i] : NULL;
 }
@@ -76,7 +76,7 @@ char* array_json_toJson(array_json* array_p)
 		JS = getJsonString("[");
 		for(unsigned long long int i = 0;i<array_p->size;i++)
 		{
-			char* object_json_result = object_json_toJson(get(array_p,i));
+			char* object_json_result = object_json_toJson(get_object_at(array_p,i));
 			addToJsonString(JS,object_json_result);
 			free(object_json_result);
 		}
@@ -89,5 +89,15 @@ char* array_json_toJson(array_json* array_p)
 
 	char* result = JS->string;
 	free(JS);
+	return result;
+}
+
+array_json* array_json_fromJson(char* json_str)
+{
+	if(json_str == NULL)
+	{
+		return NULL;
+	}
+	array_json* result = get_array();
 	return result;
 }

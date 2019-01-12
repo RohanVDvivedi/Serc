@@ -240,5 +240,17 @@ def to_json_function_creator(json_object_name,fields):
 	return function_string
 
 def from_json_function_creator(json_object_name,fields):
+	function_string      = ""
+	function_string     += "\n" + json_object_name + "* " + json_object_name + "_fromJson( char* json_str )"
+	function_declaration = function_string + ";"
+	function_string     += "\n{"
+	function_string     += "\n\tif( json_str == NULL )"
+	function_string     += "\n\t{"
+	function_string     += "\n\t\treturn NULL;"
+	function_string     += "\n\t}"
+	function_string		+= "\n\t" + json_object_name + "* result = get_" + json_object_name + "();"
+	function_string		+= "\n\treturn result;"
+	function_string     += "\n}"
+	return function_string
 
-	return "// here will go from function"
+

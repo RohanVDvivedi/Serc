@@ -15,7 +15,7 @@ struct array_json
 
 array_json* get_array();
 
-object_json* get(array_json* array_p, unsigned long long int i);
+object_json* get_object_at(array_json* array_p, unsigned long long int i);
 
 void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes);
 
@@ -24,5 +24,7 @@ void delete_array(array_json* array_p);
 void delete_array_contents(array_json* array_p);
 
 char* array_json_toJson(array_json* array_p);
+
+array_json* array_json_fromJson(char* json_str);
 
 #endif

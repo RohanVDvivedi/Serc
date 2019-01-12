@@ -45,10 +45,10 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	add(m->my_array,NULL,ARRAY_JSON,0);
 	add(m->my_array,NULL,MYOBJECTSUB_JSON,0);
 
-	((MyObjectSub*)(get(m->my_array,6)->Data))->a = 69;
-	((MyObjectSub*)(get(m->my_array,6)->Data))->b = "hello sexy";
+	((MyObjectSub*)(get_object_at(m->my_array,6)->Data))->a = 69;
+	((MyObjectSub*)(get_object_at(m->my_array,6)->Data))->b = "hello sexy";
 
-	array_json* arr_temp = get(m->my_array,5)->Data;
+	array_json* arr_temp = get_object_at(m->my_array,5)->Data;
 
 	i = 10;
 	dou = 0.101;

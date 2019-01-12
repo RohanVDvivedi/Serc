@@ -41,7 +41,7 @@ char* toJson(void* data,Type_Support type)
 void* fromJson(char* json_str,Type_Support type)
 {
 	void* return_data = NULL;
-	if(data!=NULL)
+	if(json_str!=NULL)
 	{
 		switch(type)
 		{
@@ -79,36 +79,33 @@ void* fromJson(char* json_str,Type_Support type)
 void* get(Type_Support type)
 {
 	void* return_data = NULL;
-	if(data!=NULL)
+	switch(type)
 	{
-		switch(type)
+		case ARRAY_JSON :
 		{
-			case ARRAY_JSON :
-			{
-				return_data = (void*) get_array((array_json*)data);
-				break;
-			}
-			/*
-			case CLASSNAME_JSON :
-			{
-				return_string = (void*) get_classname();
-				break;
-			}
-			*/
-			case MYOBJECT_JSON :
-			{
-				return_data = (void*) get_MyObject();
-				break;
-			}
-			case MYOBJECTSUB_JSON :
-			{
-				return_data = (void*) get_MyObjectSub();
-				break;
-			}
-			default :
-			{
-				break;
-			}
+			return_data = (void*) get_array();
+			break;
+		}
+		/*
+		case CLASSNAME_JSON :
+		{
+			return_string = (void*) get_classname();
+			break;
+		}
+		*/
+		case MYOBJECT_JSON :
+		{
+			return_data = (void*) get_MyObject();
+			break;
+		}
+		case MYOBJECTSUB_JSON :
+		{
+			return_data = (void*) get_MyObjectSub();
+			break;
+		}
+		default :
+		{
+			break;
 		}
 	}
 	return return_data;
