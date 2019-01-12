@@ -130,30 +130,11 @@ char* object_json_toJson(object_json* object_p)
 				addToJsonString(JS,number);
 				break;
 			}
-			case ARRAY_JSON :
-			{
-				if( object_p->Data != NULL )
-				{
-					char* array_json_result = array_json_toJson(((array_json*)object_p->Data));
-					addToJsonString(JS,array_json_result);
-					addToJsonString(JS,",");
-					free(array_json_result);
-				}
-				else
-				{
-					sprintf(number,"null,");
-					addToJsonString(JS,number);
-				}
-				break;
-			}
 			default :
 			{
 				if( object_p->Data != NULL )
 				{
-					char* object_json_result = NULL;
-
-					object_json_result = toJson(object_p->Data,object_p->Type);
-
+					char* object_json_result = toJson(object_p->Data,object_p->Type);
 					addToJsonString(JS,object_json_result);
 					addToJsonString(JS,",");
 					free(object_json_result);
