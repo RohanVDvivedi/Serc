@@ -2,6 +2,10 @@
 
 char* toJson(void* data,Type_Support type)
 {
+	if(!is_combined(type))
+	{
+		return NULL;
+	}
 	char* return_string = NULL;
 	if(data!=NULL)
 	{
@@ -40,6 +44,10 @@ char* toJson(void* data,Type_Support type)
 
 void* fromJson(char* json_str,Type_Support type)
 {
+	if(!is_combined(type))
+	{
+		return NULL;
+	}
 	void* return_data = NULL;
 	if(json_str!=NULL)
 	{
@@ -78,6 +86,10 @@ void* fromJson(char* json_str,Type_Support type)
 
 void* get(Type_Support type)
 {
+	if(!is_combined(type))
+	{
+		return NULL;
+	}
 	void* return_data = NULL;
 	switch(type)
 	{
@@ -113,6 +125,10 @@ void* get(Type_Support type)
 
 void del(void* data,Type_Support type)
 {
+	if(!is_combined(type))
+	{
+		return ;
+	}
 	if(data!=NULL)
 	{
 		switch(type)
@@ -145,4 +161,9 @@ void del(void* data,Type_Support type)
 			}
 		}
 	}
+}
+
+int is_combined(Type_Support type)
+{
+	return type == ARRAY_JSON || type > NODE_JSON;
 }

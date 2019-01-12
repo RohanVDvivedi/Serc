@@ -36,7 +36,7 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 			}
 		}
 	}
-	else
+	else if(is_combined(Type))
 	{
 		object_p->Data = get(Type);
 		object_p->Type = Type;
@@ -48,7 +48,7 @@ void delete_object(object_json* object_p)
 {
 	if( object_p->Data != NULL)
 	{
-		if(object_p->Type != ARRAY_JSON && object_p->Type <= BOOLEAN_JSON && object_p->Data != NULL)
+		if( (!is_combined(object_p->Type)) && object_p->Data != NULL)
 		{
 			free(object_p->Data);
 		}
@@ -135,7 +135,7 @@ char* object_json_toJson(object_json* object_p)
 			}
 			default :
 			{
-				if( object_p->Data != NULL )
+				if(is_combined(object_p->Type) && object_p->Data != NULL )
 				{
 					char* object_json_result = toJson(object_p->Data,object_p->Type);
 					addToJsonString(JS,object_json_result);

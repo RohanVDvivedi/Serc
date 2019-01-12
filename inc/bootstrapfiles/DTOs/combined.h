@@ -16,4 +16,6 @@ void* get(Type_Support type);
 
 void del(void* data,Type_Support type);
 
+int is_combined(Type_Support type);
+
 #endif
