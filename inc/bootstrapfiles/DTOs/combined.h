@@ -10,4 +10,10 @@
 
 char* toJson(void* data,Type_Support type);
 
+void* fromJson(char* json_str,Type_Support type);
+
+void* get(Type_Support type);
+
+void del(void* data,Type_Support type);
+
 #endif

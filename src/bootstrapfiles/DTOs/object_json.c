@@ -194,7 +194,31 @@ char* object_json_toJson(object_json* object_p)
 				{
 					char* object_json_result = NULL;
 
-					object_json_result = toJson(((void*)object_p->Data),object_p->Type);
+					switch(object_p->Type)
+					{
+						/*
+						case CLASSNAME_JSON :
+						{
+							object_json_result = classname_toJson(((classname*)object_p->Data));
+							break;
+						}
+						*/
+						case MYOBJECT_JSON :
+						{
+							object_json_result = MyObject_toJson(((MyObject*)object_p->Data));
+							break;
+						}
+						case MYOBJECTSUB_JSON :
+						{
+							object_json_result = MyObjectSub_toJson(((MyObjectSub*)object_p->Data));
+							break;
+						}
+						default :
+						{
+							sprintf(number,"null,");
+							addToJsonString(JS,number);
+						}
+					}
 
 					addToJsonString(JS,object_json_result);
 					addToJsonString(JS,",");
