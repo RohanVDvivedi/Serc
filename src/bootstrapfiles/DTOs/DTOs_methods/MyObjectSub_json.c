@@ -44,9 +44,9 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 
 
 
-MyObjectSub* MyObjectSub_fromJson( char* json_str )
+MyObjectSub* MyObjectSub_fromJson( json_node* json )
 {
-	if( json_str == NULL )
+	if( json == NULL || json->type == NULL_JSON )
 	{
 		return NULL;
 	}

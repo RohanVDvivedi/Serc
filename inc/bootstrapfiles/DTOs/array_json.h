@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<object_json.h>
+#include<jsonp.h>
 
 typedef struct array_json array_json;
 struct array_json
@@ -25,6 +26,6 @@ void delete_array_contents(array_json* array_p);
 
 char* array_json_toJson(array_json* array_p);
 
-array_json* array_json_fromJson(char* json_str);
+array_json* array_json_fromJson(json_node* json);
 
 #endif

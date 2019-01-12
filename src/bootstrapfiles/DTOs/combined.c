@@ -42,37 +42,37 @@ char* toJson(void* data,Type_Support type)
 	return return_string;
 }
 
-void* fromJson(char* json_str,Type_Support type)
+void* fromJson(json_node* json,Type_Support type)
 {
 	if(!is_combined(type))
 	{
 		return NULL;
 	}
 	void* return_data = NULL;
-	if(json_str!=NULL)
+	if(json!=NULL)
 	{
 		switch(type)
 		{
 			case ARRAY_JSON :
 			{
-				return_data = (void*) array_json_fromJson(json_str);
+				return_data = (void*) array_json_fromJson(json);
 				break;
 			}
 			/*
 			case CLASSNAME_JSON :
 			{
-				return_data = (void*) classname_fromJson(json_str);
+				return_data = (void*) classname_fromJson(json);
 				break;
 			}
 			*/
 			case MYOBJECT_JSON :
 			{
-				return_data = (void*) MyObject_fromJson(json_str);
+				return_data = (void*) MyObject_fromJson(json);
 				break;
 			}
 			case MYOBJECTSUB_JSON :
 			{
-				return_data = (void*) MyObjectSub_fromJson(json_str);
+				return_data = (void*) MyObjectSub_fromJson(json);
 				break;
 			}
 			default :

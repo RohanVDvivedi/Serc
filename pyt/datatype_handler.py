@@ -241,10 +241,10 @@ def to_json_function_creator(json_object_name,fields):
 
 def from_json_function_creator(json_object_name,fields):
 	function_string      = ""
-	function_string     += "\n" + json_object_name + "* " + json_object_name + "_fromJson( char* json_str )"
+	function_string     += "\n" + json_object_name + "* " + json_object_name + "_fromJson( json_node* json )"
 	function_declaration = function_string + ";"
 	function_string     += "\n{"
-	function_string     += "\n\tif( json_str == NULL )"
+	function_string     += "\n\tif( json == NULL || json->type == NULL_JSON )"
 	function_string     += "\n\t{"
 	function_string     += "\n\t\treturn NULL;"
 	function_string     += "\n\t}"

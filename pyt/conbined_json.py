@@ -20,7 +20,7 @@ command_line_args = sys.argv.copy()[1:]
 
 enum_fields_template = "\t,CLASSNAME_JSON"
 type_to_json_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\treturn_string = classname_toJson((classname*)data);\n\t\t\t\tbreak;\n\t\t\t}"
-type_from_json_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\treturn_data = (void*) classname_fromJson(json_str);\n\t\t\t\tbreak;\n\t\t\t}"
+type_from_json_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\treturn_data = (void*) classname_fromJson(json);\n\t\t\t\tbreak;\n\t\t\t}"
 type_get_fields_template = "\t\tcase CLASSNAME_JSON :\n\t\t{\n\t\t\treturn_data = (void*) get_classname();\n\t\t\tbreak;\n\t\t}"
 type_del_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\tdelete_classname((classname*)data);\n\t\t\t\tbreak;\n\t\t\t}"
 header_fields_template = "#include<classname_json.h>"

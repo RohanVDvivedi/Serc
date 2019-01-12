@@ -114,9 +114,9 @@ char* MyObject_toJson( MyObject* object )
 
 
 
-MyObject* MyObject_fromJson( char* json_str )
+MyObject* MyObject_fromJson( json_node* json )
 {
-	if( json_str == NULL )
+	if( json == NULL || json->type == NULL_JSON )
 	{
 		return NULL;
 	}

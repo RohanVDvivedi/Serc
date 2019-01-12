@@ -92,9 +92,9 @@ char* array_json_toJson(array_json* array_p)
 	return result;
 }
 
-array_json* array_json_fromJson(char* json_str)
+array_json* array_json_fromJson(json_node* json)
 {
-	if(json_str == NULL)
+	if(json == NULL || json->type ==  NULL_JSON)
 	{
 		return NULL;
 	}

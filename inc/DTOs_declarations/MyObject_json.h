@@ -1,5 +1,6 @@
 #ifndef MYOBJECT_JSON_H
 #define MYOBJECT_JSON_H
+#include<jsonp.h>
 #include<array_json.h>
 #include<MyObjectSub_json.h>
 
@@ -24,7 +25,7 @@ MyObject* get_MyObject();
 
 char* MyObject_toJson(MyObject* myobject);
 
-MyObject* MyObject_fromJson(char* json_str);
+MyObject* MyObject_fromJson(json_node* json);
 
 void delete_MyObject(MyObject* object_p);
 
