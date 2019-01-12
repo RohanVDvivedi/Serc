@@ -15,51 +15,32 @@ void set(object_json* object_p,void* Data,Type_Support Type,size_t Bytes)
 	{
 		free(object_p->Data);
 	}
-	switch( Type )
+	if(Data != NULL)
 	{
-		case  NULL_JSON :
+		switch( Type )
 		{
-			object_p->Data = NULL;
-			object_p->Type = NULL_JSON;
-			object_p->Bytes = 0;
-			break;
+			case  NULL_JSON :
+			{
+				object_p->Data = NULL;
+				object_p->Type = NULL_JSON;
+				object_p->Bytes = 0;
+				break;
+			}
+			default :
+			{
+				object_p->Data = malloc(Bytes);
+				memcpy(object_p->Data,Data,Bytes);
+				object_p->Type = Type;
+				object_p->Bytes = Bytes;
+				break;
+			}
 		}
-		case ARRAY_JSON :
-		{
-			object_p->Data = get_array();
-			object_p->Type = ARRAY_JSON;
-			object_p->Bytes = sizeof(array_json);
-			break;
-		}
-		/*case CLASSNAME_JSON :
-		{
-			object_p->Data = get_classname();
-			object_p->Type = CLASSNAME_JSON;
-			object_p->Bytes = sizeof(classname);
-			break;
-		}*/
-		case MYOBJECT_JSON :
-		{
-			object_p->Data = ((void*)get_MyObject());
-			object_p->Type = MYOBJECT_JSON;
-			object_p->Bytes = sizeof(MyObject);
-			break;
-		}
-		case MYOBJECTSUB_JSON :
-		{
-			object_p->Data = ((void*)get_MyObjectSub());
-			object_p->Type = MYOBJECTSUB_JSON;
-			object_p->Bytes = sizeof(MyObjectSub);
-			break;
-		}
-		default :
-		{
-			object_p->Data = malloc(Bytes);
-			memcpy(object_p->Data,Data,Bytes);
-			object_p->Type = Type;
-			object_p->Bytes = Bytes;
-			break;
-		}
+	}
+	else
+	{
+		object_p->Data = get(Type);
+		object_p->Type = Type;
+		object_p->Bytes = sizeof((*(object_p->Data)));
 	}
 }
 
@@ -67,33 +48,10 @@ void delete_object(object_json* object_p)
 {
 	if( object_p->Data != NULL)
 	{
-		switch( object_p->Type )
+		delete_array(object_p->Data);
+		if(object_p->Data != NULL)
 		{
-			case ARRAY_JSON :
-			{
-				delete_array(object_p->Data);
-				break;
-			}
-			/*case CLASSNAME_JSON :
-			{
-				delet_classname(object_p->Data);
-				break;
-			}*/
-			case MYOBJECT_JSON :
-			{
-				delete_MyObject((MyObject*)object_p->Data);
-				break;
-			}
-			case MYOBJECTSUB_JSON :
-			{
-				delete_MyObjectSub((MyObjectSub*)object_p->Data);
-				break;
-			}
-			default :
-			{
-				free(object_p->Data);
-				break;
-			}
+			free(object_p->Data);
 		}
 	}
 	free(object_p);
@@ -194,31 +152,7 @@ char* object_json_toJson(object_json* object_p)
 				{
 					char* object_json_result = NULL;
 
-					switch(object_p->Type)
-					{
-						/*
-						case CLASSNAME_JSON :
-						{
-							object_json_result = classname_toJson(((classname*)object_p->Data));
-							break;
-						}
-						*/
-						case MYOBJECT_JSON :
-						{
-							object_json_result = MyObject_toJson(((MyObject*)object_p->Data));
-							break;
-						}
-						case MYOBJECTSUB_JSON :
-						{
-							object_json_result = MyObjectSub_toJson(((MyObjectSub*)object_p->Data));
-							break;
-						}
-						default :
-						{
-							sprintf(number,"null,");
-							addToJsonString(JS,number);
-						}
-					}
+					object_json_result = toJson(object_p->Data,object_p->Type);
 
 					addToJsonString(JS,object_json_result);
 					addToJsonString(JS,",");
