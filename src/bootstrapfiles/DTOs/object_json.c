@@ -54,7 +54,7 @@ void delete_object(object_json* object_p)
 		}
 		else
 		{
-			delete_array(object_p->Data);
+			del(object_p->Data,object_p->Type);
 		}
 	}
 	free(object_p);

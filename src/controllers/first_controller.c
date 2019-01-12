@@ -71,7 +71,7 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	
 	json_delete(node);
 
-	delete_MyObject(m); 
+	delete_MyObject(m);
 	//
 	return 0;
 }
