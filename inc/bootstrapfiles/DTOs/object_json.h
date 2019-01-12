@@ -24,10 +24,7 @@ char* object_json_toJson(object_json* object_p);
 
 #ifndef ARRAY_JSON_H
 
-#include<array_json.h>
-/*#include<classname_json.h>*/
-#include<MyObject_json.h>
-#include<MyObjectSub_json.h>
+#include<combined.h>
 
 #endif
 
