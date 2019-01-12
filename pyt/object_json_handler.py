@@ -1,7 +1,8 @@
 import replace
 
 """
-the below script is used to generate object_json.h and object_json.c files
+the below script is used to generate combined.h, combined.c, type_support.h object_json.h and object_json.c files
+which all use functions from multiple structures
 for given json object name is given
 it will build up enum, header includes and case statements required for building up
 the complete object_json file

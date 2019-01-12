@@ -238,3 +238,7 @@ def to_json_function_creator(json_object_name,fields):
 	function_string     += "\n\treturn result;"
 	function_string     += "\n}"
 	return function_string
+
+def from_json_function_creator(json_object_name,fields):
+
+	return "// here will go from function"

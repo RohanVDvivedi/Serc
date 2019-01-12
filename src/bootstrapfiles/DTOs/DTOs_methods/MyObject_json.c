@@ -111,3 +111,6 @@ char* MyObject_toJson( MyObject* object )
 	free(JS);
 	return result;
 }
+
+
+// here will go from function

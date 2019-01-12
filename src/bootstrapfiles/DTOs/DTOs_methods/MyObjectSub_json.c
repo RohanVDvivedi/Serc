@@ -41,3 +41,6 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 	free(JS);
 	return result;
 }
+
+
+// here will go from function
