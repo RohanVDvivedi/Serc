@@ -48,10 +48,13 @@ void delete_object(object_json* object_p)
 {
 	if( object_p->Data != NULL)
 	{
-		delete_array(object_p->Data);
-		if(object_p->Data != NULL)
+		if(object_p->Type != ARRAY_JSON && object_p->Type <= BOOLEAN_JSON && object_p->Data != NULL)
 		{
 			free(object_p->Data);
+		}
+		else
+		{
+			delete_array(object_p->Data);
 		}
 	}
 	free(object_p);
