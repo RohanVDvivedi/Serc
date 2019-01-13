@@ -65,7 +65,7 @@ dataTypeFormatSpecifierStrings = {
 	DataType.DOUBLE:'%lf'
 }
 
-def forNumber(fieldi) :
+def toJson_forNumber(fieldi) :
 	code  = ""
 	pointer_variable = "(object->" + fieldi[1] + ")"
 	tab_if_required = ""
@@ -92,7 +92,7 @@ def forNumber(fieldi) :
 	code += "\n"
 	return code
 
-def forString(fieldi) :
+def toJson_forString(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
 	pointer_variable = "(object->" + fieldi[1] + ")"
@@ -120,7 +120,7 @@ def forString(fieldi) :
 	code += "\n"
 	return code
 
-def forBoolean(fieldi) :
+def toJson_forBoolean(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\"\");"
 	pointer_variable = "(object->" + fieldi[1] + ")"
@@ -153,7 +153,7 @@ def forBoolean(fieldi) :
 	code += "\n"
 	return code
 
-def forObject(fieldi) :
+def toJson_forObject(fieldi) :
 	datatype_name_string = "array_json"
 	if fieldi[0] == DataType.OTHER :
 		datatype_name_string = fieldi[3]
@@ -221,13 +221,13 @@ def to_json_function_creator(json_object_name,fields):
 
 	for fieldi in fields:
 		if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
-			function_string += forObject(fieldi)
+			function_string += toJson_forObject(fieldi)
 		elif fieldi[0] == DataType.STRING :
-			function_string += forString(fieldi)
+			function_string += toJson_forString(fieldi)
 		elif fieldi[0] == DataType.BOOLEAN :
-			function_string += forBoolean(fieldi)
+			function_string += toJson_forBoolean(fieldi)
 		else :
-			function_string += forNumber(fieldi)
+			function_string += toJson_forNumber(fieldi)
 
 	if len(fields) > 0 :
 		function_string += "\n\tJS->string[JS->size-2] = '}';"
@@ -249,6 +249,10 @@ def from_json_function_creator(json_object_name,fields):
 	function_string     += "\n\t\treturn NULL;"
 	function_string     += "\n\t}"
 	function_string		+= "\n\t" + json_object_name + "* result = get_" + json_object_name + "();"
+	function_string     += "\n\t}"
+	function_string     += "\n\t"
+	function_string     += "\n\t"
+	function_string     += "\n\t"
 	function_string		+= "\n\treturn result;"
 	function_string     += "\n}"
 	return function_string

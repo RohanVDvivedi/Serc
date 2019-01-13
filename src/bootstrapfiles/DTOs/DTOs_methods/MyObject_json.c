@@ -121,5 +121,9 @@ MyObject* MyObject_fromJson( json_node* json )
 		return NULL;
 	}
 	MyObject* result = get_MyObject();
+	}
+	}
+	}
+	}
 	return result;
 }
