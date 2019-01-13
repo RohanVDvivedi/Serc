@@ -97,6 +97,7 @@ array_json* array_json_fromJson(json_node* json)
 	{
 		return NULL;
 	}
+	
 	array_json* result = get_array();
 
 	for(unsigned long long int i = 0;i<json->child_count;i++)
