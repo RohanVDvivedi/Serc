@@ -65,6 +65,10 @@ dataTypeFormatSpecifierStrings = {
 	DataType.DOUBLE:'%lf'
 }
 
+def forJson_forNumber(fieldi) :
+	code = ""
+	return code
+
 def toJson_forNumber(fieldi) :
 	code  = ""
 	pointer_variable = "(object->" + fieldi[1] + ")"
@@ -90,6 +94,10 @@ def toJson_forNumber(fieldi) :
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
 	code += "\n\taddToJsonString(JS,number);"
 	code += "\n"
+	return code
+
+def forJson_forString(fieldi) :
+	code = ""
 	return code
 
 def toJson_forString(fieldi) :
@@ -118,6 +126,10 @@ def toJson_forString(fieldi) :
 		code += "\n\t\taddToJsonString(JS,\"null,\");"
 		code += "\n\t}"
 	code += "\n"
+	return code
+
+def forJson_forBoolean(fieldi) :
+	code = ""
 	return code
 
 def toJson_forBoolean(fieldi) :
@@ -152,6 +164,11 @@ def toJson_forBoolean(fieldi) :
 		code += "\n\t}"
 	code += "\n"
 	return code
+
+def forJson_forObject(fieldi) :
+	code = ""
+	return code
+
 
 def toJson_forObject(fieldi) :
 	datatype_name_string = "array_json"
@@ -196,7 +213,7 @@ def toJson_forObject(fieldi) :
 	code += "\n"
 	return code
 
-def to_json_function_creator(json_object_name,fields):
+def to_json_function_creator(json_object_name,fields) :
 	function_string      = ""
 	function_string     += "\nchar* " + json_object_name + "_toJson( " + json_object_name + "* object )"
 	function_declaration = function_string + ";"
@@ -239,7 +256,7 @@ def to_json_function_creator(json_object_name,fields):
 	function_string     += "\n}"
 	return function_string
 
-def from_json_function_creator(json_object_name,fields):
+def from_json_function_creator(json_object_name,fields) :
 	function_string      = ""
 	function_string     += "\n" + json_object_name + "* " + json_object_name + "_fromJson( json_node* json )"
 	function_declaration = function_string + ";"
@@ -251,7 +268,17 @@ def from_json_function_creator(json_object_name,fields):
 	function_string		+= "\n\t" + json_object_name + "* result = get_" + json_object_name + "();"
 	function_string     += "\n\t}"
 	function_string     += "\n\t"
-	function_string     += "\n\t"
+
+	for fieldi in fields:
+		if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
+			function_string += forJson_forObject(fieldi)
+		elif fieldi[0] == DataType.STRING :
+			function_string += forJson_forString(fieldi)
+		elif fieldi[0] == DataType.BOOLEAN :
+			function_string += forJson_forBoolean(fieldi)
+		else :
+			function_string += forJson_forNumber(fieldi)
+
 	function_string     += "\n\t"
 	function_string		+= "\n\treturn result;"
 	function_string     += "\n}"
