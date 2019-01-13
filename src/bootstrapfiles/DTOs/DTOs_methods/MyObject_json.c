@@ -120,10 +120,114 @@ MyObject* MyObject_fromJson( json_node* json )
 	{
 		return NULL;
 	}
+	
 	MyObject* result = get_MyObject();
+	json_node* required_key = NULL;
+	
+	required_key = find_key(json,"myint");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == NUMBER_JSON )
+		{
+			
+		}
 	}
+	
+	required_key = find_key(json,"mylongint");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == NUMBER_JSON )
+		{
+			
+		}
 	}
+	
+	required_key = find_key(json,"myuint");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == NUMBER_JSON )
+		{
+			
+		}
 	}
+	
+	required_key = find_key(json,"myulongint");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == NUMBER_JSON )
+		{
+			
+		}
 	}
+	
+	required_key = find_key(json,"mystring");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == STRING_JSON )
+		{
+			
+		}
+	}
+	
+	required_key = find_key(json,"my_bool");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == TRUE_JSON )
+		{
+			
+		}
+		else if( value->type == FALSE_JSON )
+		{
+			
+		}
+	}
+	
+	required_key = find_key(json,"myfloat");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == NUMBER_JSON )
+		{
+			
+		}
+	}
+	
+	required_key = find_key(json,"mydouble");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == NUMBER_JSON )
+		{
+			
+		}
+	}
+	
+	required_key = find_key(json,"my_array");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == ARRAY_JSON )
+		{
+			
+		}
+	}
+	
+	required_key = find_key(json,"my_sub");
+	if( required_key != NULL && required_key->child != NULL )
+	{
+		json_node* value = required_key->child;
+		if( value->type == OBJECT_JSON )
+		{
+			
+		}
+	}
+	
+	
 	return result;
 }

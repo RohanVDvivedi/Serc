@@ -67,6 +67,11 @@ dataTypeFormatSpecifierStrings = {
 
 def forJson_forNumber(fieldi) :
 	code = ""
+	code  = ""
+	code += "\n\t\tif( value->type == NUMBER_JSON )"
+	code += "\n\t\t{"
+	code += "\n\t\t\t"
+	code += "\n\t\t}"
 	return code
 
 def toJson_forNumber(fieldi) :
@@ -97,7 +102,11 @@ def toJson_forNumber(fieldi) :
 	return code
 
 def forJson_forString(fieldi) :
-	code = ""
+	code  = ""
+	code += "\n\t\tif( value->type == STRING_JSON )"
+	code += "\n\t\t{"
+	code += "\n\t\t\t"
+	code += "\n\t\t}"
 	return code
 
 def toJson_forString(fieldi) :
@@ -130,6 +139,15 @@ def toJson_forString(fieldi) :
 
 def forJson_forBoolean(fieldi) :
 	code = ""
+	code  = ""
+	code += "\n\t\tif( value->type == TRUE_JSON )"
+	code += "\n\t\t{"
+	code += "\n\t\t\t"
+	code += "\n\t\t}"
+	code += "\n\t\telse if( value->type == FALSE_JSON )"
+	code += "\n\t\t{"
+	code += "\n\t\t\t"
+	code += "\n\t\t}"
 	return code
 
 def toJson_forBoolean(fieldi) :
@@ -166,7 +184,17 @@ def toJson_forBoolean(fieldi) :
 	return code
 
 def forJson_forObject(fieldi) :
+	is_other = False
+	datatype_name_string = "array_json"
+	if fieldi[0] == DataType.OTHER :
+		is_other = True
+		datatype_name_string = fieldi[3]
 	code = ""
+	code  = ""
+	code += "\n\t\tif( value->type == " + ( "OBJECT_JSON" if is_other else "ARRAY_JSON" ) + " )"
+	code += "\n\t\t{"
+	code += "\n\t\t\t"
+	code += "\n\t\t}"
 	return code
 
 
@@ -265,11 +293,16 @@ def from_json_function_creator(json_object_name,fields) :
 	function_string     += "\n\t{"
 	function_string     += "\n\t\treturn NULL;"
 	function_string     += "\n\t}"
+	function_string     += "\n\t"
 	function_string		+= "\n\t" + json_object_name + "* result = get_" + json_object_name + "();"
-	function_string     += "\n\t}"
+	function_string     += "\n\tjson_node* required_key = NULL;"
 	function_string     += "\n\t"
 
 	for fieldi in fields:
+		function_string += "\n\trequired_key = find_key(json,\"" + fieldi[1] + "\");"
+		function_string += "\n\tif( required_key != NULL && required_key->child != NULL )"
+		function_string += "\n\t{"
+		function_string += "\n\t\tjson_node* value = required_key->child;"
 		if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
 			function_string += forJson_forObject(fieldi)
 		elif fieldi[0] == DataType.STRING :
@@ -278,6 +311,8 @@ def from_json_function_creator(json_object_name,fields) :
 			function_string += forJson_forBoolean(fieldi)
 		else :
 			function_string += forJson_forNumber(fieldi)
+		function_string += "\n\t}"
+		function_string += "\n\t"
 
 	function_string     += "\n\t"
 	function_string		+= "\n\treturn result;"
