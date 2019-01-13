@@ -163,5 +163,9 @@ char* object_json_toJson(object_json* object_p)
 
 object_json* object_json_fromJson(json_node* json)
 {
+	if(json == NULL || json->type == NULL_JSON || json->is_key == 1)
+	{
+		return NULL;
+	}
 	return NULL;
 }

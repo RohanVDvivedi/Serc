@@ -93,7 +93,7 @@ char* array_json_toJson(array_json* array_p)
 
 array_json* array_json_fromJson(json_node* json)
 {
-	if(json == NULL || json->type ==  NULL_JSON)
+	if(json == NULL || json->type ==  NULL_JSON || json->type != ARRAY_JSON)
 	{
 		return NULL;
 	}
