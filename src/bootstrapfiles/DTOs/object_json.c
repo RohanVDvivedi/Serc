@@ -160,3 +160,8 @@ char* object_json_toJson(object_json* object_p)
 	free(JS);
 	return result;
 }
+
+object_json* object_json_fromJson(json_node* json)
+{
+	return NULL;
+}

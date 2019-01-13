@@ -14,34 +14,33 @@ object_json* get_object_at(array_json* array_p, unsigned long long int i)
 	return (array_p!=NULL && array_p->size > i) ? array_p->objectList[i] : NULL;
 }
 
+void add_element(array_json* array_p,object_json* array_element_p)
+{
+	if(array_p->objectList == NULL || array_p->size == array_p->max_size)
+	{
+		unsigned long long int new_max_size = array_p->max_size * 2;
+		if(new_max_size == 0)
+		{
+			new_max_size = 3;
+		}
+		object_json** new_objectList = (object_json**) calloc(new_max_size,sizeof(object_json*));
+		for(unsigned long long int i = 0;i<array_p->size;i++)
+		{
+			new_objectList[i] = array_p->objectList[i];
+		}
+		array_p->objectList = new_objectList;
+		array_p->max_size = new_max_size;
+	}
+	array_p->objectList[(array_p->size)++] = array_element_p;
+}
+
 void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes)
 {
 	if(array_p!=NULL)
 	{
 		object_json* new_obj = get_object();
 		set(new_obj,Data,Type,Bytes);
-		if(array_p->objectList!=NULL && array_p->size < array_p->max_size)
-		{
-			array_p->objectList[(array_p->size)++] = new_obj;
-		}
-		else
-		{
-			unsigned long long int new_max_size = array_p->max_size * 2;
-			if(new_max_size == 0)
-			{
-				new_max_size = 3;
-			}
-			object_json** new_objectList = (object_json**) calloc(new_max_size,sizeof(object_json*));
-			unsigned long long int i = 0;
-			for(;i<array_p->size;i++)
-			{
-				new_objectList[i] = array_p->objectList[i];
-			}
-			new_objectList[i] = new_obj;
-			array_p->objectList = new_objectList;
-			array_p->max_size = new_max_size;
-			array_p->size++; 
-		}
+		add_element(array_p,new_obj);
 	}
 }
 
@@ -99,5 +98,12 @@ array_json* array_json_fromJson(json_node* json)
 		return NULL;
 	}
 	array_json* result = get_array();
+
+	for(unsigned long long int i = 0;i<json->child_count;i++)
+	{
+		object_json* array_element = object_json_fromJson(json->children[i]);
+		add_element(result,array_element);
+	}
+
 	return result;
 }
