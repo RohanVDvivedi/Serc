@@ -55,20 +55,20 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 	json_node* required_key = NULL;
 	
 	required_key = find_key(json,"a");
-	if( required_key != NULL && required_key->child != NULL )
+	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
 	{
 		json_node* value = required_key->child;
-		if( value->type == NUMBER_JSON )
+		if( value != NULL && value->type == NUMBER_JSON )
 		{
 			
 		}
 	}
 	
 	required_key = find_key(json,"b");
-	if( required_key != NULL && required_key->child != NULL )
+	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
 	{
 		json_node* value = required_key->child;
-		if( value->type == STRING_JSON )
+		if( value != NULL && value->type == STRING_JSON )
 		{
 			
 		}
