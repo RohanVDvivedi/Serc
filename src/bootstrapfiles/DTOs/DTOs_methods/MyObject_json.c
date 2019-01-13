@@ -121,7 +121,7 @@ MyObject* MyObject_fromJson( json_node* json )
 		return NULL;
 	}
 	
-	MyObject* result = get_MyObject();
+	MyObject* object = get_MyObject();
 	json_node* required_key = NULL;
 	
 	required_key = find_key(json,"myint");
@@ -130,7 +130,12 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%d",(&(object->myint)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -140,7 +145,12 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%ld",(&(object->mylongint)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -150,7 +160,12 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%u",(&(object->myuint)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -160,7 +175,12 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%lu",(&(object->myulongint)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -197,7 +217,12 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%f",(&(object->myfloat)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -207,7 +232,12 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%lf",(&(object->mydouble)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -231,6 +261,5 @@ MyObject* MyObject_fromJson( json_node* json )
 		}
 	}
 	
-	
-	return result;
+	return object;
 }

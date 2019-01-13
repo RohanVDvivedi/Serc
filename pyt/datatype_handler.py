@@ -66,11 +66,17 @@ dataTypeFormatSpecifierStrings = {
 }
 
 def forJson_forNumber(fieldi) :
+	pointer_variable = "(object->" + fieldi[1] + ")"
 	code = ""
 	code  = ""
 	code += "\n\t\tif( value != NULL && value->type == NUMBER_JSON )"
 	code += "\n\t\t{"
+	code += "\n\t\t\tchar prev_char = (*(value->end_index + 1));"
+	code += "\n\t\t\t(*(value->end_index + 1)) = \'\\0\';"
 	code += "\n\t\t\t"
+	code += "\n\t\t\tsscanf(value->start_index,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + "\",(&" + pointer_variable + "));";
+	code += "\n\t\t\t"
+	code += "\n\t\t\t(*(value->end_index + 1)) = prev_char;"
 	code += "\n\t\t}"
 	return code
 
@@ -89,7 +95,7 @@ def toJson_forNumber(fieldi) :
 			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
-	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[int(fieldi[0])] + ",\", (" + pointer_variable + ") );"
+	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + ",\", (" + pointer_variable + ") );"
 	if fieldi[2] > 0 :
 		code += "\n\t}"
 		code += "\n\telse"
@@ -296,7 +302,7 @@ def from_json_function_creator(json_object_name,fields) :
 	function_string     += "\n\t\treturn NULL;"
 	function_string     += "\n\t}"
 	function_string     += "\n\t"
-	function_string		+= "\n\t" + json_object_name + "* result = get_" + json_object_name + "();"
+	function_string		+= "\n\t" + json_object_name + "* object = get_" + json_object_name + "();"
 	function_string     += "\n\tjson_node* required_key = NULL;"
 	function_string     += "\n\t"
 
@@ -316,8 +322,7 @@ def from_json_function_creator(json_object_name,fields) :
 		function_string += "\n\t}"
 		function_string += "\n\t"
 
-	function_string     += "\n\t"
-	function_string		+= "\n\treturn result;"
+	function_string		+= "\n\treturn object;"
 	function_string     += "\n}"
 	return function_string
 

@@ -51,7 +51,7 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 		return NULL;
 	}
 	
-	MyObjectSub* result = get_MyObjectSub();
+	MyObjectSub* object = get_MyObjectSub();
 	json_node* required_key = NULL;
 	
 	required_key = find_key(json,"a");
@@ -60,7 +60,12 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == NUMBER_JSON )
 		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
 			
+			sscanf(value->start_index,"%d",(&(object->a)));
+			
+			(*(value->end_index + 1)) = prev_char;
 		}
 	}
 	
@@ -74,6 +79,5 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 		}
 	}
 	
-	
-	return result;
+	return object;
 }
