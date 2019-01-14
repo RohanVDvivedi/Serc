@@ -108,9 +108,17 @@ def toJson_forNumber(fieldi) :
 	return code
 
 def forJson_forString(fieldi) :
+	pointer_variable = "(object->" + fieldi[1] + ")"
 	code  = ""
 	code += "\n\t\tif( value != NULL && value->type == STRING_JSON )"
 	code += "\n\t\t{"
+	code += "\n\t\t\tchar prev_char = (*(value->end_index));"
+	code += "\n\t\t\t(*(value->end_index)) = \'\\0\';"
+	code += "\n\t\t\t"
+	code += "\n\t\t\t" + pointer_variable + " = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );"
+	code += "\n\t\t\tstrcpy(" + pointer_variable + ",value->start_index);"
+	code += "\n\t\t\t"
+	code += "\n\t\t\t(*(value->end_index)) = prev_char;"
 	code += "\n\t\t\t"
 	code += "\n\t\t}"
 	return code

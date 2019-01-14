@@ -190,6 +190,13 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == STRING_JSON )
 		{
+			char prev_char = (*(value->end_index));
+			(*(value->end_index)) = '\0';
+			
+			(object->mystring) = malloc(sizeof(char) * (strlen(value->start_index) + 1) );
+			strcpy((object->mystring),value->start_index);
+			
+			(*(value->end_index)) = prev_char;
 			
 		}
 	}
