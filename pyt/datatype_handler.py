@@ -144,16 +144,17 @@ def toJson_forString(fieldi) :
 	return code
 
 def forJson_forBoolean(fieldi) :
+	pointer_variable = "(object->" + fieldi[1] + ")"
 	code = ""
 	code += "\n\t\tif( value != NULL )"
 	code += "\n\t\t{"
 	code += "\n\t\t\tif( value->type == TRUE_JSON )"
 	code += "\n\t\t\t{"
-	code += "\n\t\t\t\t"
+	code += "\n\t\t\t\t" + pointer_variable + " = 1;"
 	code += "\n\t\t\t}"
 	code += "\n\t\t\telse if( value->type == FALSE_JSON )"
 	code += "\n\t\t\t{"
-	code += "\n\t\t\t\t"
+	code += "\n\t\t\t\t" + pointer_variable + " = 0;"
 	code += "\n\t\t\t}"
 	code += "\n\t\t}"
 	return code

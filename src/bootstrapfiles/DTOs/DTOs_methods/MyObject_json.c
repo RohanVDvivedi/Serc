@@ -202,11 +202,11 @@ MyObject* MyObject_fromJson( json_node* json )
 		{
 			if( value->type == TRUE_JSON )
 			{
-				
+				(object->my_bool) = 1;
 			}
 			else if( value->type == FALSE_JSON )
 			{
-				
+				(object->my_bool) = 0;
 			}
 		}
 	}
