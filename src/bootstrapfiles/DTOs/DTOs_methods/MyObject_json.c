@@ -254,7 +254,7 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == ARRAY_JSON )
 		{
-			
+			(object->my_array) = array_json_fromJson(value);
 		}
 	}
 	
@@ -264,7 +264,7 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == OBJECT_JSON )
 		{
-			
+			(object->my_sub) = MyObjectSub_fromJson(value);
 		}
 	}
 	

@@ -201,16 +201,16 @@ def toJson_forBoolean(fieldi) :
 	return code
 
 def forJson_forObject(fieldi) :
+	pointer_variable = "(object->" + fieldi[1] + ")"
 	is_other = False
 	datatype_name_string = "array_json"
 	if fieldi[0] == DataType.OTHER :
 		is_other = True
 		datatype_name_string = fieldi[3]
-	code = ""
 	code  = ""
 	code += "\n\t\tif( value != NULL && value->type == " + ( "OBJECT_JSON" if is_other else "ARRAY_JSON" ) + " )"
 	code += "\n\t\t{"
-	code += "\n\t\t\t"
+	code += "\n\t\t\t" + pointer_variable + " = " + datatype_name_string + "_fromJson(value);"
 	code += "\n\t\t}"
 	return code
 
