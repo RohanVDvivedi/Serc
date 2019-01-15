@@ -114,14 +114,13 @@ char* MyObject_toJson( MyObject* object )
 
 
 
-MyObject* MyObject_fromJson( json_node* json )
+void MyObject_fromJson( MyObject* object, json_node* json )
 {
 	if( json == NULL || json->type == NULL_JSON )
 	{
 		return NULL;
 	}
 	
-	MyObject* object = get_MyObject();
 	json_node* required_key = NULL;
 	
 	required_key = find_key(json,"myint");
@@ -209,11 +208,11 @@ MyObject* MyObject_fromJson( json_node* json )
 		{
 			if( value->type == TRUE_JSON )
 			{
-				(object->my_bool) = 1;
+				 object->my_bool  = 1;
 			}
 			else if( value->type == FALSE_JSON )
 			{
-				(object->my_bool) = 0;
+				 object->my_bool  = 0;
 			}
 		}
 	}
@@ -254,7 +253,7 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == ARRAY_JSON )
 		{
-			(object->my_array) = array_json_fromJson(value);
+			array_json_fromJson((object->my_array),value);
 		}
 	}
 	
@@ -264,7 +263,7 @@ MyObject* MyObject_fromJson( json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == OBJECT_JSON )
 		{
-			(object->my_sub) = MyObjectSub_fromJson(value);
+			MyObjectSub_fromJson((object->my_sub),value);
 		}
 	}
 	

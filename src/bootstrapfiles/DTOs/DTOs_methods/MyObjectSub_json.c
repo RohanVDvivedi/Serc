@@ -44,14 +44,13 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 
 
 
-MyObjectSub* MyObjectSub_fromJson( json_node* json )
+void MyObjectSub_fromJson( MyObjectSub* object, json_node* json )
 {
 	if( json == NULL || json->type == NULL_JSON )
 	{
 		return NULL;
 	}
 	
-	MyObjectSub* object = get_MyObjectSub();
 	json_node* required_key = NULL;
 	
 	required_key = find_key(json,"a");

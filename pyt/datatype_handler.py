@@ -169,18 +169,30 @@ def toJson_forString(fieldi) :
 	return code
 
 def forJson_forBoolean(fieldi) :
-	pointer_variable = "(object->" + fieldi[1] + ")"
+	pointer_variable = "object->" + fieldi[1]
 	code  = ""
 	code += "\n\t\tif( value != NULL )"
 	code += "\n\t\t{"
-	code += "\n\t\t\tif( value->type == TRUE_JSON )"
-	code += "\n\t\t\t{"
-	code += "\n\t\t\t\t" + pointer_variable + " = 1;"
-	code += "\n\t\t\t}"
-	code += "\n\t\t\telse if( value->type == FALSE_JSON )"
-	code += "\n\t\t\t{"
-	code += "\n\t\t\t\t" + pointer_variable + " = 0;"
-	code += "\n\t\t\t}"
+	tab_if_required = ""
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\t\t\tif( "
+		for i in range(fieldi[2]) :
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+		code += " )"
+		code += "\n\t\t\t{"
+	code += "\n\t\t\t" + tab_if_required + "if( value->type == TRUE_JSON )"
+	code += "\n\t\t\t" + tab_if_required + "{"
+	code += "\n\t\t\t\t" + tab_if_required + "" + get_value(pointer_variable,fieldi[2]) + " = 1;"
+	code += "\n\t\t\t" + tab_if_required + "}"
+	code += "\n\t\t\t" + tab_if_required + "else if( value->type == FALSE_JSON )"
+	code += "\n\t\t\t" + tab_if_required + "{"
+	code += "\n\t\t\t\t" + tab_if_required + "" + get_value(pointer_variable,fieldi[2]) + " = 0;"
+	code += "\n\t\t\t" + tab_if_required + "}"
+	if fieldi[2] > 0 :
+		code += "\n\t\t\t}"
 	code += "\n\t\t}"
 	return code
 
@@ -225,7 +237,7 @@ def forJson_forObject(fieldi) :
 	code  = ""
 	code += "\n\t\tif( value != NULL && value->type == " + ( "OBJECT_JSON" if is_other else "ARRAY_JSON" ) + " )"
 	code += "\n\t\t{"
-	code += "\n\t\t\t" + pointer_variable + " = " + datatype_name_string + "_fromJson(value);"
+	code += "\n\t\t\t" + datatype_name_string + "_fromJson(" + pointer_variable + ",value);"
 	code += "\n\t\t}"
 	return code
 
@@ -314,7 +326,7 @@ def to_json_function_creator(json_object_name,fields) :
 
 def from_json_function_creator(json_object_name,fields) :
 	function_string      = ""
-	function_string     += "\n" + json_object_name + "* " + json_object_name + "_fromJson( json_node* json )"
+	function_string     += "\nvoid " + json_object_name + "_fromJson( " + json_object_name + "* object, json_node* json )"
 	function_declaration = function_string + ";"
 	function_string     += "\n{"
 	function_string     += "\n\tif( json == NULL || json->type == NULL_JSON )"
@@ -322,7 +334,6 @@ def from_json_function_creator(json_object_name,fields) :
 	function_string     += "\n\t\treturn NULL;"
 	function_string     += "\n\t}"
 	function_string     += "\n\t"
-	function_string		+= "\n\t" + json_object_name + "* object = get_" + json_object_name + "();"
 	function_string     += "\n\tjson_node* required_key = NULL;"
 	function_string     += "\n\t"
 
