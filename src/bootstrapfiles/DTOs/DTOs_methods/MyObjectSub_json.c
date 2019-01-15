@@ -18,15 +18,15 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 	}
 	JS = getJsonString("{");
 
-	sprintf(number,"%d,", ((object->a)) );
+	sprintf(number,"%d,", ( object->a ) );
 	addToJsonString(JS,"\"a\":");
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"b\":");
-	if( ( ( (object->b) ) != NULL ) )
+	if( ( ( object->b ) != NULL ) )
 	{
 		addToJsonString(JS,"\"");
-		addToJsonString(JS, ((object->b)) );
+		addToJsonString(JS, ( object->b ) );
 		addToJsonString(JS,"\",");
 	}
 	else
@@ -63,7 +63,7 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%d",(&(object->a)));
+			sscanf(value->start_index,"%d",( &(object->a) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}

@@ -18,27 +18,27 @@ char* MyObject_toJson( MyObject* object )
 	}
 	JS = getJsonString("{");
 
-	sprintf(number,"%d,", ((object->myint)) );
+	sprintf(number,"%d,", ( object->myint ) );
 	addToJsonString(JS,"\"myint\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%ld,", ((object->mylongint)) );
+	sprintf(number,"%ld,", ( object->mylongint ) );
 	addToJsonString(JS,"\"mylongint\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%u,", ((object->myuint)) );
+	sprintf(number,"%u,", ( object->myuint ) );
 	addToJsonString(JS,"\"myuint\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%lu,", ((object->myulongint)) );
+	sprintf(number,"%lu,", ( object->myulongint ) );
 	addToJsonString(JS,"\"myulongint\":");
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"mystring\":");
-	if( ( ( (object->mystring) ) != NULL ) )
+	if( ( ( object->mystring ) != NULL ) )
 	{
 		addToJsonString(JS,"\"");
-		addToJsonString(JS, ((object->mystring)) );
+		addToJsonString(JS, ( object->mystring ) );
 		addToJsonString(JS,"\",");
 	}
 	else
@@ -47,7 +47,7 @@ char* MyObject_toJson( MyObject* object )
 	}
 
 	addToJsonString(JS,"\"my_bool\"");
-	if( (object->my_bool) )
+	if(  object->my_bool  )
 	{
 		addToJsonString(JS,":true,");
 	}
@@ -56,18 +56,18 @@ char* MyObject_toJson( MyObject* object )
 		addToJsonString(JS,":false,");
 	}
 
-	sprintf(number,"%f,", ((object->myfloat)) );
+	sprintf(number,"%f,", ( object->myfloat ) );
 	addToJsonString(JS,"\"myfloat\":");
 	addToJsonString(JS,number);
 
-	sprintf(number,"%lf,", ((object->mydouble)) );
+	sprintf(number,"%lf,", ( object->mydouble ) );
 	addToJsonString(JS,"\"mydouble\":");
 	addToJsonString(JS,number);
 
 	addToJsonString(JS,"\"my_array\":");
-	if( ( ( (object->my_array) ) != NULL ) )
+	if( ( ( object->my_array ) != NULL ) )
 	{
-		resultJsonObject = array_json_toJson( ((object->my_array)) );
+		resultJsonObject = array_json_toJson( ( object->my_array ) );
 		if( strcmp(resultJsonObject,"{}")==0 )
 		{
 			addToJsonString(JS,"null,");
@@ -85,9 +85,9 @@ char* MyObject_toJson( MyObject* object )
 	}
 
 	addToJsonString(JS,"\"my_sub\":");
-	if( ( ( (object->my_sub) ) != NULL ) )
+	if( ( ( object->my_sub ) != NULL ) )
 	{
-		resultJsonObject = MyObjectSub_toJson( ((object->my_sub)) );
+		resultJsonObject = MyObjectSub_toJson( ( object->my_sub ) );
 		if( strcmp(resultJsonObject,"{}")==0 )
 		{
 			addToJsonString(JS,"null,");
@@ -133,7 +133,7 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%d",(&(object->myint)));
+			sscanf(value->start_index,"%d",( &(object->myint) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}
@@ -148,7 +148,7 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%ld",(&(object->mylongint)));
+			sscanf(value->start_index,"%ld",( &(object->mylongint) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}
@@ -163,7 +163,7 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%u",(&(object->myuint)));
+			sscanf(value->start_index,"%u",( &(object->myuint) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}
@@ -178,7 +178,7 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%lu",(&(object->myulongint)));
+			sscanf(value->start_index,"%lu",( &(object->myulongint) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}
@@ -227,7 +227,7 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%f",(&(object->myfloat)));
+			sscanf(value->start_index,"%f",( &(object->myfloat) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}
@@ -242,7 +242,7 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index + 1));
 			(*(value->end_index + 1)) = '\0';
 			
-			sscanf(value->start_index,"%lf",(&(object->mydouble)));
+			sscanf(value->start_index,"%lf",( &(object->mydouble) ));
 			
 			(*(value->end_index + 1)) = prev_char;
 		}

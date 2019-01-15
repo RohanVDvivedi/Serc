@@ -72,35 +72,47 @@ def get_value(var_p,n = 1) :
 	return " " + ( "*(" * n ) + var_p.strip() + ( ")" * n ) + " " if n >= 0 else var_p
 
 def forJson_forNumber(fieldi) :
-	pointer_variable = "(object->" + fieldi[1] + ")"
+	pointer_variable = "object->" + fieldi[1]
 	code  = ""
 	code += "\n\t\tif( value != NULL && value->type == NUMBER_JSON )"
 	code += "\n\t\t{"
-	code += "\n\t\t\tchar prev_char = (*(value->end_index + 1));"
-	code += "\n\t\t\t(*(value->end_index + 1)) = \'\\0\';"
+	tab_if_required = ""
+	address_of_data = get_address(pointer_variable)
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\t\t\tif("
+		for i in range(fieldi[2]) :
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+		code += ")"
+		code += "\n\t\t\t{"
+		address_of_data = get_value(pointer_variable,fieldi[2]-1)
+	code += "\n\t\t\t" + tab_if_required + "char prev_char = (*(value->end_index + 1));"
+	code += "\n\t\t\t" + tab_if_required + "(*(value->end_index + 1)) = \'\\0\';"
 	code += "\n\t\t\t"
-	code += "\n\t\t\tsscanf(value->start_index,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + "\",(&" + pointer_variable + "));";
+	code += "\n\t\t\t" + tab_if_required + "sscanf(value->start_index,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + "\",(" + address_of_data + "));";
 	code += "\n\t\t\t"
-	code += "\n\t\t\t(*(value->end_index + 1)) = prev_char;"
+	code += "\n\t\t\t" + tab_if_required + "(*(value->end_index + 1)) = prev_char;"
+	if fieldi[2] > 0 :
+		code += "\n\t\t\t}"
 	code += "\n\t\t}"
 	return code
 
 def toJson_forNumber(fieldi) :
 	code  = ""
-	pointer_variable = "(object->" + fieldi[1] + ")"
+	pointer_variable = "object->" + fieldi[1]
 	tab_if_required = ""
 	if fieldi[2] > 0 :
 		tab_if_required = "\t"
 		code += "\n\tif( "
 		for i in range(fieldi[2]) :
-			code += "( ( " + pointer_variable + " ) != NULL )"
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
 			if i != fieldi[2]-1 : 
 				code += " && "
-			i -= 1
-			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
-	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + ",\", (" + pointer_variable + ") );"
+	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + ",\", (" + get_value(pointer_variable,fieldi[2]) + ") );"
 	if fieldi[2] > 0 :
 		code += "\n\t}"
 		code += "\n\telse"
@@ -131,21 +143,21 @@ def forJson_forString(fieldi) :
 def toJson_forString(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
-	pointer_variable = "(object->" + fieldi[1] + ")"
+	pointer_variable = "object->" + fieldi[1]
 	tab_if_required = ""
+	address_of_data = pointer_variable
 	if fieldi[2] > 0 :
 		tab_if_required = "\t"
 		code += "\n\tif( "
 		for i in range(fieldi[2]) :
-			code += "( ( " + pointer_variable + " ) != NULL )"
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
 			if i != fieldi[2]-1 : 
 				code += " && "
-			i -= 1
-			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
+		address_of_data = get_value(pointer_variable,fieldi[2]-1)
 	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\"\");"
-	code += "\n\t" + tab_if_required + "addToJsonString(JS, (" + pointer_variable[1:] + ")" + " );"
+	code += "\n\t" + tab_if_required + "addToJsonString(JS, (" + address_of_data + ")" + " );"
 	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\",\");"
 	if fieldi[2] > 0 :
 		code += "\n\t}"
@@ -175,20 +187,18 @@ def forJson_forBoolean(fieldi) :
 def toJson_forBoolean(fieldi) :
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\"\");"
-	pointer_variable = "(object->" + fieldi[1] + ")"
+	pointer_variable = "object->" + fieldi[1]
 	tab_if_required = ""
 	if fieldi[2] > 0 :
 		tab_if_required = "\t"
 		code += "\n\tif( "
 		for i in range(fieldi[2]) :
-			code += "( ( " + pointer_variable + " ) != NULL )"
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
 			if i != fieldi[2]-1 : 
 				code += " && "
-			i -= 1
-			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
-	code += "\n\t" + tab_if_required + "if( " + pointer_variable + " )"
+	code += "\n\t" + tab_if_required + "if( " + get_value(pointer_variable,fieldi[2]) + " )"
 	code += "\n\t" + tab_if_required + "{"
 	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\":true,\");"
 	code += "\n\t" + tab_if_required + "}"
@@ -226,24 +236,20 @@ def toJson_forObject(fieldi) :
 		datatype_name_string = fieldi[3]
 	code  = ""
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
-	pointer_variable = "(object->" + fieldi[1] + ")"
+	pointer_variable = "object->" + fieldi[1]
 	tab_if_required = ""
+	address_of_data = get_address(pointer_variable)
 	if fieldi[2] > 0 :
 		tab_if_required = "\t"
 		code += "\n\tif( "
 		for i in range(fieldi[2]) :
-			code += "( ( " + pointer_variable + " ) != NULL )"
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
 			if i != fieldi[2]-1 : 
 				code += " && "
-			i -= 1
-			pointer_variable = "*" + pointer_variable
 		code += " )"
 		code += "\n\t{"
-	if fieldi[2] == 0 :
-		pointer_address = "&(object->" + fieldi[1] + ")"
-	else :
-		pointer_address = pointer_variable[1:]
-	code += "\n\t" + tab_if_required + "resultJsonObject = " + datatype_name_string + "_toJson( (" + pointer_address + ") );"
+		address_of_data = get_value(pointer_variable,fieldi[2]-1)
+	code += "\n\t" + tab_if_required + "resultJsonObject = " + datatype_name_string + "_toJson( (" + address_of_data + ") );"
 	code += "\n\t" + tab_if_required + "if( strcmp(resultJsonObject,\"{}\")==0 )"
 	code += "\n\t" + tab_if_required + "{"
 	code += "\n\t\t" + tab_if_required + "addToJsonString(JS,\"null,\");"
