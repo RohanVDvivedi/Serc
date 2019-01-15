@@ -65,9 +65,14 @@ dataTypeFormatSpecifierStrings = {
 	DataType.DOUBLE:'%lf'
 }
 
+def get_address(var_p,n = 1) :
+	return " " + ( "&(" * n ) + var_p.strip() + ( ")" * n ) + " " if n >= 0 else var_p
+
+def get_value(var_p,n = 1) :
+	return " " + ( "*(" * n ) + var_p.strip() + ( ")" * n ) + " " if n >= 0 else var_p
+
 def forJson_forNumber(fieldi) :
 	pointer_variable = "(object->" + fieldi[1] + ")"
-	code = ""
 	code  = ""
 	code += "\n\t\tif( value != NULL && value->type == NUMBER_JSON )"
 	code += "\n\t\t{"
@@ -153,7 +158,7 @@ def toJson_forString(fieldi) :
 
 def forJson_forBoolean(fieldi) :
 	pointer_variable = "(object->" + fieldi[1] + ")"
-	code = ""
+	code  = ""
 	code += "\n\t\tif( value != NULL )"
 	code += "\n\t\t{"
 	code += "\n\t\t\tif( value->type == TRUE_JSON )"
