@@ -78,11 +78,11 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 			char prev_char = (*(value->end_index));
 			(*(value->end_index)) = '\0';
 			
-		if(( ( (object->b) ) != NULL ))
-		{
+			if(( ( (object->b) ) != NULL ))
+			{
 				(object->b) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
-			strcpy(	(object->b),value->start_index);
-		}
+				strcpy((object->b),value->start_index);
+			}
 			
 			(*(value->end_index)) = prev_char;
 			

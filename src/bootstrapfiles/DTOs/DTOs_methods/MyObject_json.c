@@ -260,8 +260,11 @@ MyObject* MyObject_fromJson( json_node* json )
 			if(( ( object->my_array ) != NULL ))
 			{
 				array_json* resultJsonObject = array_json_fromJson(value);
-				 *(object->my_array)  = *resultJsonObject;
-				delete_array_json(resultJsonObject);
+				if( resultJsonObject != NULL )
+				{
+					 *(object->my_array)  = *resultJsonObject;
+					delete_array_json(resultJsonObject);
+				}
 			}
 		}
 	}
@@ -275,8 +278,11 @@ MyObject* MyObject_fromJson( json_node* json )
 			if(( ( object->my_sub ) != NULL ))
 			{
 				MyObjectSub* resultJsonObject = MyObjectSub_fromJson(value);
-				 *(object->my_sub)  = *resultJsonObject;
-				delete_MyObjectSub(resultJsonObject);
+				if( resultJsonObject != NULL )
+				{
+					 *(object->my_sub)  = *resultJsonObject;
+					delete_MyObjectSub(resultJsonObject);
+				}
 			}
 		}
 	}

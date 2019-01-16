@@ -262,8 +262,11 @@ def forJson_forObject(fieldi) :
 		code += "\n\t\t\t{"
 		value_of_data = get_value(pointer_variable,fieldi[2])
 	code += "\n\t\t\t" + tab_if_required + datatype_name_string + "* resultJsonObject = " + datatype_name_string + "_fromJson(value);"
-	code += "\n\t\t\t" + tab_if_required + value_of_data + " = *resultJsonObject;"
-	code += "\n\t\t\t" + tab_if_required + "delete_" + datatype_name_string + "(resultJsonObject);"
+	code += "\n\t\t\t" + tab_if_required + "if( resultJsonObject != NULL )"
+	code += "\n\t\t\t" + tab_if_required + "{"
+	code += "\n\t\t\t\t" + tab_if_required + value_of_data + " = *resultJsonObject;"
+	code += "\n\t\t\t\t" + tab_if_required + "delete_" + datatype_name_string + "(resultJsonObject);"
+	code += "\n\t\t\t" + tab_if_required + "}"
 	if fieldi[2] > 0 :
 		code += "\n\t\t\t}"
 	code += "\n\t\t}"
