@@ -37,6 +37,9 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	unsigned char bool_= 0;
 	char* arr_str = "world";
 
+	m->my_array = get_array_json();
+	m->my_sub = get_MyObjectSub();
+
 	add(m->my_array,&i,INTEGER_JSON,sizeof(long long int));
 	add(m->my_array,&dou,DOUBLE_JSON,sizeof(double));
 	add(m->my_array,&bool_,BOOLEAN_JSON,sizeof(unsigned char));
@@ -71,6 +74,8 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	
 	json_delete(node);
 
+	delete_array_json(m->my_array);
+	delete_MyObjectSub(m->my_sub);
 	delete_MyObject(m);
 	//
 	return 0;
