@@ -91,3 +91,9 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 	
 	return object;
 }
+
+
+// here goes the delete function
+
+
+// here goes the get function

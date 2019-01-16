@@ -390,3 +390,10 @@ def from_json_function_creator(json_object_name,fields) :
 	return function_string
 
 
+def delete_function_creator(json_object_name,fields) :
+	code = "// here goes the delete function"
+	return code
+
+def get_function_creator(json_object_name,fields) :
+	code = "// here goes the get function"
+	return code
