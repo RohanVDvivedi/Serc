@@ -366,7 +366,7 @@ def from_json_function_creator(json_object_name,fields) :
 	function_string     += "\n\t}"
 	function_string     += "\n\t"
 	function_string     += "\n\tjson_node* required_key = NULL;"
-	function_string     += "\n\t" + json_object_name + "* object = get_" + json_object_name + "();"
+	function_string		+= "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(1,sizeof(" + json_object_name + ")) );"
 	function_string     += "\n\t"
 
 	for fieldi in fields:
@@ -391,24 +391,24 @@ def from_json_function_creator(json_object_name,fields) :
 
 
 def delete_function_creator(json_object_name,fields) :
-	code  = ""
-	code += "\nvoid delete_" + json_object_name + "( " + json_object_name + "* object )"
-	code += "\n{"
-	code += "\n\tif( object == NULL )"
-	code += "\n\t{"
-	code += "\n\t\treturn;"
-	code += "\n\t}"
-	code += "\n\tfree(object);"
-	code += "\n}"
-	return code
+	function_string  = ""
+	function_string += "\nvoid delete_" + json_object_name + "( " + json_object_name + "* object )"
+	function_string += "\n{"
+	function_string += "\n\tif( object == NULL )"
+	function_string += "\n\t{"
+	function_string += "\n\t\treturn;"
+	function_string += "\n\t}"
+	function_string += "\n\tfree(object);"
+	function_string += "\n}"
+	return function_string
 
 def get_function_creator(json_object_name,fields) :
-	code  = ""
-	code += "\n" + json_object_name + "* get_" + json_object_name + "()"
-	code += "\n{"
-	code += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(1,sizeof(" + json_object_name + ")) );"
-	code += "\n\treturn object;"
-	code += "\n}"
-	return code
+	function_string  = ""
+	function_string += "\n" + json_object_name + "* get_" + json_object_name + "()"
+	function_string += "\n{"
+	function_string += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(1,sizeof(" + json_object_name + ")) );"
+	function_string += "\n\treturn object;"
+	function_string += "\n}"
+	return function_string
 
 

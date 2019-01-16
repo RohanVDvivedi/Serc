@@ -122,7 +122,7 @@ MyObject* MyObject_fromJson( json_node* json )
 	}
 	
 	json_node* required_key = NULL;
-	MyObject* object = get_MyObject();
+	MyObject* object = ( (MyObject*) calloc(1,sizeof(MyObject)) );
 	
 	required_key = find_key(json,"myint");
 	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
