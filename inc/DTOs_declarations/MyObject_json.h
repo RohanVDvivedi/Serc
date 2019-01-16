@@ -25,7 +25,7 @@ MyObject* get_MyObject();
 
 char* MyObject_toJson(MyObject* myobject);
 
-void MyObject_fromJson( MyObject* object, json_node* json );
+MyObject* MyObject_fromJson( json_node* json );
 
 void delete_MyObject(MyObject* object_p);
 

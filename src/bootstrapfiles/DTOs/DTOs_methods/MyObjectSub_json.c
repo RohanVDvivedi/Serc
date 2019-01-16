@@ -44,7 +44,7 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 
 
 
-void MyObjectSub_fromJson( MyObjectSub* object, json_node* json )
+MyObjectSub* MyObjectSub_fromJson( json_node* json )
 {
 	if( json == NULL || json->type == NULL_JSON )
 	{
@@ -52,6 +52,7 @@ void MyObjectSub_fromJson( MyObjectSub* object, json_node* json )
 	}
 	
 	json_node* required_key = NULL;
+	MyObjectSub* object = get_MyObjectSub();
 	
 	required_key = find_key(json,"a");
 	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
@@ -77,8 +78,11 @@ void MyObjectSub_fromJson( MyObjectSub* object, json_node* json )
 			char prev_char = (*(value->end_index));
 			(*(value->end_index)) = '\0';
 			
-			(object->b) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
-			strcpy((object->b),value->start_index);
+		if(( ( (object->b) ) != NULL ))
+		{
+				(object->b) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
+			strcpy(	(object->b),value->start_index);
+		}
 			
 			(*(value->end_index)) = prev_char;
 			

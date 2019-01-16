@@ -95,7 +95,7 @@ void* get(Type_Support type)
 	{
 		case ARRAY_JSON :
 		{
-			return_data = (void*) get_array();
+			return_data = (void*) get_array_json();
 			break;
 		}
 		/*
@@ -135,7 +135,7 @@ void del(void* data,Type_Support type)
 		{
 			case ARRAY_JSON :
 			{
-				delete_array((array_json*)data);
+				delete_array_json((array_json*)data);
 				break;
 			}
 			/*

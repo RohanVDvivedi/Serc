@@ -1,6 +1,6 @@
 #include<array_json.h>
 
-array_json* get_array()
+array_json* get_array_json()
 {
 	array_json* new_array_json = (array_json*) malloc(sizeof(array_json));
 	new_array_json->max_size = 0;
@@ -44,7 +44,7 @@ void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes)
 	}
 }
 
-void delete_array(array_json* array_p)
+void delete_array_json(array_json* array_p)
 {
 	for(unsigned long long int i=0;i<array_p->size;i++)
 	{
@@ -98,7 +98,7 @@ array_json* array_json_fromJson(json_node* json)
 		return NULL;
 	}
 	
-	array_json* result = get_array();
+	array_json* result = get_array_json();
 
 	for(unsigned long long int i = 0;i<json->child_count;i++)
 	{

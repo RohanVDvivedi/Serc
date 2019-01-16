@@ -114,7 +114,7 @@ char* MyObject_toJson( MyObject* object )
 
 
 
-void MyObject_fromJson( MyObject* object, json_node* json )
+MyObject* MyObject_fromJson( json_node* json )
 {
 	if( json == NULL || json->type == NULL_JSON )
 	{
@@ -122,6 +122,7 @@ void MyObject_fromJson( MyObject* object, json_node* json )
 	}
 	
 	json_node* required_key = NULL;
+	MyObject* object = get_MyObject();
 	
 	required_key = find_key(json,"myint");
 	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
@@ -192,8 +193,11 @@ void MyObject_fromJson( MyObject* object, json_node* json )
 			char prev_char = (*(value->end_index));
 			(*(value->end_index)) = '\0';
 			
-			(object->mystring) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
-			strcpy((object->mystring),value->start_index);
+			if(( ( (object->mystring) ) != NULL ))
+			{
+				(object->mystring) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
+				strcpy((object->mystring),value->start_index);
+			}
 			
 			(*(value->end_index)) = prev_char;
 			
@@ -253,7 +257,12 @@ void MyObject_fromJson( MyObject* object, json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == ARRAY_JSON )
 		{
-			array_json_fromJson((object->my_array),value);
+			if(( ( object->my_array ) != NULL ))
+			{
+				array_json* resultJsonObject = array_json_fromJson(value);
+				 *(object->my_array)  = *resultJsonObject;
+				delete_array_json(resultJsonObject);
+			}
 		}
 	}
 	
@@ -263,7 +272,12 @@ void MyObject_fromJson( MyObject* object, json_node* json )
 		json_node* value = required_key->child;
 		if( value != NULL && value->type == OBJECT_JSON )
 		{
-			MyObjectSub_fromJson((object->my_sub),value);
+			if(( ( object->my_sub ) != NULL ))
+			{
+				MyObjectSub* resultJsonObject = MyObjectSub_fromJson(value);
+				 *(object->my_sub)  = *resultJsonObject;
+				delete_MyObjectSub(resultJsonObject);
+			}
 		}
 	}
 	

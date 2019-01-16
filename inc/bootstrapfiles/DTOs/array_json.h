@@ -14,13 +14,13 @@ struct array_json
 	object_json** objectList;
 };
 
-array_json* get_array();
+array_json* get_array_json();
 
 object_json* get_object_at(array_json* array_p, unsigned long long int i);
 
 void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes);
 
-void delete_array(array_json* array_p);
+void delete_array_json(array_json* array_p);
 
 void delete_array_contents(array_json* array_p);
 
