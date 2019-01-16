@@ -93,7 +93,20 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 }
 
 
-// here goes the delete function
+
+void delete_MyObjectSub( MyObjectSub* object )
+{
+	if( object == NULL )
+	{
+		return;
+	}
+	free(object);
+}
 
 
-// here goes the get function
+
+MyObjectSub* get_MyObjectSub()
+{
+	MyObjectSub* object = ( (MyObjectSub*) calloc(1,sizeof(MyObjectSub)) );
+	return object;
+}

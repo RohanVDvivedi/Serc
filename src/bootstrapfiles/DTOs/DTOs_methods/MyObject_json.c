@@ -291,7 +291,20 @@ MyObject* MyObject_fromJson( json_node* json )
 }
 
 
-// here goes the delete function
+
+void delete_MyObject( MyObject* object )
+{
+	if( object == NULL )
+	{
+		return;
+	}
+	free(object);
+}
 
 
-// here goes the get function
+
+MyObject* get_MyObject()
+{
+	MyObject* object = ( (MyObject*) calloc(1,sizeof(MyObject)) );
+	return object;
+}

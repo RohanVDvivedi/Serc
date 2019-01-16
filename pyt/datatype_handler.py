@@ -391,9 +391,24 @@ def from_json_function_creator(json_object_name,fields) :
 
 
 def delete_function_creator(json_object_name,fields) :
-	code = "// here goes the delete function"
+	code  = ""
+	code += "\nvoid delete_" + json_object_name + "( " + json_object_name + "* object )"
+	code += "\n{"
+	code += "\n\tif( object == NULL )"
+	code += "\n\t{"
+	code += "\n\t\treturn;"
+	code += "\n\t}"
+	code += "\n\tfree(object);"
+	code += "\n}"
 	return code
 
 def get_function_creator(json_object_name,fields) :
-	code = "// here goes the get function"
+	code  = ""
+	code += "\n" + json_object_name + "* get_" + json_object_name + "()"
+	code += "\n{"
+	code += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(1,sizeof(" + json_object_name + ")) );"
+	code += "\n\treturn object;"
+	code += "\n}"
 	return code
+
+
