@@ -298,6 +298,10 @@ void delete_MyObject( MyObject* object )
 	{
 		return;
 	}
+	
+	
+	
+	
 	free(object);
 }
 

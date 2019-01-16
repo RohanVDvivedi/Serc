@@ -390,6 +390,26 @@ def from_json_function_creator(json_object_name,fields) :
 	return function_string
 
 
+def delete_forObject(fieldi,all_fields) :
+	code  = ""
+	pointer_variable = "object->" + fieldi[1]
+	return code
+
+def delete_forString(fieldi,all_fields) :
+	code  = ""
+	pointer_variable = "object->" + fieldi[1]
+	return code
+
+def delete_forBoolean(fieldi,all_fields) :
+	code  = ""
+	pointer_variable = "object->" + fieldi[1]
+	return code
+
+def delete_forNumber(fieldi,all_fields) :
+	code  = ""
+	pointer_variable = "object->" + fieldi[1]
+	return code
+
 def delete_function_creator(json_object_name,fields) :
 	function_string  = ""
 	function_string += "\nvoid delete_" + json_object_name + "( " + json_object_name + "* object )"
@@ -398,6 +418,20 @@ def delete_function_creator(json_object_name,fields) :
 	function_string += "\n\t{"
 	function_string += "\n\t\treturn;"
 	function_string += "\n\t}"
+	function_string += "\n\t"
+
+	for fieldi in fields:
+		if fieldi[2] > 0 :
+			if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
+				function_string += delete_forObject(fieldi,fields)
+			elif fieldi[0] == DataType.STRING :
+				function_string += delete_forString(fieldi,fields)
+			elif fieldi[0] == DataType.BOOLEAN :
+				function_string += delete_forBoolean(fieldi,fields)
+			else :
+				function_string += delete_forNumber(fieldi,fields)
+			function_string += "\n\t"
+
 	function_string += "\n\tfree(object);"
 	function_string += "\n}"
 	return function_string

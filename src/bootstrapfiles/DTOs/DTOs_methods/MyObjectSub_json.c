@@ -100,6 +100,8 @@ void delete_MyObjectSub( MyObjectSub* object )
 	{
 		return;
 	}
+	
+	
 	free(object);
 }
 
