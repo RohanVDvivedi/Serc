@@ -2,6 +2,7 @@
 #include<jsonstringhandler.h>
 #include<stdlib.h>
 #include<stdio.h>
+#include<c_util.h>
 
 
 char* MyObject_toJson( MyObject* object )
@@ -292,20 +293,56 @@ MyObject* MyObject_fromJson( json_node* json )
 
 
 
-void delete_MyObject( MyObject* object )
+void delete_attributes_MyObject( MyObject* object )
 {
 	if( object == NULL )
 	{
 		return;
 	}
 	
-		delete_multi_dim( object->mystring, {  1 }, 1);
+	delete_multi_dim( object->mystring, (unsigned long long int[]){  1 }, 1);
 	
-		delete_multi_dim( object->my_array, {  1 }, 1);
+	delete_multi_dim( object->my_array, (unsigned long long int[]){  1 }, 1);
 	
-		delete_multi_dim( object->my_sub, {  1 }, 1);
+	delete_multi_dim( object->my_sub, (unsigned long long int[]){  1 }, 1);
 	
+}
+
+
+
+void delete_MyObject( MyObject* object )
+{
+	if( object == NULL )
+	{
+		return;
+	}
+	delete_attributes_MyObject( object_array );
 	free(object);
+}
+
+
+
+void delete_array_MyObject( MyObject* object_array, unsigned long long int n )
+{
+	if( object == NULL )
+	{
+		return;
+	}
+	for( unsigned long long int i ; i < n ; i++ )
+	{
+		delete_attributes_MyObject(object_array + i);
+	}
+	free(object);
+}
+
+
+
+void initialize_attributes_MyObject( MyObject* object )
+{
+	if( object == NULL )
+	{
+		return;
+	}
 }
 
 
@@ -313,5 +350,18 @@ void delete_MyObject( MyObject* object )
 MyObject* get_MyObject()
 {
 	MyObject* object = ( (MyObject*) calloc(1,sizeof(MyObject)) );
+	initialize_attribures_MyObject( object );
+	return object;
+}
+
+
+
+MyObject* get_array_MyObject(unsigned long long int n)
+{
+	MyObject* object = ( (MyObject*) calloc(n,sizeof(MyObject)) );
+	for( unsigned long long int i ; i < n ; i++ )
+	{
+		initialize_attributes_MyObject(object_array + i);
+	}
 	return object;
 }

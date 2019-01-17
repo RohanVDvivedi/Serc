@@ -393,34 +393,34 @@ def from_json_function_creator(json_object_name,fields) :
 def delete_forObject(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
-	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
-	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_forString(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
-	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
-	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_forBoolean(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
-	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
-	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_forNumber(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
-	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
-	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
-def delete_function_creator(json_object_name,fields) :
+def delete_attributes_function_creator(json_object_name,fields) :
 	function_string  = ""
-	function_string += "\nvoid delete_" + json_object_name + "( " + json_object_name + "* object )"
+	function_string += "\nvoid delete_attributes_" + json_object_name + "( " + json_object_name + "* object )"
 	function_string += "\n{"
 	function_string += "\n\tif( object == NULL )"
 	function_string += "\n\t{"
@@ -440,7 +440,46 @@ def delete_function_creator(json_object_name,fields) :
 				function_string += delete_forNumber(fieldi,fields)
 			function_string += "\n\t"
 
+	function_string += "\n}"
+	return function_string
+
+def delete_function_creator(json_object_name,fields) :
+	function_string  = ""
+	function_string += "\nvoid delete_" + json_object_name + "( " + json_object_name + "* object )"
+	function_string += "\n{"
+	function_string += "\n\tif( object == NULL )"
+	function_string += "\n\t{"
+	function_string += "\n\t\treturn;"
+	function_string += "\n\t}"
+	function_string += "\n\tdelete_attributes_" + json_object_name + "( object_array );"
 	function_string += "\n\tfree(object);"
+	function_string += "\n}"
+	return function_string
+
+def delete_array_function_creator(json_object_name,fields) :
+	function_string  = ""
+	function_string += "\nvoid delete_array_" + json_object_name + "( " + json_object_name + "* object_array, unsigned long long int n )"
+	function_string += "\n{"
+	function_string += "\n\tif( object == NULL )"
+	function_string += "\n\t{"
+	function_string += "\n\t\treturn;"
+	function_string += "\n\t}"
+	function_string += "\n\tfor( unsigned long long int i ; i < n ; i++ )"
+	function_string += "\n\t{"
+	function_string += "\n\t\tdelete_attributes_" + json_object_name + "(object_array + i);"
+	function_string += "\n\t}"
+	function_string += "\n\tfree(object);"
+	function_string += "\n}"
+	return function_string
+
+def initialize_attributes_function_creator(json_object_name,fields) :
+	function_string  = ""
+	function_string += "\nvoid initialize_attributes_" + json_object_name + "( " + json_object_name + "* object )"
+	function_string += "\n{"
+	function_string += "\n\tif( object == NULL )"
+	function_string += "\n\t{"
+	function_string += "\n\t\treturn;"
+	function_string += "\n\t}"
 	function_string += "\n}"
 	return function_string
 
@@ -449,6 +488,20 @@ def get_function_creator(json_object_name,fields) :
 	function_string += "\n" + json_object_name + "* get_" + json_object_name + "()"
 	function_string += "\n{"
 	function_string += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(1,sizeof(" + json_object_name + ")) );"
+	function_string += "\n\tinitialize_attribures_" + json_object_name + "( object );"
+	function_string += "\n\treturn object;"
+	function_string += "\n}"
+	return function_string
+
+def get_array_function_creator(json_object_name,fields) :
+	function_string  = ""
+	function_string += "\n" + json_object_name + "* get_array_" + json_object_name + "(unsigned long long int n)"
+	function_string += "\n{"
+	function_string += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(n,sizeof(" + json_object_name + ")) );"
+	function_string += "\n\tfor( unsigned long long int i ; i < n ; i++ )"
+	function_string += "\n\t{"
+	function_string += "\n\t\tinitialize_attributes_" + json_object_name + "(object_array + i);"
+	function_string += "\n\t}"
 	function_string += "\n\treturn object;"
 	function_string += "\n}"
 	return function_string

@@ -74,9 +74,13 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	
 	json_delete(node);
 
-	delete_array_json(m->my_array);
-	delete_MyObjectSub(m->my_sub);
+	// delete_array_json(m->my_array);
+	// delete_MyObjectSub(m->my_sub);
 	delete_MyObject(m);
+	printf("after error\n");
+	printf("%d %d\n",m->my_sub->a, *((int*)get_object_at(m->my_array,0)->Data) );
+	free(m);
+
 	//
 	return 0;
 }

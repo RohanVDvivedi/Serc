@@ -52,9 +52,13 @@ with key as a DataType enum and value as variable name
 """
 function_string = datatype_handler.to_json_function_creator(json_object_name,fields)
 function_string += "\n\n\n" + datatype_handler.from_json_function_creator(json_object_name,fields)
+function_string += "\n\n\n" + datatype_handler.delete_attributes_function_creator(json_object_name,fields)
 function_string += "\n\n\n" + datatype_handler.delete_function_creator(json_object_name,fields)
+function_string += "\n\n\n" + datatype_handler.delete_array_function_creator(json_object_name,fields)
+function_string += "\n\n\n" + datatype_handler.initialize_attributes_function_creator(json_object_name,fields)
 function_string += "\n\n\n" + datatype_handler.get_function_creator(json_object_name,fields)
+function_string += "\n\n\n" + datatype_handler.get_array_function_creator(json_object_name,fields)
 
-replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/bootstrapfiles/DTOs/DTOs_methods/" + json_object_name + "_json.c",{"@DTO_declaration file include\n":"#include<" + json_object_name + "_json.h>\n#include<jsonstringhandler.h>\n#include<stdlib.h>\n#include<stdio.h>\n","@add_methods\n":function_string})
+replace.replaceLineWithCode("../pyt/DTOs_method.temp","../src/bootstrapfiles/DTOs/DTOs_methods/" + json_object_name + "_json.c",{"@DTO_declaration file include\n":"#include<" + json_object_name + "_json.h>\n#include<jsonstringhandler.h>\n#include<stdlib.h>\n#include<stdio.h>\n#include<c_util.h>\n","@add_methods\n":function_string})
 
 
