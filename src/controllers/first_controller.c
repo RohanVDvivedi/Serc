@@ -74,16 +74,10 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	setResponseBodyFromJsonObject(m,MYOBJECT_JSON,hrp);
 	// setResponseBodyFromJsonObject(m->my_array,ARRAY_JSON,hrp);
 	
-	json_delete(node);printf("before error1\n");
+	json_delete(node);
 
-	// delete_array_json(m->my_array);printf("before error2\n");
-	// delete_MyObjectSub(m->my_sub);printf("before error3\n");
-	delete_attributes_MyObject(m);
-	printf("waiting to error\n");
-	delete_attributes_MyObject(m);
-	printf("after error\n");
+	delete_MyObject(m);
 	printf("%d %d\n",m->my_sub->a, *((int*)get_object_at(m->my_array,0)->Data) );
-	free(m);
 
 	//
 	return 0;

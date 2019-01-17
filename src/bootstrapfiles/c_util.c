@@ -1,5 +1,13 @@
 #include<c_util.h>
 
+void print_tabs(unsigned long long int n )
+{
+	for(unsigned long long int i = 0 ; i < n ; i++ )
+	{
+		printf("\t");
+	}
+}
+
 void delete_multi_dim_intermediate(void** multi_p, unsigned long long int* dimensions, unsigned long long int dimensions_count, unsigned long long int current_level)
 {
 	if( multi_p != NULL )
@@ -44,3 +52,30 @@ void* alloc_multi_dim(unsigned long long int* dimensions, unsigned long long int
 {
 	return alloc_multi_dim_intermediate(dimensions, dimensions_count, 0, element_size);;
 }
+
+void apply_dim_json_intermediate(void** multi_p,unsigned long long int* dimensions, unsigned long long int dimensions_count, unsigned long long int current_level, void (*apply)(void *) , size_t element_size)
+{
+	if( multi_p != NULL )
+	{
+		if( current_level < dimensions_count - 1 )
+		{
+			for(unsigned long long int i = 0;i<dimensions[current_level];i++)
+			{
+				apply_dim_json_intermediate( ((void**)(multi_p[i])) , dimensions, dimensions_count, current_level + 1, apply, element_size);
+			}
+		}
+		else
+		{
+			for(unsigned long long int i = 0;i<dimensions[current_level];i++)
+			{
+				(*apply)( (void*) ( ((char*)multi_p) + (i * element_size) ) );
+			}
+		}
+	}
+}
+
+void apply_dim_json(void* multi_p,unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size,void (*apply)(void *))
+{
+	apply_dim_json_intermediate( ((void**)(multi_p)) , dimensions, dimensions_count, 0, apply, element_size);
+}
+
