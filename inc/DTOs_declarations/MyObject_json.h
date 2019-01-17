@@ -23,10 +23,18 @@ struct MyObject
 
 MyObject* get_MyObject();
 
+MyObject* get_array_MyObject(unsigned long long int n);
+
 char* MyObject_toJson(MyObject* myobject);
 
 MyObject* MyObject_fromJson( json_node* json );
 
 void delete_MyObject(MyObject* object_p);
+
+void delete_array_MyObject(MyObject* object_p,unsigned long long int n);
+
+void initialize_attributes_MyObject(MyObject* obj);
+
+void delete_attributes_MyObject(MyObject* obj);
 
 #endif

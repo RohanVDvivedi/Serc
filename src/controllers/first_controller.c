@@ -20,14 +20,14 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	m->mylongint = 2;
 	m->myuint = 3;
 	m->myulongint = 4;
-	char page[200];
+
+	m->mystring = (char*) malloc(sizeof(char)*200);
 	char* start_index = find_key(node,"page_no")->child->start_index;
 	char* end_index = find_key(node,"page_no")->child->end_index;
 	char p = *(end_index + 1);
 	*(end_index + 1) = '\0';
-	strcpy(page,start_index);
+	strcpy(m->mystring,start_index);
 	*(end_index + 1) = p;
-	m->mystring = ((char*)page);
 	m->my_bool = 0;
 	m->myfloat = 6.9987;
 	m->mydouble = 5.9876577;
@@ -49,7 +49,8 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	add(m->my_array,NULL,MYOBJECTSUB_JSON,0);
 
 	((MyObjectSub*)(get_object_at(m->my_array,6)->Data))->a = 69;
-	((MyObjectSub*)(get_object_at(m->my_array,6)->Data))->b = "hello sexy";
+	((MyObjectSub*)(get_object_at(m->my_array,6)->Data))->b = malloc(sizeof(char) * 100);
+	strcpy(((MyObjectSub*)(get_object_at(m->my_array,6)->Data))->b,"hello sexy");
 
 	array_json* arr_temp = get_object_at(m->my_array,5)->Data;
 
@@ -65,18 +66,21 @@ int first_controller(HttpRequest* hrq,HttpResponse* hrp)
 	add(arr_temp,arr_str,STRING_JSON,strlen(arr_str)+1);
 
 	m->my_sub->a = 500;
-	m->my_sub->b = "world";
+	m->my_sub->b = malloc(sizeof(char) * 100);
+	strcpy(m->my_sub->b,"world");
 
 	// setResponseBody("This is the first test",hrp);
 
 	setResponseBodyFromJsonObject(m,MYOBJECT_JSON,hrp);
 	// setResponseBodyFromJsonObject(m->my_array,ARRAY_JSON,hrp);
 	
-	json_delete(node);
+	json_delete(node);printf("before error1\n");
 
-	// delete_array_json(m->my_array);
-	// delete_MyObjectSub(m->my_sub);
-	delete_MyObject(m);
+	// delete_array_json(m->my_array);printf("before error2\n");
+	// delete_MyObjectSub(m->my_sub);printf("before error3\n");
+	delete_attributes_MyObject(m);
+	printf("waiting to error\n");
+	delete_attributes_MyObject(m);
 	printf("after error\n");
 	printf("%d %d\n",m->my_sub->a, *((int*)get_object_at(m->my_array,0)->Data) );
 	free(m);

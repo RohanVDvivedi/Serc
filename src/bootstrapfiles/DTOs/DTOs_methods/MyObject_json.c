@@ -316,15 +316,15 @@ void delete_MyObject( MyObject* object )
 	{
 		return;
 	}
-	delete_attributes_MyObject( object_array );
-	free(object);
+	delete_attributes_MyObject( object );
+	free( object );
 }
 
 
 
 void delete_array_MyObject( MyObject* object_array, unsigned long long int n )
 {
-	if( object == NULL )
+	if( object_array == NULL )
 	{
 		return;
 	}
@@ -332,7 +332,7 @@ void delete_array_MyObject( MyObject* object_array, unsigned long long int n )
 	{
 		delete_attributes_MyObject(object_array + i);
 	}
-	free(object);
+	free( object_array );
 }
 
 
@@ -350,7 +350,7 @@ void initialize_attributes_MyObject( MyObject* object )
 MyObject* get_MyObject()
 {
 	MyObject* object = ( (MyObject*) calloc(1,sizeof(MyObject)) );
-	initialize_attribures_MyObject( object );
+	initialize_attributes_MyObject( object );
 	return object;
 }
 
@@ -358,10 +358,10 @@ MyObject* get_MyObject()
 
 MyObject* get_array_MyObject(unsigned long long int n)
 {
-	MyObject* object = ( (MyObject*) calloc(n,sizeof(MyObject)) );
+	MyObject* object_array = ( (MyObject*) calloc(n,sizeof(MyObject)) );
 	for( unsigned long long int i ; i < n ; i++ )
 	{
 		initialize_attributes_MyObject(object_array + i);
 	}
-	return object;
+	return object_array;
 }

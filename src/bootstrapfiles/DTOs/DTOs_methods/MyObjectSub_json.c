@@ -114,15 +114,15 @@ void delete_MyObjectSub( MyObjectSub* object )
 	{
 		return;
 	}
-	delete_attributes_MyObjectSub( object_array );
-	free(object);
+	delete_attributes_MyObjectSub( object );
+	free( object );
 }
 
 
 
 void delete_array_MyObjectSub( MyObjectSub* object_array, unsigned long long int n )
 {
-	if( object == NULL )
+	if( object_array == NULL )
 	{
 		return;
 	}
@@ -130,7 +130,7 @@ void delete_array_MyObjectSub( MyObjectSub* object_array, unsigned long long int
 	{
 		delete_attributes_MyObjectSub(object_array + i);
 	}
-	free(object);
+	free( object_array );
 }
 
 
@@ -148,7 +148,7 @@ void initialize_attributes_MyObjectSub( MyObjectSub* object )
 MyObjectSub* get_MyObjectSub()
 {
 	MyObjectSub* object = ( (MyObjectSub*) calloc(1,sizeof(MyObjectSub)) );
-	initialize_attribures_MyObjectSub( object );
+	initialize_attributes_MyObjectSub( object );
 	return object;
 }
 
@@ -156,10 +156,10 @@ MyObjectSub* get_MyObjectSub()
 
 MyObjectSub* get_array_MyObjectSub(unsigned long long int n)
 {
-	MyObjectSub* object = ( (MyObjectSub*) calloc(n,sizeof(MyObjectSub)) );
+	MyObjectSub* object_array = ( (MyObjectSub*) calloc(n,sizeof(MyObjectSub)) );
 	for( unsigned long long int i ; i < n ; i++ )
 	{
 		initialize_attributes_MyObjectSub(object_array + i);
 	}
-	return object;
+	return object_array;
 }

@@ -451,8 +451,8 @@ def delete_function_creator(json_object_name,fields) :
 	function_string += "\n\t{"
 	function_string += "\n\t\treturn;"
 	function_string += "\n\t}"
-	function_string += "\n\tdelete_attributes_" + json_object_name + "( object_array );"
-	function_string += "\n\tfree(object);"
+	function_string += "\n\tdelete_attributes_" + json_object_name + "( object );"
+	function_string += "\n\tfree( object );"
 	function_string += "\n}"
 	return function_string
 
@@ -460,7 +460,7 @@ def delete_array_function_creator(json_object_name,fields) :
 	function_string  = ""
 	function_string += "\nvoid delete_array_" + json_object_name + "( " + json_object_name + "* object_array, unsigned long long int n )"
 	function_string += "\n{"
-	function_string += "\n\tif( object == NULL )"
+	function_string += "\n\tif( object_array == NULL )"
 	function_string += "\n\t{"
 	function_string += "\n\t\treturn;"
 	function_string += "\n\t}"
@@ -468,7 +468,7 @@ def delete_array_function_creator(json_object_name,fields) :
 	function_string += "\n\t{"
 	function_string += "\n\t\tdelete_attributes_" + json_object_name + "(object_array + i);"
 	function_string += "\n\t}"
-	function_string += "\n\tfree(object);"
+	function_string += "\n\tfree( object_array );"
 	function_string += "\n}"
 	return function_string
 
@@ -488,7 +488,7 @@ def get_function_creator(json_object_name,fields) :
 	function_string += "\n" + json_object_name + "* get_" + json_object_name + "()"
 	function_string += "\n{"
 	function_string += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(1,sizeof(" + json_object_name + ")) );"
-	function_string += "\n\tinitialize_attribures_" + json_object_name + "( object );"
+	function_string += "\n\tinitialize_attributes_" + json_object_name + "( object );"
 	function_string += "\n\treturn object;"
 	function_string += "\n}"
 	return function_string
@@ -497,12 +497,12 @@ def get_array_function_creator(json_object_name,fields) :
 	function_string  = ""
 	function_string += "\n" + json_object_name + "* get_array_" + json_object_name + "(unsigned long long int n)"
 	function_string += "\n{"
-	function_string += "\n\t" + json_object_name + "* object = ( (" + json_object_name + "*) calloc(n,sizeof(" + json_object_name + ")) );"
+	function_string += "\n\t" + json_object_name + "* object_array = ( (" + json_object_name + "*) calloc(n,sizeof(" + json_object_name + ")) );"
 	function_string += "\n\tfor( unsigned long long int i ; i < n ; i++ )"
 	function_string += "\n\t{"
 	function_string += "\n\t\tinitialize_attributes_" + json_object_name + "(object_array + i);"
 	function_string += "\n\t}"
-	function_string += "\n\treturn object;"
+	function_string += "\n\treturn object_array;"
 	function_string += "\n}"
 	return function_string
 
