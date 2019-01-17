@@ -101,6 +101,7 @@ void delete_MyObjectSub( MyObjectSub* object )
 		return;
 	}
 	
+		delete_multi_dim( object->b, {  1 }, 1);
 	
 	free(object);
 }

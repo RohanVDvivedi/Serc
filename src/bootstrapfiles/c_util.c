@@ -2,18 +2,18 @@
 
 void delete_multi_dim_intermediate(void** multi_p, unsigned long long int* dimensions, unsigned long long int dimensions_count, unsigned long long int current_level)
 {
-	if( current_level < dimensions_count - 1  )
+	if( multi_p != NULL )
 	{
-		for(unsigned long long int i = 0;i<dimensions[current_level];i++)
+		if( current_level < dimensions_count - 1  )
 		{
-			if( multi_p[i] != NULL )
+			for(unsigned long long int i = 0;i<dimensions[current_level];i++)
 			{
 				delete_multi_dim_intermediate( ((void**)(multi_p[i])) , dimensions, dimensions_count, current_level+1);
 				multi_p[i] = NULL;
 			}
 		}
+		free(multi_p);
 	}
-	free(multi_p);
 }
 
 void delete_multi_dim(void* multi_p, unsigned long long int* dimensions, unsigned long long int dimensions_count)

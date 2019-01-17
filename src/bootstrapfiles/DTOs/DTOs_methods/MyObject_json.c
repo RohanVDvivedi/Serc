@@ -299,8 +299,11 @@ void delete_MyObject( MyObject* object )
 		return;
 	}
 	
+		delete_multi_dim( object->mystring, {  1 }, 1);
 	
+		delete_multi_dim( object->my_array, {  1 }, 1);
 	
+		delete_multi_dim( object->my_sub, {  1 }, 1);
 	
 	free(object);
 }

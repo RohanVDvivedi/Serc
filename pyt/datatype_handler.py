@@ -393,21 +393,29 @@ def from_json_function_creator(json_object_name,fields) :
 def delete_forObject(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
+	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_forString(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
+	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_forBoolean(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
+	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_forNumber(fieldi,all_fields) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
+	dimensions = "{ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\t\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
 	return code
 
 def delete_function_creator(json_object_name,fields) :
