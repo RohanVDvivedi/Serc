@@ -157,27 +157,34 @@ def toJson_forNumber(fieldi) :
 def forJson_forString(fieldi) :
 	pointer_variable = "(object->" + fieldi[1] + ")"
 	code  = ""
+	first_index_required = "value->start_index + 1"
+	last_index_required = "value->end_index"
+	if fieldi[0] == DataType.STRING_SET_JSON :
+		first_index_required = "value->start_index"
+		last_index_required = "value->end_index + 1"
 	code += "\n\t\tif( value != NULL && value->type == STRING_JSON )"
 	code += "\n\t\t{"
-	code += "\n\t\t\tchar prev_char = (*(value->end_index));"
-	code += "\n\t\t\t(*(value->end_index)) = \'\\0\';"
-	code += "\n\t\t\t"
+	code += "\n\t\t\tchar prev_char = (*(" + last_index_required + "));"
+	code += "\n\t\t\t(*(" + last_index_required + ")) = \'\\0\';"
+	code += "\n\t\t\t" 
 	tab_if_required = ""
-	if fieldi[2] > 0 :
+	address_of_data = get_value(pointer_variable,fieldi[2])
+	fieldi_2 = fieldi[2] + 1
+	if fieldi_2 > 0 :
 		tab_if_required = "\t"
 		code += "\n\t\t\tif("
-		for i in range(fieldi[2]) :
+		for i in range(fieldi_2) :
 			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
-			if i != fieldi[2]-1 : 
+			if i != fieldi_2-1 : 
 				code += " && "
 		code += ")"
 		code += "\n\t\t\t{"
-	code += "\n\t\t\t" + tab_if_required + pointer_variable + " = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );"
-	code += "\n\t\t\t" + tab_if_required + "strcpy(" + pointer_variable + ",value->start_index);"
-	if fieldi[2] > 0 :
+	code += "\n\t\t\t" + tab_if_required + address_of_data.strip() + " = (char*) malloc( sizeof(char) * ( strlen( " + first_index_required + " ) + 1 ) );"
+	code += "\n\t\t\t" + tab_if_required + "strcpy(" + address_of_data + ", " + first_index_required + " );"
+	if fieldi_2 > 0 :
 		code += "\n\t\t\t}"
 	code += "\n\t\t\t"
-	code += "\n\t\t\t(*(value->end_index)) = prev_char;"
+	code += "\n\t\t\t(*(" + last_index_required + ")) = prev_char;"
 	code += "\n\t\t\t"
 	code += "\n\t\t}"
 	return code
