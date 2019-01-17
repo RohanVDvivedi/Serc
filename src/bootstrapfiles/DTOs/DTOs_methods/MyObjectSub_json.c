@@ -73,16 +73,11 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
 	{
 		json_node* value = required_key->child;
-		if( value != NULL && value->type == NUMBER_JSON )
+		if( value != NULL && value->type == STRING_JSON )
 		{
 			if(( ( object->b ) != NULL ))
 			{
-				char prev_char = (*(value->end_index + 1));
-				(*(value->end_index + 1)) = '\0';
-			
-				sscanf(value->start_index,"%c",( object->b ));
-			
-				(*(value->end_index + 1)) = prev_char;
+				 *(object->b)  = (*(value->start_index + 1));
 			}
 		}
 	}

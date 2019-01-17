@@ -103,6 +103,29 @@ def forJson_forNumber(fieldi) :
 	code += "\n\t\t}"
 	return code
 
+def forJson_forChar(fieldi) :
+	pointer_variable = "object->" + fieldi[1]
+	code  = ""
+	code += "\n\t\tif( value != NULL && value->type == STRING_JSON )"
+	code += "\n\t\t{"
+	tab_if_required = ""
+	value_of_data = pointer_variable
+	if fieldi[2] > 0 :
+		tab_if_required = "\t"
+		code += "\n\t\t\tif("
+		for i in range(fieldi[2]) :
+			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
+			if i != fieldi[2]-1 : 
+				code += " && "
+		code += ")"
+		code += "\n\t\t\t{"
+		value_of_data = get_value(pointer_variable,fieldi[2])
+	code += "\n\t\t\t" + tab_if_required + value_of_data + " = (*(value->start_index + 1));"
+	if fieldi[2] > 0 :
+		code += "\n\t\t\t}"
+	code += "\n\t\t}"
+	return code
+
 def toJson_forNumber(fieldi) :
 	code  = ""
 	pointer_variable = "object->" + fieldi[1]
@@ -389,6 +412,8 @@ def from_json_function_creator(json_object_name,fields) :
 			function_string += forJson_forString(fieldi)
 		elif fieldi[0] == DataType.BOOLEAN :
 			function_string += forJson_forBoolean(fieldi)
+		elif fieldi[0] == DataType.CHARACTER :
+			function_string += forJson_forChar(fieldi)
 		else :
 			function_string += forJson_forNumber(fieldi)
 		function_string += "\n\t}"
