@@ -103,6 +103,7 @@ void delete_attributes_MyObjectSub( MyObjectSub* object )
 	}
 	
 	delete_multi_dim( object->b, (unsigned long long int[]){  1 }, 1);
+	object->b = NULL;
 	
 }
 

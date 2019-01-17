@@ -392,9 +392,14 @@ def from_json_function_creator(json_object_name,fields) :
 
 def delete_forObject(fieldi,all_fields) :
 	code  = ""
+	datatype_name_string = "array_json"
+	if fieldi[0] == DataType.OTHER :
+		datatype_name_string = fieldi[3]
 	pointer_variable = "object->" + fieldi[1]
 	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
+	code += "\n\tapply_dim_json( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ", sizeof(" + datatype_name_string + "), ( (void (*)(void*)) &delete_attributes_" + datatype_name_string + " ) );"
 	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	code += "\n\t" + pointer_variable + " = NULL;"
 	return code
 
 def delete_forString(fieldi,all_fields) :
@@ -402,6 +407,7 @@ def delete_forString(fieldi,all_fields) :
 	pointer_variable = "object->" + fieldi[1]
 	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
 	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	code += "\n\t" + pointer_variable + " = NULL;"
 	return code
 
 def delete_forBoolean(fieldi,all_fields) :
@@ -409,6 +415,7 @@ def delete_forBoolean(fieldi,all_fields) :
 	pointer_variable = "object->" + fieldi[1]
 	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
 	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	code += "\n\t" + pointer_variable + " = NULL;"
 	return code
 
 def delete_forNumber(fieldi,all_fields) :
@@ -416,6 +423,7 @@ def delete_forNumber(fieldi,all_fields) :
 	pointer_variable = "object->" + fieldi[1]
 	dimensions = "(unsigned long long int[]){ " + ",".join([" 1"] * fieldi[2]) + " }"
 	code += "\n\tdelete_multi_dim( " + pointer_variable + ", " + dimensions + ", " + str(fieldi[2]) + ");"
+	code += "\n\t" + pointer_variable + " = NULL;"
 	return code
 
 def delete_attributes_function_creator(json_object_name,fields) :
