@@ -46,15 +46,11 @@ void add(array_json* array_p,void* Data,Type_Support Type,size_t Bytes)
 
 void delete_array_json(array_json* array_p)
 {
-	for(unsigned long long int i=0;i<array_p->size;i++)
-	{
-		delete_object(array_p->objectList[i]);
-	}
-	free(array_p->objectList);
+	delete_attributes_array_json(array_p);
 	free(array_p);
 }
 
-void delete_array_contents(array_json* array_p)
+void delete_attributes_array_json(array_json* array_p)
 {
 	for(unsigned long long int i=0;i<array_p->size;i++)
 	{
