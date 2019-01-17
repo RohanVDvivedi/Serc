@@ -1,8 +1,8 @@
 #ifndef JSON_TYPE_SPEC_H
 #define JSON_TYPE_SPEC_H
 
-#define bool unsigned char
-#define string char *
+#define Bool unsigned char
+#define String char *
 
 // string_set_json is same as a string of valid json data
 // if used a data type the frame work will parse it and buil;d a json object
@@ -11,7 +11,7 @@
 // this functionality can be used in case when you want to send a 
 // ready made json data in your object by putting it as a key value pair
 
-#define string_set_json char *
+#define String_Set_Json char *
 
 
 /*

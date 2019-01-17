@@ -23,17 +23,16 @@ char* MyObjectSub_toJson( MyObjectSub* object )
 	addToJsonString(JS,"\"a\":");
 	addToJsonString(JS,number);
 
-	addToJsonString(JS,"\"b\":");
 	if( ( ( object->b ) != NULL ) )
 	{
-		addToJsonString(JS,"\"");
-		addToJsonString(JS, ( object->b ) );
-		addToJsonString(JS,"\",");
+		sprintf(number,"\"%c\",", ( *(object->b) ) );
 	}
 	else
 	{
-		addToJsonString(JS,"null,");
+		sprintf(number,"null,");
 	}
+	addToJsonString(JS,"\"b\":");
+	addToJsonString(JS,number);
 
 	JS->string[JS->size-2] = '}';
 
@@ -74,19 +73,17 @@ MyObjectSub* MyObjectSub_fromJson( json_node* json )
 	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
 	{
 		json_node* value = required_key->child;
-		if( value != NULL && value->type == STRING_JSON )
+		if( value != NULL && value->type == NUMBER_JSON )
 		{
-			char prev_char = (*(value->end_index));
-			(*(value->end_index)) = '\0';
-			
-			if(( ( (object->b) ) != NULL ))
+			if(( ( object->b ) != NULL ))
 			{
-				(object->b) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
-				strcpy((object->b),value->start_index);
+				char prev_char = (*(value->end_index + 1));
+				(*(value->end_index + 1)) = '\0';
+			
+				sscanf(value->start_index,"%c",( object->b ));
+			
+				(*(value->end_index + 1)) = prev_char;
 			}
-			
-			(*(value->end_index)) = prev_char;
-			
 		}
 	}
 	

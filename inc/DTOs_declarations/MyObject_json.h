@@ -3,8 +3,7 @@
 #include<jsonp.h>
 #include<array_json.h>
 #include<MyObjectSub_json.h>
-
-#define bool int
+#include<json_type_spec.h>
 
 typedef struct MyObject MyObject;
 struct MyObject
@@ -13,8 +12,10 @@ struct MyObject
 	signed long int mylongint;
 	unsigned int myuint;
 	unsigned long int myulongint;
-	char *mystring;
-	bool my_bool;
+	char mychar;
+	String mystring;
+	String_Set_Json my_json;
+	Bool my_bool;
 	float myfloat;
 	double mydouble;
 	array_json* my_array;

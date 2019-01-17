@@ -35,12 +35,26 @@ char* MyObject_toJson( MyObject* object )
 	addToJsonString(JS,"\"myulongint\":");
 	addToJsonString(JS,number);
 
+	sprintf(number,"\"%c\",", ( object->mychar ) );
+	addToJsonString(JS,"\"mychar\":");
+	addToJsonString(JS,number);
+
 	addToJsonString(JS,"\"mystring\":");
 	if( ( ( object->mystring ) != NULL ) )
 	{
 		addToJsonString(JS,"\"");
 		addToJsonString(JS, ( object->mystring ) );
 		addToJsonString(JS,"\",");
+	}
+	else
+	{
+		addToJsonString(JS,"null,");
+	}
+
+	addToJsonString(JS,"\"my_json\":");
+	if( ( ( object->my_json ) != NULL ) )
+	{
+		addToJsonString(JS, ( object->my_json ) );
 	}
 	else
 	{
@@ -185,6 +199,21 @@ MyObject* MyObject_fromJson( json_node* json )
 		}
 	}
 	
+	required_key = find_key(json,"mychar");
+	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
+	{
+		json_node* value = required_key->child;
+		if( value != NULL && value->type == NUMBER_JSON )
+		{
+			char prev_char = (*(value->end_index + 1));
+			(*(value->end_index + 1)) = '\0';
+			
+			sscanf(value->start_index,"%c",( &(object->mychar) ));
+			
+			(*(value->end_index + 1)) = prev_char;
+		}
+	}
+	
 	required_key = find_key(json,"mystring");
 	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
 	{
@@ -194,11 +223,25 @@ MyObject* MyObject_fromJson( json_node* json )
 			char prev_char = (*(value->end_index));
 			(*(value->end_index)) = '\0';
 			
-			if(( ( (object->mystring) ) != NULL ))
-			{
-				(object->mystring) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
-				strcpy((object->mystring),value->start_index);
-			}
+			(object->mystring) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
+			strcpy((object->mystring),value->start_index);
+			
+			(*(value->end_index)) = prev_char;
+			
+		}
+	}
+	
+	required_key = find_key(json,"my_json");
+	if( required_key != NULL && required_key->type == STRING_JSON && required_key->is_key == 1 )
+	{
+		json_node* value = required_key->child;
+		if( value != NULL && value->type == STRING_JSON )
+		{
+			char prev_char = (*(value->end_index));
+			(*(value->end_index)) = '\0';
+			
+			(object->my_json) = (char*) malloc( sizeof(char) * ( strlen(value->start_index) + 1 ) );
+			strcpy((object->my_json),value->start_index);
 			
 			(*(value->end_index)) = prev_char;
 			
@@ -299,9 +342,6 @@ void delete_attributes_MyObject( MyObject* object )
 	{
 		return;
 	}
-	
-	delete_multi_dim( object->mystring, (unsigned long long int[]){  1 }, 1);
-	object->mystring = NULL;
 	
 	apply_dim_json( object->my_array, (unsigned long long int[]){  1 }, 1, sizeof(array_json), ( (void (*)(void*)) &delete_attributes_array_json ) );
 	delete_multi_dim( object->my_array, (unsigned long long int[]){  1 }, 1);

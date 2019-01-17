@@ -9,12 +9,13 @@ class DataType(enum.IntEnum) :
 	UNSIGNED_LONG_LONG_INT = 5
 	CHARACTER = 6
 	UNSIGNED_CHARACTER = 7
-	STRING = 8
-	BOOLEAN = 9
-	FLOAT = 10
-	DOUBLE = 11
-	OTHER = 12
-	ARRAY = 13
+	STRING_SET_JSON = 8
+	STRING = 9
+	BOOLEAN = 10
+	FLOAT = 11
+	DOUBLE = 12
+	OTHER = 13
+	ARRAY = 14
 
 dataTypeStrings = {
 	DataType.UNSIGNED_LONG_LONG_INT:['unsigned long long int','unsigned long long'],
@@ -25,8 +26,9 @@ dataTypeStrings = {
 	DataType.SIGNED_INT:['int','signed int'],
 	DataType.CHARACTER:['char','signed char'],
 	DataType.UNSIGNED_CHARACTER:['unsigned char'],
-	DataType.STRING:['char*','char *'],
-	DataType.BOOLEAN:['bool'],
+	DataType.STRING_SET_JSON:['String_Set_Json'],
+	DataType.STRING:['String'],
+	DataType.BOOLEAN:['Bool'],
 	DataType.FLOAT:['float'],
 	DataType.DOUBLE:['double']
 }
@@ -40,10 +42,11 @@ dataTypeStrings_flexible = {
 	DataType.SIGNED_INT:['int'],
 
 	DataType.UNSIGNED_CHARACTER:['unsigned char'],
-	DataType.STRING:['char*','char *'],
+	DataType.STRING_SET_JSON:['String_Set_Json'],
+	DataType.STRING:['String'],
 	DataType.CHARACTER:['char'],
 
-	DataType.BOOLEAN:['bool'],
+	DataType.BOOLEAN:['Bool'],
 
 	DataType.FLOAT:['float'],
 	DataType.DOUBLE:['double'],
@@ -61,6 +64,7 @@ dataTypeFormatSpecifierStrings = {
 	DataType.CHARACTER:'%c',
 	DataType.UNSIGNED_CHARACTER:'%c',
 	DataType.STRING:'%s',
+	DataType.STRING_SET_JSON:'%s',
 	DataType.FLOAT:'%f',
 	DataType.DOUBLE:'%lf'
 }
@@ -112,7 +116,10 @@ def toJson_forNumber(fieldi) :
 				code += " && "
 		code += " )"
 		code += "\n\t{"
-	code += "\n\t" + tab_if_required + "sprintf(number,\"" + dataTypeFormatSpecifierStrings[fieldi[0]] + ",\", (" + get_value(pointer_variable,fieldi[2]) + ") );"
+	format_specif = dataTypeFormatSpecifierStrings[fieldi[0]]
+	if fieldi[0] == DataType.CHARACTER :
+		format_specif = "\\\"" + format_specif + "\\\""
+	code += "\n\t" + tab_if_required + "sprintf(number,\"" + format_specif + ",\", (" + get_value(pointer_variable,fieldi[2]) + ") );"
 	if fieldi[2] > 0 :
 		code += "\n\t}"
 		code += "\n\telse"
@@ -157,21 +164,23 @@ def toJson_forString(fieldi) :
 	code += "\n\taddToJsonString(JS,\"\\\"" + fieldi[1] + "\\\":\");"
 	pointer_variable = "object->" + fieldi[1]
 	tab_if_required = ""
-	address_of_data = pointer_variable
-	if fieldi[2] > 0 :
+	address_of_data = get_value(pointer_variable,fieldi[2])
+	fieldi_2 = fieldi[2] + 1
+	if fieldi_2 > 0 :
 		tab_if_required = "\t"
 		code += "\n\tif( "
-		for i in range(fieldi[2]) :
+		for i in range(fieldi_2) :
 			code += "( (" + get_value(pointer_variable,i) + ") != NULL )"
-			if i != fieldi[2]-1 : 
+			if i != fieldi_2-1 : 
 				code += " && "
 		code += " )"
 		code += "\n\t{"
-		address_of_data = get_value(pointer_variable,fieldi[2]-1)
-	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\"\");"
+	if fieldi[0] == DataType.STRING :
+		code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\"\");"
 	code += "\n\t" + tab_if_required + "addToJsonString(JS, (" + address_of_data + ")" + " );"
-	code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\",\");"
-	if fieldi[2] > 0 :
+	if fieldi[0] == DataType.STRING :
+		code += "\n\t" + tab_if_required + "addToJsonString(JS,\"\\\",\");"
+	if fieldi_2 > 0 :
 		code += "\n\t}"
 		code += "\n\telse"
 		code += "\n\t{"
@@ -338,7 +347,7 @@ def to_json_function_creator(json_object_name,fields) :
 	for fieldi in fields:
 		if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
 			function_string += toJson_forObject(fieldi)
-		elif fieldi[0] == DataType.STRING :
+		elif fieldi[0] == DataType.STRING or fieldi[0] == DataType.STRING_SET_JSON :
 			function_string += toJson_forString(fieldi)
 		elif fieldi[0] == DataType.BOOLEAN :
 			function_string += toJson_forBoolean(fieldi)
@@ -376,7 +385,7 @@ def from_json_function_creator(json_object_name,fields) :
 		function_string += "\n\t\tjson_node* value = required_key->child;"
 		if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
 			function_string += forJson_forObject(fieldi)
-		elif fieldi[0] == DataType.STRING :
+		elif fieldi[0] == DataType.STRING or fieldi[0] == DataType.STRING_SET_JSON :
 			function_string += forJson_forString(fieldi)
 		elif fieldi[0] == DataType.BOOLEAN :
 			function_string += forJson_forBoolean(fieldi)
@@ -440,7 +449,7 @@ def delete_attributes_function_creator(json_object_name,fields) :
 		if fieldi[2] > 0 :
 			if fieldi[0] == DataType.OTHER or fieldi[0] == DataType.ARRAY :
 				function_string += delete_forObject(fieldi,fields)
-			elif fieldi[0] == DataType.STRING :
+			elif fieldi[0] == DataType.STRING or fieldi[0] == DataType.STRING_SET_JSON :
 				function_string += delete_forString(fieldi,fields)
 			elif fieldi[0] == DataType.BOOLEAN :
 				function_string += delete_forBoolean(fieldi,fields)

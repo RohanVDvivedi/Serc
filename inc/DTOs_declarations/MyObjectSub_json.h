@@ -2,6 +2,7 @@
 #define MYOBJECTSUB_JSON_H
 
 #include<jsonp.h>
+#include<json_type_spec.h>
 
 typedef struct MyObjectSub MyObjectSub;
 struct MyObjectSub
