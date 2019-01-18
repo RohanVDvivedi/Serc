@@ -24,6 +24,8 @@ void delete_array_json(array_json* array_p);
 
 void delete_attributes_array_json(array_json* array_p);
 
+void initialize_attributes_array_json(array_json* array_p);
+
 char* array_json_toJson(array_json* array_p);
 
 array_json* array_json_fromJson(json_node* json);

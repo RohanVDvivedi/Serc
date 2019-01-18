@@ -1,11 +1,16 @@
 #include<array_json.h>
 
-array_json* get_array_json()
+void initialize_attributes_array_json(array_json* array_p)
 {
-	array_json* new_array_json = (array_json*) malloc(sizeof(array_json));
 	new_array_json->max_size = 0;
 	new_array_json->size = 0;
 	new_array_json->objectList = NULL;
+}
+
+array_json* get_array_json()
+{
+	array_json* new_array_json = (array_json*) calloc(1,sizeof(array_json));
+	initialize_attributes_array_json(new_array_json);
 	return new_array_json;
 }
 
