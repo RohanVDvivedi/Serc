@@ -95,7 +95,7 @@ void* get(Type_Support type)
 	{
 		case ARRAY_JSON :
 		{
-			return_data = (void*) get_array_json();
+			return_data = (void*) get_array();
 			break;
 		}
 		/*
@@ -135,7 +135,7 @@ void del(void* data,Type_Support type)
 		{
 			case ARRAY_JSON :
 			{
-				delete_array_json((array_json*)data);
+				delete_array((array_json*)data);
 				break;
 			}
 			/*
@@ -153,6 +153,86 @@ void del(void* data,Type_Support type)
 			case MYOBJECTSUB_JSON :
 			{
 				delete_MyObjectSub((MyObjectSub*)data);
+				break;
+			}
+			default :
+			{
+				break;
+			}
+		}
+	}
+}
+
+void initialize_attributes(void* data,Type_Support type)
+{
+	if(!is_combined(type))
+	{
+		return ;
+	}
+	if(data!=NULL)
+	{
+		switch(type)
+		{
+			case ARRAY_JSON :
+			{
+				initialize_attributes_array_json((array_json*)data);
+				break;
+			}
+			/*
+			case CLASSNAME_JSON :
+			{
+				initialize_attributes_classname((classname*)data);
+				break;
+			}
+			*/
+			case MYOBJECT_JSON :
+			{
+				initialize_attributes_MyObject((MyObject*)data);
+				break;
+			}
+			case MYOBJECTSUB_JSON :
+			{
+				initialize_attributes_MyObjectSub((MyObjectSub*)data);
+				break;
+			}
+			default :
+			{
+				break;
+			}
+		}
+	}
+}
+
+void delete_attributes(void* data,Type_Support type)
+{
+	if(!is_combined(type))
+	{
+		return ;
+	}
+	if(data!=NULL)
+	{
+		switch(type)
+		{
+			case ARRAY_JSON :
+			{
+				delete_attributes_array_json((array_json*)data);
+				break;
+			}
+			/*
+			case CLASSNAME_JSON :
+			{
+				delete_attributes_classname((classname*)data);
+				break;
+			}
+			*/
+			case MYOBJECT_JSON :
+			{
+				delete_attributes_MyObject((MyObject*)data);
+				break;
+			}
+			case MYOBJECTSUB_JSON :
+			{
+				delete_attributes_MyObjectSub((MyObjectSub*)data);
 				break;
 			}
 			default :
