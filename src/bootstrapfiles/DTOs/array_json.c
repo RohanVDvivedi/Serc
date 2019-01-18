@@ -2,9 +2,9 @@
 
 void initialize_attributes_array_json(array_json* array_p)
 {
-	new_array_json->max_size = 0;
-	new_array_json->size = 0;
-	new_array_json->objectList = NULL;
+	array_p->max_size = 0;
+	array_p->size = 0;
+	array_p->objectList = NULL;
 }
 
 array_json* get_array_json()
