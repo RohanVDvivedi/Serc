@@ -30,4 +30,8 @@ char* array_json_toJson(array_json* array_p);
 
 array_json* array_json_fromJson(json_node* json);
 
+array_json* get_array_array_json(unsigned long long int n);
+
+void delete_array_array_json( array_json* object_array, unsigned long long int n );
+
 #endif

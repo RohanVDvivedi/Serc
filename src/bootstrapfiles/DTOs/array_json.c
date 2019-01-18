@@ -67,6 +67,29 @@ void delete_attributes_array_json(array_json* array_p)
 	array_p->objectList = NULL;
 }
 
+array_json* get_array_array_json(unsigned long long int n)
+{
+	array_json* object_array = ( (array_json*) calloc(n,sizeof(array_json)) );
+	for( unsigned long long int i ; i < n ; i++ )
+	{
+		initialize_attributes_array_json(object_array + i);
+	}
+	return object_array;
+}
+
+void delete_array_array_json( array_json* object_array, unsigned long long int n )
+{
+	if( object_array == NULL )
+	{
+		return;
+	}
+	for( unsigned long long int i ; i < n ; i++ )
+	{
+		delete_attributes_array_json(object_array + i);
+	}
+	free( object_array );
+}
+
 char* array_json_toJson(array_json* array_p)
 {
 	JsonString* JS;
