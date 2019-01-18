@@ -101,7 +101,7 @@ void* get(Type_Support type)
 		/*
 		case CLASSNAME_JSON :
 		{
-			return_string = (void*) get_classname();
+			return_data = (void*) get_classname();
 			break;
 		}
 		*/
@@ -233,6 +233,85 @@ void delete_attributes(void* data,Type_Support type)
 			case MYOBJECTSUB_JSON :
 			{
 				delete_attributes_MyObjectSub((MyObjectSub*)data);
+				break;
+			}
+			default :
+			{
+				break;
+			}
+		}
+	}
+}
+
+void* get_array(unsigned long long int n,Type_Support type)
+{
+	if(!is_combined(type))
+	{
+		return NULL;
+	}
+	void* return_data = NULL;
+	switch(type)
+	{
+		case ARRAY_JSON :
+		{
+			return_data = (void*) get_array_array_json(n);
+			break;
+		}
+		/*
+		case CLASSNAME_JSON :
+		{
+			return_data = (void*) get_array_classname(n);
+			break;
+		}
+		*/
+		case MYOBJECT_JSON :
+		{
+			return_data = (void*) get_array_MyObject(n);
+			break;
+		}
+		case MYOBJECTSUB_JSON :
+		{
+			return_data = (void*) get_array_MyObjectSub(n);
+			break;
+		}
+		default :
+		{
+			break;
+		}
+	}
+	return return_data;
+}
+
+void del_array(void* data,unsigned long long int n,Type_Support type)
+{
+	if(!is_combined(type))
+	{
+		return ;
+	}
+	if(data!=NULL)
+	{
+		switch(type)
+		{
+			case ARRAY_JSON :
+			{
+				delete_array_array_json((array_json*)data,n);
+				break;
+			}
+			/*
+			case CLASSNAME_JSON :
+			{
+				delete_array_classname((classname*)data,n);
+				break;
+			}
+			*/
+			case MYOBJECT_JSON :
+			{
+				delete_array_MyObject((MyObject*)data,n);
+				break;
+			}
+			case MYOBJECTSUB_JSON :
+			{
+				delete_array_MyObjectSub((MyObjectSub*)data,n);
 				break;
 			}
 			default :

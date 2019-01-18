@@ -25,6 +25,8 @@ type_get_fields_template = "\t\tcase CLASSNAME_JSON :\n\t\t{\n\t\t\treturn_data 
 type_del_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\tdelete_classname((classname*)data);\n\t\t\t\tbreak;\n\t\t\t}"
 type_init_attr_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\tinitialize_attributes_classname((classname*)data);\n\t\t\t\tbreak;\n\t\t\t}"
 type_del_attr_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\tdelete_attributes_classname((classname*)data);\n\t\t\t\tbreak;\n\t\t\t}"
+type_get_array_fields_template = "\t\tcase CLASSNAME_JSON :\n\t\t{\n\t\t\treturn_data = (void*) get_array_classname(n);\n\t\t\tbreak;\n\t\t}"
+type_del_array_fields_template = "\t\t\tcase CLASSNAME_JSON :\n\t\t\t{\n\t\t\t\tdelete_array_classname((classname*)data,n);\n\t\t\t\tbreak;\n\t\t\t}"
 header_fields_template = "#include<classname_json.h>"
 
 
@@ -35,6 +37,8 @@ type_get_fields = ""
 type_del_fields = ""
 type_init_attr_fields = ""
 type_del_attr_fields = ""
+type_get_array_fields = ""
+type_del_array_fields = ""
 header_fields = ""
 
 for json_object_name in command_line_args :
@@ -47,11 +51,24 @@ for json_object_name in command_line_args :
 	type_del_fields += (type_del_fields_template.replace("classname",json_object_name).replace("CLASSNAME",json_object_name_all_caps) + "\n")
 	type_init_attr_fields += (type_init_attr_fields_template.replace("classname",json_object_name).replace("CLASSNAME",json_object_name_all_caps) + "\n")
 	type_del_attr_fields += (type_del_attr_fields_template.replace("classname",json_object_name).replace("CLASSNAME",json_object_name_all_caps) + "\n")
+	type_get_array_fields += (type_get_array_fields_template.replace("classname",json_object_name).replace("CLASSNAME",json_object_name_all_caps) + "\n")
+	type_del_array_fields += (type_del_array_fields_template.replace("classname",json_object_name).replace("CLASSNAME",json_object_name_all_caps) + "\n")
 	header_fields += (header_fields_template.replace("classname",json_object_name).replace("CLASSNAME",json_object_name_all_caps) + "\n")
 	
 
 
 replace.replaceLineWithCode("../pyt/type_support.h.temp","../inc/bootstrapfiles/DTOs/type_support.h",{"//@add_enum\n":enum_fields,"//@headers_all_json)))\n":header_fields})
 replace.replaceLineWithCode("../pyt/combined.h.temp","../inc/bootstrapfiles/DTOs/combined.h",{"//@headers_all_json)))\n":header_fields})
-replace.replaceLineWithCode("../pyt/combined.c.temp","../src/bootstrapfiles/DTOs/combined.c",{"//@add_case_for_objects for to_json)))\n":type_to_json_fields,"//@add_case_for_objects for from_json)))\n":type_from_json_fields,"//@add_case_for_objects for get)))\n":type_get_fields,"//@add_case_for_objects for del)))\n":type_del_fields,"//@add_case_for_objects for init_attr)))\n":type_init_attr_fields,"//@add_case_for_objects for del_attr)))\n":type_del_attr_fields})
+replace.replaceLineWithCode("../pyt/combined.c.temp","../src/bootstrapfiles/DTOs/combined.c",{
+																								"//@add_case_for_objects for to_json)))\n":type_to_json_fields,
+																								"//@add_case_for_objects for from_json)))\n":type_from_json_fields,
+																								"//@add_case_for_objects for get)))\n":type_get_fields,
+																								"//@add_case_for_objects for del)))\n":type_del_fields,
+																								"//@add_case_for_objects for init_attr)))\n":type_init_attr_fields,
+																								"//@add_case_for_objects for del_attr)))\n":type_del_attr_fields,
+																								"//@add_case_for_objects for get_array)))\n":type_get_array_fields,
+																								"//@add_case_for_objects for del_array)))\n":type_del_array_fields
+																							}	)
+
+
 
