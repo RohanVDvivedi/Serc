@@ -16,13 +16,14 @@
 // each of the dimensions array element denotes the dimension size of the
 // multi_p multidimensional array
 
-void print_tabs(unsigned long long int n );
+void print_n_tabs(unsigned long long int n );
 
 void delete_multi_dim(void* multi_p, unsigned long long int* dimensions, unsigned long long int dimensions_count);
 
 void* alloc_multi_dim(unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size);
 
-void apply_dim_json(void* multi_p,unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size, void (*apply)(void *) );
+void apply_multi_dim(void* multi_p,unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size, void (*apply)(void *) );
+
 
 
 // example 

@@ -344,11 +344,11 @@ void delete_attributes_MyObject( MyObject* object )
 		return;
 	}
 	
-	apply_dim_json( object->my_array, (unsigned long long int[]){  1 }, 1, sizeof(array_json), ( (void (*)(void*)) &delete_attributes_array_json ) );
+	apply_multi_dim( object->my_array, (unsigned long long int[]){  1 }, 1, sizeof(array_json), ( (void (*)(void*)) &delete_attributes_array_json ) );
 	delete_multi_dim( object->my_array, (unsigned long long int[]){  1 }, 1);
 	object->my_array = NULL;
 	
-	apply_dim_json( object->my_sub, (unsigned long long int[]){  1 }, 1, sizeof(MyObjectSub), ( (void (*)(void*)) &delete_attributes_MyObjectSub ) );
+	apply_multi_dim( object->my_sub, (unsigned long long int[]){  1 }, 1, sizeof(MyObjectSub), ( (void (*)(void*)) &delete_attributes_MyObjectSub ) );
 	delete_multi_dim( object->my_sub, (unsigned long long int[]){  1 }, 1);
 	object->my_sub = NULL;
 	
