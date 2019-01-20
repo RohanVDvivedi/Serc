@@ -88,10 +88,15 @@ void toJson_multi_dim_intermediate( JsonString* resultJS,void** multi_p,unsigned
 {
 	if( multi_p != NULL )
 	{
+		addToJsonString( resultJS, "[");
 		if( current_level < dimensions_count - 1 )
 		{
 			for(unsigned long long int i = 0;i<dimensions[current_level];i++)
 			{
+				if(i > 0)
+				{
+					addToJsonString( resultJS, ",");
+				}
 				toJson_multi_dim_intermediate( resultJS, ((void**)(multi_p[i])) , dimensions, dimensions_count, current_level + 1, type, element_size);
 			}
 		}
@@ -99,14 +104,20 @@ void toJson_multi_dim_intermediate( JsonString* resultJS,void** multi_p,unsigned
 		{
 			for(unsigned long long int i = 0;i<dimensions[current_level];i++)
 			{
+				if(i > 0)
+				{
+					addToJsonString( resultJS, ",");
+				}
 				if( !is_combined(type) )
 				{
 					char elemental_result[10];
 					primitive_toJson(elemental_result, ( (void*) ( ((char*)multi_p) + (i * element_size) ) ), type);
+					addToJsonString( resultJS, elemental_result);
 				}
 				else
 				{
 					char* elemental_result = toJson( ( (void*) ( ((char*)multi_p) + (i * element_size) ) ) , type );
+					addToJsonString( resultJS, elemental_result);
 					if(elemental_result != NULL)
 					{
 						free(elemental_result);
@@ -114,6 +125,7 @@ void toJson_multi_dim_intermediate( JsonString* resultJS,void** multi_p,unsigned
 				}
 			}
 		}
+		addToJsonString( resultJS, "]");
 	}
 }
 
