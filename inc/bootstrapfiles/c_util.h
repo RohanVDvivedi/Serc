@@ -3,6 +3,7 @@
 
 #include<stdlib.h>
 #include<stdio.h>
+#include<combined.h>
 
 // by the following given functions n dimentional arrays
 // of any structure can be initialized and deleted
@@ -16,15 +17,13 @@
 // each of the dimensions array element denotes the dimension size of the
 // multi_p multidimensional array
 
-void print_n_tabs(unsigned long long int n );
-
 void delete_multi_dim(void* multi_p, unsigned long long int* dimensions, unsigned long long int dimensions_count);
 
 void* alloc_multi_dim(unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size);
 
 void apply_multi_dim(void* multi_p,unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size, void (*apply)(void *) );
 
-
+char* toJson_multi_dim(void* multi_p,unsigned long long int* dimensions, unsigned long long int dimensions_count, size_t element_size, Type_Support type );
 
 // example 
 /*
@@ -45,5 +44,10 @@ l[i][j][k].lat will be the value of latitude of location structure at index i, j
 0 <= k < 2 are the index ranges as per dimensions array
 the same l is to be passed to delete_multi_dim along with required variables to delete the allocated memory
 */
+
+void print_n_tabs(unsigned long long int n );
+
+// target array has to be of size >= 10, we will not be dealing with number not being handled by the c language
+void primitive_toJson(char* target, void* data, Type_Support type);
 
 #endif
