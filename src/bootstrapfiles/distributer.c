@@ -28,17 +28,6 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					}
 					break;
 				}
-				case 62323 :
-				{
-					// case for path = /read and supports method = GET
-					if( 0 == strcmp( path_str , "/read" ) )
-					{
-						error = second_controller(hrq,hrp);
-						routing_resolved = 1;
-						hrp->Status = 200;
-					}
-					break;
-				}
 			}
 			break;
 		}
@@ -52,17 +41,6 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					if( 0 == strcmp( path_str , "/index/get_post" ) )
 					{
 						error = first_controller(hrq,hrp);
-						routing_resolved = 1;
-						hrp->Status = 200;
-					}
-					break;
-				}
-				case 155303 :
-				{
-					// case for path = /write and supports method = POST
-					if( 0 == strcmp( path_str , "/write" ) )
-					{
-						error = second_controller(hrq,hrp);
 						routing_resolved = 1;
 						hrp->Status = 200;
 					}
