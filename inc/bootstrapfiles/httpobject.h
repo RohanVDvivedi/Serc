@@ -4,6 +4,8 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
+#include<ctype.h>
+
 #include<strhsh.h>
 #include<responseStrings.h>
 
@@ -125,9 +127,6 @@ void setRequestPath(char* path,HttpRequest* hr);
 // setter for request body
 void setRequestBody(char* body,HttpRequest* hr);
 
-// setter for request body from json objects
-void setRequestBodyFromJsonObject(void* json_object,Type_Support type,HttpRequest* hr);
-
 // adds more content to request body
 void addToRequestBody(char* body,HttpRequest* hr);
 
@@ -148,9 +147,6 @@ void addPathParameterInHttpRequest(char* Key,char* Value,HttpRequest* hr);
 
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
-
-// detele HttpRequest but before that send it to server socket file discriptor 
-int sendRequest(HttpRequest* hr,int fd);
 
 // print HttpRequest Object in a readable format
 void printHttpRequest(HttpRequest* hr);
@@ -174,9 +170,6 @@ void setResponseBody(char* body,HttpResponse* hr);
 // adds more content to response body
 void addToResponseBody(char* body,HttpResponse* hr);
 
-// setter for response body from json objects
-void setResponseBodyFromJsonObject(void* json_object,Type_Support type,HttpResponse* hr);
-
 // parse string to populate HttpResponse
 int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* Rstate);
 
@@ -191,9 +184,6 @@ void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr);
 
 // delete HttpResponse and all its attributes
 void deleteHttpResponse(HttpResponse* hr);
-
-// detele HttpResponse but before that send it to client socket file discriptor 
-int sendResponse(HttpResponse* hr,int fd);
 
 // print HttpResponse Object in a readable format
 void printHttpResponse(HttpResponse* hr);

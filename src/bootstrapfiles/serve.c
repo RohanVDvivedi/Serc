@@ -1,11 +1,6 @@
 #include<serve.h>
 
-#define buffersize 100
-#define PORT 6969
-
-#define UseOptimizeSend
-
-void (*connection_handler)(int conn_fd)
+void connection_handler(int conn_fd)
 {
 	// create buffer to read the request
 	char bufferRequest[buffersize];
@@ -13,6 +8,10 @@ void (*connection_handler)(int conn_fd)
 
 	// this is how we maintain, the state of the HTTP parser
 	StringToRequestState Rstate = NOT_STARTED;
+
+	// create a new HttpRequest Object
+	HttpRequest* hrq = getNewHttpRequest();
+	int error = 0;
 
 	while(1)
 	{
@@ -29,7 +28,7 @@ void (*connection_handler)(int conn_fd)
 		bufferRequest[buffreadlength] = '\0';
 
 		// parse the RequestString to populate HttpRequest Object
-		error = stringToRequestObject(bufferRequest,hrq,&Rstate);
+		error = stringToRequestObject(bufferRequest, hrq, &Rstate);
 
 		// if the request object parsing is completed then exit
 		if(Rstate == BODY_COMPLETE)
@@ -47,16 +46,16 @@ void (*connection_handler)(int conn_fd)
 
 		// get the estimate of the buffer length and this will help us initialize the buffer to store and send the response
 		buffreadlength = estimateResponseObjectSize(hrp);
-		char* bufferResponse = ((char*)malloc(sizeof(char)*buffreadlength));
+		char* bufferResponse = ((char*)malloc(sizeof(char) * buffreadlength));
 		bufferResponse[0] = '\0';
 
 		// sertialize the response object in tot the string
-		error = responseObjectToString(bufferResponse,&buffreadlength,hrp);
+		error = responseObjectToString(bufferResponse, &buffreadlength, hrp);
 
 		// if no error send the data
 		if(error == 0)
 		{
-			buffreadlength = strlen(buffer);
+			buffreadlength = strlen(bufferResponse);
 			send(conn_fd, bufferResponse, buffreadlength, 0);
 		}
 
@@ -71,7 +70,7 @@ void (*connection_handler)(int conn_fd)
 	deleteHttpRequest(hrq);
 }
 
-void serve()
+void server_run()
 {
-	serve_tcp_on_ipv4(uint16_t PORT, void (*connection_handler)(int conn_fd));
+	serve_tcp_on_ipv4(PORT, connection_handler);
 }

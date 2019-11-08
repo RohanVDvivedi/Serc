@@ -5,3 +5,5 @@
 *.so*
 *.pyc
 *.DS_store
+*.obj
+*.out

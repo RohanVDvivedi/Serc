@@ -1,7 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+#include<serve.h>
+
 int main()
 {
-	return serve();
+	server_run();
+	return 0;
 }
