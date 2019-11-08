@@ -10,8 +10,4 @@ shl for .sh build scripts that you may require
 pyt for .py python helper scripts
 log for .lg log text files
 
-1. come up with shell script based biild environment
-2. a frame work that helps host rest api service
-3. a json parser for c structure to json and json to c structure
-4. a parser to decrypt path variables, path parameters, header and separate out request body values.
-5. all controller functions to return c structures, string or a file structure to send json data , string or a html,css,javascript.
+-> It is a frame work that helps host rest api service, and static files over HTTP/TCP/IP protocal
