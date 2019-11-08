@@ -5,6 +5,6 @@
 #include<httpobject.h>
 #include<distributer.h>
 
-void serve(int fd);
+void serve();
 
 #endif
