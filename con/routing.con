@@ -3,5 +3,10 @@
 		"methods"         : ["GET","POST"],
 		"paths"           : ["/index/get_post"],
 		"controller"      : "first_controller"
+	},
+	{
+		"methods"         : ["POST"],
+		"paths"           : ["/write"],
+		"controller"      : "second_controller"
 	}
 ]

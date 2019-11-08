@@ -21,7 +21,7 @@ ${BIN_DIR}/$(TARGET) : ${OBJ_DIR}/${BOOTSTRAPFILES}/*.o
 	gcc -o $@ ${OBJ_DIR}/*.o $(OBJ_DIR)/${BOOTSTRAPFILES}/*.o
 
 route :
-	route.py routing.con routing1.con
+	python3 pyt/route.py routing routing1
 
 all : route ${BIN_DIR}/$(TARGET)
 

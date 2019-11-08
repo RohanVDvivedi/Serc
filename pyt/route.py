@@ -19,7 +19,7 @@ example. :
 		"methods"         : ["GET"],
 		"paths"           : ["/read"],
 		"controller"      : "second_controller"
-	},
+	}
 ]
 
 """
@@ -45,6 +45,9 @@ command_line_args = sys.argv.copy()[1:]
 # simply using the latter file as the higher priority
 mydict = {}
 
+# this is the array containting the names of all the controller functions in the system
+controllers_list = []
+
 # loop throught all the routing files and collect all paths
 for routing_file in command_line_args:
 
@@ -59,7 +62,6 @@ for routing_file in command_line_args:
 	# use a dictionery to store the routes in format as required for making switch case
 	# format is mydict[method][hashvalue_of_path][path_in_string] = controller
 	# the below given loop builds up structure mydict for distributer.c and controllers_list for controller.h
-	controllers_list = []
 	for route in routes :
 		for method in route['methods']:
 			if not (method in mydict):
