@@ -2,6 +2,6 @@
 
 int first_controller(HttpRequest* hrq, HttpResponse* hrp)
 {
-	setResponseBody("hello world !!", hrp);
+	append_to_dstring(hrp->body, "hello world !!");
 	return 0;
 }

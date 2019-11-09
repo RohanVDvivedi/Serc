@@ -27,6 +27,10 @@ enum HttpMethod
 	UNIDENTIFIED =    166308
 };
 
+// methods for Http method
+HttpMethod getHttpMethod(char* verb);
+char* serializeHttpMethod(HttpMethod m);
+
 typedef enum HttpParseState HttpParseState;
 enum HttpParseState
 {
@@ -57,8 +61,6 @@ enum HttpParseState
 //	IN_BODY,
 //	BODY_COMPLETE,
 };
-
-extern const char Verb[10][15];
 
 typedef struct HttpRequest HttpRequest;
 struct HttpRequest
@@ -121,12 +123,5 @@ void addHeader(char* Key, char* Value, hashmap* headers);
 // set Default Header in Request like size , type , date , updated at , server type email etc
 void setServerDefaultHeadersInRequest(HttpRequest* hrq);
 void setServerDefaultHeadersInResponse(HttpResponse* hrp);
-
-
-// helper functions
-
-
-HttpMethod verbToHttpMethodType(char* verb);
-char* httpMethodTypeToVerb(HttpMethod m);
 
 #endif
