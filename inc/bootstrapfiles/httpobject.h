@@ -6,6 +6,9 @@
 #include<stdio.h>
 #include<ctype.h>
 
+#include<dstring.h>
+#include<hashmap.h>
+
 #include<strhsh.h>
 #include<responseStrings.h>
 
