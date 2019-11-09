@@ -39,9 +39,9 @@ void delete_entry_wrapper(const void* key, const void* value, const void* additi
 void deleteHttpRequest(HttpRequest* hr)
 {
 	delete_dstring(hr->Path);
-	for_each_entry(hr->parameters, delete_entry_wrapper, NULL);
+	for_each_entry_in_hash(hr->parameters, delete_entry_wrapper, NULL);
 	delete_hashmap(hr->parameters);
-	for_each_entry(hr->headers, delete_entry_wrapper, NULL);
+	for_each_entry_in_hash(hr->headers, delete_entry_wrapper, NULL);
 	delete_hashmap(hr->headers);
 	delete_dstring(hr->body);
 	free(hr);
@@ -49,117 +49,10 @@ void deleteHttpRequest(HttpRequest* hr)
 
 void deleteHttpResponse(HttpResponse* hr)
 {
-	for_each_entry(hr->headers, delete_entry_wrapper, NULL);
+	for_each_entry_in_hash(hr->headers, delete_entry_wrapper, NULL);
 	delete_hashmap(hr->headers);
 	delete_dstring(hr->body);
 	free(hr);
-}
-
-char charToHex(char c)
-{
-	if( '0' <= c && c <= '9' )
-	{
-		return c - '0';
-	}
-	else if('a' <= c && c <= 'f')
-	{
-		return c - 'a' + 10;
-	}
-	else if('A' <= c && c <= 'F')
-	{
-		return c - 'A' + 10;
-	}
-	else
-	{
-		return 'N';
-	}
-}
-
-void urlToString(char* path_param_str)
-{
-	char* ptemp = path_param_str;
-	char* update = ptemp;
-	while(*ptemp != '\0')
-	{
-		if(*ptemp == '%')
-		{
-			*update = (( charToHex(*(ptemp+1)) << 4 ) | charToHex(*(ptemp+2)));
-			ptemp+=2;
-		}
-		else
-		{
-			*update = *ptemp;
-		}
-		update++;
-		ptemp++;
-	}
-	*update = '\0';
-}
-
-char hexToChar(char hex)
-{
-	hex = hex & 0x0f;
-	if( 0 <= hex && hex <= 9 )
-	{
-		return hex + '0';
-	}
-	else
-	{
-		return (hex - 10) + 'a';
-	}
-}
-
-void getUrlHelper(char* path_param_str,int* pos,char* str)
-{
-	for(int i=0;i<strlen(str);i++)
-	{
-		if( characterAllowedInURL(str[i]) )
-		{
-			path_param_str[(*pos)++] = str[i];
-		}
-		else
-		{
-			path_param_str[(*pos)++] = '%';
-			path_param_str[(*pos)++] = hexToChar((str[i] >> 4) & 0x0f);
-			path_param_str[(*pos)++] = hexToChar((str[i] >> 0) & 0x0f);
-		}
-	}
-}
-
-char* getUrl(HttpRequest* hr)
-{
-	int path_param_str_len = 1;
-	path_param_str_len += strlen(hr->Path);
-	for(int i=0;i<hr->PathParameterCount;i++)
-	{
-		path_param_str_len += 1 + strlen(hr->PathParameters[i]->Key) + 1 + strlen(hr->PathParameters[i]->Value);
-	}
-	char* path_param_str = malloc(sizeof(char)*path_param_str_len*3);
-	int pos = 0;
-	for(int i=0;i<strlen(hr->Path);i++)
-	{
-		if( characterAllowedInURL(hr->Path[i]) || hr->Path[i]=='/')
-		{
-			path_param_str[pos++] = hr->Path[i];
-		}
-		else
-		{
-			path_param_str[pos++] = '%';
-			path_param_str[pos++] = hexToChar((hr->Path[i] >> 4) & 0x0f);
-			path_param_str[pos++] = hexToChar((hr->Path[i] >> 0) & 0x0f);
-		}
-	}
-	char reserved_character = '?';
-	for(int i=0;i<hr->PathParameterCount;i++)
-	{
-		path_param_str[pos++] = reserved_character;
-		reserved_character = '&';
-		getUrlHelper(path_param_str,&pos,hr->PathParameters[i]->Key);
-		path_param_str[pos++] = '=';
-		getUrlHelper(path_param_str,&pos,hr->PathParameters[i]->Value);
-	}
-	path_param_str[pos] = '\0';
-	return path_param_str;
 }
 
 // path?params is parsed to populate in hr
@@ -860,170 +753,144 @@ int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* 
 	BC: return 0;
 }
 
-// returns -1 when error
-int pathBuildHelper(char* buffer,int* bufferlength,int maxsize,char precedence,char* string)
+char charToHex(char c)
 {
-	char temp[2];
-	temp[0] = precedence;
-	temp[1] = '\0';
-	(*bufferlength) += (strlen(string) + 1);
-	if( maxsize < (*bufferlength) )
+	if( '0' <= c && c <= '9' )
 	{
-		return -1;
+		return c - '0';
 	}
-	strcat(buffer,temp);
-	strcat(buffer,string);
-	return 0;
+	else if('a' <= c && c <= 'f')
+	{
+		return c - 'a' + 10;
+	}
+	else if('A' <= c && c <= 'F')
+	{
+		return c - 'A' + 10;
+	}
+	else
+	{
+		return 'N';
+	}
+}
+
+void urlToString(char* path_param_str)
+{
+	char* ptemp = path_param_str;
+	char* update = ptemp;
+	while(*ptemp != '\0')
+	{
+		if(*ptemp == '%')
+		{
+			*update = (( charToHex(*(ptemp+1)) << 4 ) | charToHex(*(ptemp+2)));
+			ptemp+=2;
+		}
+		else
+		{
+			*update = *ptemp;
+		}
+		update++;
+		ptemp++;
+	}
+	*update = '\0';
+}
+
+char hexToChar(char hex)
+{
+	hex = hex & 0x0f;
+	if( 0 <= hex && hex <= 9 )
+	{
+		return hex + '0';
+	}
+	else
+	{
+		return (hex - 10) + 'a';
+	}
+}
+
+void serialize_paramter_helper(dstring* result, dstring* input)
+{
+	char temp[10];
+	for(int i=0;i<strlen(str);i++)
+	{
+		if( characterAllowedInURL(str[i]) )
+		{
+			temp[0] = str[i];
+			temp[1] = '\0';
+		}
+		else
+		{
+			temp[0] = '%';
+			temp[1] = hexToChar((str[i] >> 4) & 0x0f);
+			temp[2] = hexToChar((str[i] >> 0) & 0x0f);
+			temp[3] = '\0';
+		}
+		append_to_dstring(result, temp);
+	}
+}
+
+void serialize_parameter_entry(dstring* key, dstring* value, dstring* result)
+{
+	append_to_dstring(result, "&");
+	serialize_paramter_helper(key, dstring* input);
+	append_to_dstring(result, "=");
+	serialize_paramter_helper(value, dstring* input);
+}
+
+void serializeUrl(dstring* result, HttpRequest* hr)
+{
+	for(int i=0;i<strlen(hr->Path);i++)
+	{
+		char temp[10];
+		if( characterAllowedInURL(hr->path[i]) || hr->path[i]=='/')
+		{
+			temp[0] = hr->Path[i];
+			temp[1] = '\0';
+		}
+		else
+		{
+			temp[0] = '%';
+			temp[1] = hexToChar((hr->Path[i] >> 4) & 0x0f);
+			temp[2] = hexToChar((hr->Path[i] >> 0) & 0x0f);
+			temp[3] = '\0';
+		}
+		append_to_dstring(result, temp);
+	}
+	char* path_last_char = result->cstring + result->bytes_occupied - 1;
+	for_each_entry_in_hash(hr->parameters, serialize_parameter_entry, result);
+	char* path_last_char_new = result->cstring + result->bytes_occupied - 1;
+	if(path_last_char != path_last_char_new)
+	{
+		*path_last_char = '?';
+	}
+}
+
+void serialize_header_entry(dstring* key, dstring* value, dstring* result)
+{
+	concatenate_dstring(result, key);
+	append_to_dstring(result, ": ");
+	concatenate_dstring(result, value);
+	append_to_dstring(result, "\r\n");
 }
 
 // returns -1 when error
-int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr)
+void parseRequest(char* buffer, HttpRequest* hr)
 {
-	const int maxsize = (*bufferlength);
-	buffer[0] = '\0';
-	(*bufferlength) = 0;
-
-	if(hr->MethodType == UNIDENTIFIED)
-	{
-		return -2;
-	}
-	char* MethodTypeString = httpMethodTypeToVerb(hr->MethodType);
-	(*bufferlength) += strlen(MethodTypeString);
-	if( maxsize < (*bufferlength) )
-	{
-		return -1;
-	}
-	strcat(buffer,MethodTypeString);
-
-	(*bufferlength) += 1;
-	if(maxsize < (*bufferlength))
-	{
-		return -1;
-	}
-	buffer[(*bufferlength)-1] = ' ';
-	buffer[(*bufferlength)] = '\0';
-
-	char* path_param_str = getUrl(hr);
-	(*bufferlength) += strlen(path_param_str);
-	if( maxsize < (*bufferlength) )
-	{
-		return -1;
-	}
-	strcat(buffer,path_param_str);
-	free(path_param_str);
-
-	(*bufferlength) += 11;
-	if( maxsize < (*bufferlength) )
-	{
-		return -1;
-	}
-	strcat(buffer," HTTP/1.1\r\n");
-
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		(*bufferlength) += (strlen(hr->Headers[i]->Key) + 2);
-		if( maxsize < (*bufferlength) )
-		{
-			return -1;
-		}
-		strcat(buffer,hr->Headers[i]->Key);
-		strcat(buffer,": ");
-
-		(*bufferlength) += (strlen(hr->Headers[i]->Value) + 2);
-		if( maxsize < (*bufferlength) )
-		{
-			return -1;
-		}
-		strcat(buffer,hr->Headers[i]->Value);
-		strcat(buffer,"\r\n");
-	}
-	(*bufferlength) += (hr->RequestBodyLength + 2);
-	if( maxsize < (*bufferlength) )
-	{
-		return -1;
-	}
-	strcat(buffer,"\r\n");
-	if(hr->RequestBodyLength!=0)
-	{
-		strcat(buffer,hr->RequestBody);
-	}
+	append_to_dstring(result, httpMethodTypeToVerb(hr->method));
+	append_to_dstring(result, " ");
+	serializeUrl(result, hr);
+	append_to_dstring(result, " HTTP/1.1\r\n");
+	for_each_entry_in_hash(hr->headers, serialize_header_entry, result);
+	append_to_dstring(result, "\r\n");
+	concatenate_dstring(result, hr->body);
 	return 0;
 }
 
-// returns -1 when error, when -1 is returned pass in a larger buffer
-int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr)
+void serializeResponse(dstring* result, HttpResponse* hr)
 {
-	const int maxsize = (*bufferlength);
-	buffer[0] = '\0';
-	(*bufferlength) = 0;
-	char* statusline = getHttpResponseStatus(hr->Status);
-	if(statusline == NULL)
-	{
-		return -2;
-	}
-	(*bufferlength) += strlen(statusline);
-	if( maxsize < (*bufferlength) )
-	{
-		return -1;
-	}
-	strcat(buffer,statusline);
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		(*bufferlength) += (strlen(hr->Headers[i]->Key) + 2);
-		if( maxsize < (*bufferlength) )
-		{
-			return -1;
-		}
-		strcat(buffer,hr->Headers[i]->Key);
-		strcat(buffer,": ");
-
-		(*bufferlength) += (strlen(hr->Headers[i]->Value) + 2);
-		if( maxsize < (*bufferlength) )
-		{
-			return -1;
-		}
-		strcat(buffer,hr->Headers[i]->Value);
-		strcat(buffer,"\r\n");
-	}
-	(*bufferlength) += (hr->ResponseBodyLength + 2);
-	if( maxsize < (*bufferlength) )
-	{
-		return -1;
-	}
-	strcat(buffer,"\r\n");
-	if(hr->ResponseBodyLength!=0)
-	{
-		strcat(buffer,hr->ResponseBody);
-	}
-	return 0;
-}
-
-int estimateRequestObjectSize(HttpRequest* hr)
-{
-	int result = 0;
-	result += (strlen(httpMethodTypeToVerb(hr->MethodType)) + 1);
-	char* path_param_str = getUrl(hr);
-	result += strlen(path_param_str);
-	free(path_param_str);
-	result += strlen(" HTTP/1.1\r\n");
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		result += (strlen(hr->Headers[i]->Key) + 2 + strlen(hr->Headers[i]->Value) + 2);
-	}
-	result += (2 + hr->RequestBodyLength + 1);
-	return result;
-}
-
-int estimateResponseObjectSize(HttpResponse* hr)
-{
-	int result = 0;
-	result += strlen(getHttpResponseStatus(hr->Status));
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		result += (strlen(hr->Headers[i]->Key) + 2 + strlen(hr->Headers[i]->Value) + 2);
-	}
-	result += (2 + hr->ResponseBodyLength + 1);
-	return result;
+	append_to_dstring(result, getHttpResponseStatus(hr->status));
+	for_each_entry_in_hash(hr->headers, serialize_header_entry, result);
+	append_to_dstring(result, "\r\n");
+	concatenate_dstring(result, hr->body);
 }
 
 void lowercaseString(char* str)
@@ -1032,97 +899,6 @@ void lowercaseString(char* str)
 	{
 		*str = (char)tolower(((int)(*str)));
 	}
-}
-
-void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr)
-{
-	if(hr->HeaderCount == hr->HeaderSize || hr->HeaderSize == 0)
-	{
-		int newHeaderSize = 2 * hr->HeaderSize;
-		if(newHeaderSize == 0)
-		{
-			newHeaderSize = 1;
-		}
-		keyvaluepair** newHeaders = (keyvaluepair**) malloc(sizeof(keyvaluepair*)*newHeaderSize);
-		for(int i=0;i<hr->HeaderCount;i++)
-		{
-			newHeaders[i] = hr->Headers[i];
-		}
-		if(hr->Headers!=NULL)
-		{
-			free(hr->Headers);
-		}
-		hr->Headers = newHeaders;
-		hr->HeaderSize = newHeaderSize;
-	}
-	hr->HeaderCount++;
-	hr->Headers[hr->HeaderCount - 1] = (keyvaluepair*) malloc(sizeof(keyvaluepair));
-	hr->Headers[hr->HeaderCount - 1]->Key = (char*) malloc(sizeof(char)*(strlen(Key)+1));
-	strcpy(hr->Headers[hr->HeaderCount - 1]->Key,Key);
-	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Key);
-	hr->Headers[hr->HeaderCount - 1]->Value = (char*) malloc(sizeof(char)*(strlen(Value)+1));
-	strcpy(hr->Headers[hr->HeaderCount - 1]->Value,Value);
-	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Value);
-}
-
-void addPathParameterInHttpRequest(char* Key,char* Value,HttpRequest* hr)
-{
-	if(hr->PathParameterCount == hr->PathParameterSize || hr->PathParameterSize == 0)
-	{
-		int newPathParameterSize = 2 * hr->PathParameterSize;
-		if(newPathParameterSize == 0)
-		{
-			newPathParameterSize = 1;
-		}
-		keyvaluepair** newPathParameters = (keyvaluepair**) malloc(sizeof(keyvaluepair*)*newPathParameterSize);
-		for(int i=0;i<hr->PathParameterCount;i++)
-		{
-			newPathParameters[i] = hr->PathParameters[i];
-		}
-		if(hr->PathParameters!=NULL)
-		{
-			free(hr->PathParameters);
-		}
-		hr->PathParameters = newPathParameters;
-		hr->PathParameterSize = newPathParameterSize;
-	}
-	hr->PathParameterCount++;
-	hr->PathParameters[hr->PathParameterCount - 1] = (keyvaluepair*) malloc(sizeof(keyvaluepair));
-	hr->PathParameters[hr->PathParameterCount - 1]->Key = (char*) malloc(sizeof(char)*(strlen(Key)+1));
-	strcpy(hr->PathParameters[hr->PathParameterCount - 1]->Key,Key);
-	hr->PathParameters[hr->PathParameterCount - 1]->Value = (char*) malloc(sizeof(char)*(strlen(Value)+1));
-	strcpy(hr->PathParameters[hr->PathParameterCount - 1]->Value,Value);
-}
-
-void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr)
-{
-	if(hr->HeaderCount == hr->HeaderSize || hr->HeaderSize == 0)
-	{
-		int newHeaderSize = 2 * hr->HeaderSize;
-		if(newHeaderSize == 0)
-		{
-			newHeaderSize = 1;
-		}
-		keyvaluepair** newHeaders = (keyvaluepair**) malloc(sizeof(keyvaluepair*)*newHeaderSize);
-		for(int i=0;i<hr->HeaderCount;i++)
-		{
-			newHeaders[i] = hr->Headers[i];
-		}
-		if(hr->Headers!=NULL)
-		{
-			free(hr->Headers);
-		}
-		hr->Headers = newHeaders;
-		hr->HeaderSize = newHeaderSize;
-	}
-	hr->HeaderCount++;
-	hr->Headers[hr->HeaderCount - 1] = (keyvaluepair*) malloc(sizeof(keyvaluepair));
-	hr->Headers[hr->HeaderCount - 1]->Key = (char*) malloc(sizeof(char)*(strlen(Key)+1));
-	strcpy(hr->Headers[hr->HeaderCount - 1]->Key,Key);
-	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Key);
-	hr->Headers[hr->HeaderCount - 1]->Value = (char*) malloc(sizeof(char)*(strlen(Value)+1));
-	strcpy(hr->Headers[hr->HeaderCount - 1]->Value,Value);
-	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Value);
 }
 
 // Methods common to both Request and response

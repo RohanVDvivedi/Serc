@@ -84,29 +84,23 @@ struct HttpResponse
 	dstring* body;
 };
 
-
-
 // functions for Request
-
 // to create HttpRequest Object
 HttpRequest* getNewHttpRequest();
 
 // parse string to populate HttpRequest
 int parseRequest(char* buffer, HttpRequest* hr, HttpParseState* state);
 
-// returns a string that is searchable url consisting of only allowed characted and rest of which are converted to %## format
-char* getUrl(HttpRequest* hr);
+// serialize the url of the HttpRequest
+void serializeUrl(dstring* result, HttpRequest* hr);
 
 // serialize HttpRequest and append to dstring to send over network or to print
-int serializeRequest(dstring* result, HttpRequest* hr);
+void serializeRequest(dstring* result, HttpRequest* hr);
 
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
 
-
-
 // functions for Response
-
 // to create HttpResponse Object
 HttpResponse* getNewHttpResponse();
 
@@ -114,14 +108,12 @@ HttpResponse* getNewHttpResponse();
 int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate);
 
 // serialize HttpResponse and append to dstring to send over network or to print
-int serializeResponse(dstring* result, HttpResponse* hr);
+void serializeResponse(dstring* result, HttpResponse* hr);
 
 // delete HttpResponse and all its attributes
 void deleteHttpResponse(HttpResponse* hr);
 
-
 // functions common to request and response both
-
 // add Header in HttpResponse 
 void addHeader(char* Key, char* Value, hashmap* headers);
 #define addParameter addHeader

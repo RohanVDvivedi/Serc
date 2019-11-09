@@ -48,13 +48,10 @@ void connection_handler(int conn_fd)
 		dstring* bufferResponse = get_dstring("", 10);
 
 		// sertialize the response object in tot the string
-		error = serializeResponse(bufferResponse, hrp);
+		serializeResponse(bufferResponse, hrp);
 
-		// if no error send the data
-		if(error == 0)
-		{
-			send(conn_fd, bufferResponse->cstring, bufferResponse->bytes_occupied, 0);
-		}
+		// send the data
+		send(conn_fd, bufferResponse->cstring, bufferResponse->bytes_occupied, 0);
 
 		// once data sent delete bufferResponse
 		delete_dstring(bufferResponse);
