@@ -11,8 +11,7 @@
 #include<distributer.h>
 
 #define buffersize 100
-#define PORT 6969
 
-void server_run();
+void server_run(uint16_t PORT);
 
 #endif

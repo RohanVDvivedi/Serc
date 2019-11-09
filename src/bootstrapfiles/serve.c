@@ -70,7 +70,7 @@ void connection_handler(int conn_fd)
 	deleteHttpRequest(hrq);
 }
 
-void server_run()
+void server_run(uint16_t PORT)
 {
 	serve_tcp_on_ipv4(PORT, connection_handler);
 }

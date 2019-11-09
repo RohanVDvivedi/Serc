@@ -5,6 +5,6 @@
 
 int main()
 {
-	server_run();
+	server_run(6969);
 	return 0;
 }
