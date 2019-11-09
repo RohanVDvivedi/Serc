@@ -7,7 +7,7 @@ void connection_handler(int conn_fd)
 	int buffreadlength = -1;
 
 	// this is how we maintain, the state of the HTTP parser
-	StringToRequestState Rstate = NOT_STARTED;
+	HttpParseState Rstate = NOT_STARTED;
 
 	// create a new HttpRequest Object
 	HttpRequest* hrq = getNewHttpRequest();
@@ -28,7 +28,7 @@ void connection_handler(int conn_fd)
 		bufferRequest[buffreadlength] = '\0';
 
 		// parse the RequestString to populate HttpRequest Object
-		error = stringToRequestObject(bufferRequest, hrq, &Rstate);
+		error = parseRequest(bufferRequest, hrq, &Rstate);
 
 		// if the request object parsing is completed then exit
 		if(Rstate == BODY_COMPLETE)
@@ -44,23 +44,20 @@ void connection_handler(int conn_fd)
 
 		distribute(hrq,hrp);
 
-		// get the estimate of the buffer length and this will help us initialize the buffer to store and send the response
-		buffreadlength = estimateResponseObjectSize(hrp);
-		char* bufferResponse = ((char*)malloc(sizeof(char) * buffreadlength));
-		bufferResponse[0] = '\0';
+		// serialize HttpResponse to send it
+		dstring* bufferResponse = get_dstring("", 10);
 
 		// sertialize the response object in tot the string
-		error = responseObjectToString(bufferResponse, &buffreadlength, hrp);
+		error = serializeResponse(bufferResponse, hrp);
 
 		// if no error send the data
 		if(error == 0)
 		{
-			buffreadlength = strlen(bufferResponse);
-			send(conn_fd, bufferResponse, buffreadlength, 0);
+			send(conn_fd, bufferResponse->cstring, bufferResponse->bytes_occupied, 0);
 		}
 
 		// once data sent delete bufferResponse
-		free(bufferResponse);
+		delete_dstring(bufferResponse);
 
 		// delete HttpResponse Object
 		deleteHttpResponse(hrp);

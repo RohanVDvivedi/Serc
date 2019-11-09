@@ -1,46 +1,23 @@
 #include<httpobject.h>
 
-// list of supported verbs
-const char verb[10][15] = {
-	"GET",
-	"POST",
-	"PUT",
-	"HEAD",
-	"DELETE",
-	"PATCH",
-	"OPTIONS",
-	"TRACE",
-	"CONNECT",
-	"UNIDENTIFIED"
-};
 
-// Returns -1 if no such method found
-void setRequestMethod(char* Method,HttpRequest* hr)
-{
-	hr->MethodType = verbToHttpMethodType(Method);
-}
-
-// Returns -1 if no such method found
-char* getRequestMethod(HttpRequest* hr)
-{
-	return httpMethodTypeToVerb(hr->MethodType);
-}
+char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state);
+char* skipCharacters(int* Token,char* querystring,int* count);
+long long int readInt(char* str);
+int characterAllowedInURL(char c);
+int strcmpcaseinsensitive(char* str1,char* str2);
+int strhasprefixcaseinsensitive(char* prefix,char* str);
 
 
 // create new http request object and initialized with defaults
 HttpRequest* getNewHttpRequest()
 {
 	HttpRequest* hr = (HttpRequest*) malloc(sizeof(HttpRequest));
-	hr->MethodType = UNIDENTIFIED;
-	hr->Path = NULL;
-	hr->PathParameterSize = 0;
-	hr->PathParameterCount = 0;
-	hr->PathParameters = NULL;
-	hr->HeaderSize = 0;
-	hr->HeaderCount = 0;
-	hr->Headers = NULL;
-	hr->RequestBodyLength = 0;
-	hr->RequestBody = NULL;
+	hr->method = UNIDENTIFIED;
+	hr->path = get_dstring(20, getHashValueDstring, compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
+	hr->parameters = get_hashmap(20, getHashValueDstring, compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
+	hr->headers = get_hashmap(20, compare_dstring);
+	hr->body = get_dstring("", 10);
 	return hr;
 }
 
@@ -48,12 +25,34 @@ HttpRequest* getNewHttpRequest()
 HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = (HttpResponse*) malloc(sizeof(HttpResponse));
-	hr->HeaderSize = 0;
-	hr->HeaderCount = 0;
-	hr->Headers = NULL;
-	hr->ResponseBodyLength = 0;
-	hr->ResponseBody = NULL;
+	hr->headers = get_hashmap(20, getHashValueDstring, compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
+	hr->body = get_dstring("", 10);
 	return hr;
+}
+
+void delete_entry_wrapper(const void* key, const void* value, const void* additional_params)
+{
+	delete_dstring(key);
+	delete_dstring(value);
+}
+
+void deleteHttpRequest(HttpRequest* hr)
+{
+	delete_dstring(hr->Path);
+	for_each_entry(hr->parameters, delete_entry_wrapper, NULL);
+	delete_hashmap(hr->parameters);
+	for_each_entry(hr->headers, delete_entry_wrapper, NULL);
+	delete_hashmap(hr->headers);
+	delete_dstring(hr->body);
+	free(hr);
+}
+
+void deleteHttpResponse(HttpResponse* hr)
+{
+	for_each_entry(hr->headers, delete_entry_wrapper, NULL);
+	delete_hashmap(hr->headers);
+	delete_dstring(hr->body);
+	free(hr);
 }
 
 char charToHex(char c)
@@ -1126,185 +1125,28 @@ void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr)
 	lowercaseString(hr->Headers[hr->HeaderCount - 1]->Value);
 }
 
-void deleteHttpRequest(HttpRequest* hr)
+// Methods common to both Request and response
+
+void addHeader(char* Key, char* Value, hashmap* headers)
 {
-	if(hr == NULL)
-	{
-		return;
-	}
-	if(hr->Path!=NULL)
-	{
-		free(hr->Path);
-	}
-	for(int i=0;i<hr->PathParameterCount;i++)
-	{
-		free(hr->PathParameters[i]->Key);
-		free(hr->PathParameters[i]->Value);
-		free(hr->PathParameters[i]);
-	}
-	if(hr->PathParameters!=NULL)
-	{
-		free(hr->PathParameters);
-	}
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		free(hr->Headers[i]->Key);
-		free(hr->Headers[i]->Value);
-		free(hr->Headers[i]);
-	}
-	if(hr->Headers!=NULL)
-	{
-		free(hr->Headers);
-	}
-	if(hr->RequestBody!=NULL)
-	{
-		free(hr->RequestBody);
-	}
-	free(hr);
+	dstring* key = get_dstring(Key, 10);
+	dstring* value = get_dstring(Value, 10);
+	insert_entry_in_hash(headers, key, value);
 }
 
-void deleteHttpResponse(HttpResponse* hr)
-{
-	if(hr == NULL)
-	{
-		return;
-	}
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		free(hr->Headers[i]->Key);
-		free(hr->Headers[i]->Value);
-		free(hr->Headers[i]);
-	}
-	if(hr->Headers!=NULL)
-	{
-		free(hr->Headers);
-	}
-	if(hr->ResponseBody!=NULL)
-	{
-		free(hr->ResponseBody);
-	}
-	free(hr);
-}
-
-void printHttpRequest(HttpRequest* hr)
-{
-	printf("Http Request\n");
-	printf("\t Method : %s\n",httpMethodTypeToVerb(hr->MethodType));
-	printf("\t Path   : %s\n",hr->Path);
-	printf("\t Path Parameters :: \n");
-	for(int i=0;i<hr->PathParameterCount;i++)
-	{
-		printf("\t \t %s : %s \n",hr->PathParameters[i]->Key,hr->PathParameters[i]->Value);
-	}
-	printf("\t Request Headers :: %d\n",hr->HeaderCount);
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		printf("\t \t %s : %s \n",hr->Headers[i]->Key,hr->Headers[i]->Value);
-	}
-	printf("\t RequestBody : %s\n",hr->RequestBody);
-}
-
-void printHttpResponse(HttpResponse* hr)
-{
-	printf("Http Response\n");
-	printf("\t Response Status ::  %d\n",hr->Status);
-	printf("\t Response Headers :: \n");
-	for(int i=0;i<hr->HeaderCount;i++)
-	{
-		printf("\t \t %s : %s \n",hr->Headers[i]->Key,hr->Headers[i]->Value);
-	}
-	printf("\t Response Body : %s\n",hr->ResponseBody);
-}
-
-void setRequestPath(char* path,HttpRequest* hr)
-{
-	if(hr->Path!=NULL)
-	{
-		free(hr->Path);
-	}
-	int n = strlen(path);
-	hr->Path = (char*) malloc(sizeof(char)*(n+1));
-	strcpy(hr->Path,path);
-}
-
-void setRequestBody(char* body,HttpRequest* hr)
-{
-	if(hr->RequestBody!=NULL)
-	{
-		free(hr->RequestBody);
-	}
-	hr->RequestBodyLength = strlen(body);
-	hr->RequestBody = (char*) malloc(sizeof(char)*(hr->RequestBodyLength + 1));
-	strcpy(hr->RequestBody,body);
-}
-
-void addToRequestBody(char* body,HttpRequest* hr)
-{
-	unsigned long long int oldLength = hr->RequestBody == NULL ? 0 : strlen(hr->RequestBody);
-	unsigned long long newLength = oldLength + strlen(body);
-	hr->RequestBodyLength = newLength;
-	char* newBody = (char*) malloc(sizeof(char)*(hr->RequestBodyLength + 1));
-	if(hr->RequestBody != NULL)
-	{
-		strcpy(newBody,hr->RequestBody);
-		free(hr->RequestBody);
-	}
-	else
-	{
-		newBody[0] = '\0';
-	}
-	strcat(newBody,body);
-	hr->RequestBody = newBody;
-}
-
-void addToResponseBody(char* body,HttpResponse* hr)
-{
-	unsigned long long int oldLength = hr->ResponseBody == NULL ? 0 : strlen(hr->ResponseBody);
-	unsigned long long newLength = oldLength + strlen(body);
-	hr->ResponseBodyLength = newLength;
-	char* newBody = (char*) malloc(sizeof(char)*(hr->ResponseBodyLength + 1));
-	if(hr->ResponseBody != NULL)
-	{
-		strcpy(newBody,hr->ResponseBody);
-		free(hr->ResponseBody);
-	}
-	else
-	{
-		newBody[0] = '\0';
-	}
-	strcat(newBody,body);
-	hr->ResponseBody = newBody;
-}
-
-void setResponseBody(char* body,HttpResponse* hr)
-{
-	if(hr->ResponseBody!=NULL)
-	{
-		free(hr->ResponseBody);
-	}
-	hr->ResponseBodyLength = strlen(body);
-	hr->ResponseBody = (char*) malloc(sizeof(char)*(hr->ResponseBodyLength + 1));
-	strcpy(hr->ResponseBody,body);
-}
-
-
-
-void setServerDefaultHeaderInRequest(HttpRequest* hr)
+void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 {
 	char ptemp[3000];
-	sprintf(ptemp, "%d",hr->RequestBodyLength);
-	addHeaderInHttpRequest("Content-Length",ptemp,hr);
+	sprintf(ptemp, "%llu", hrq->body->bytes_occupied);
+	addHeader("Content-Length", ptemp, hrq->headers);
 }
 
-void setServerDefaultHeaderInResponse(HttpResponse* hr)
+void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[3000];
-	sprintf(ptemp, "%d",hr->ResponseBodyLength);
-	addHeaderInHttpResponse("Content-Length",ptemp,hr);
+	sprintf(ptemp, "%llu", hrp->body->bytes_occupied);
+	addHeader("Content-Length", ptemp, hrp->headers);
 }
-
-
-
 
 // sets result pointing pointer to the string thats ends with token starting from query string
 char* tillToken(char* result,int* Tokens,char* querystring,TillTokenState* state)
@@ -1362,66 +1204,66 @@ long long int readInt(char* str)
 	return (str[i] == '-') ? -result : result ;
 }
 
-HttpMethodType verbToHttpMethodType(char* verb)
+HttpMethodType getHttpMethod(char* verb)
 {
 	// get hash value
 	unsigned long long int hsh = getHashValue(verb);
 
 	// if garbage string is provided (anything except the listed verbs) return UNIDENTIFIED enum
-	char* verbtemp = httpMethodTypeToVerb((HttpMethodType)hsh);
-	if(strcmp(verbtemp,"UNIDENTIFIED")==0)
+	char* verbtemp = serializeHttpMethod((HttpMethod)hsh);
+	if(strcmp(verbtemp,"UNIDENTIFIED") == 0)
 	{
 		return UNIDENTIFIED;
 	}
 	else
 	{
-		return ((HttpMethodType)hsh);
+		return ((HttpMethod)hsh);
 	}
 }
 
-char* httpMethodTypeToVerb(HttpMethodType m)
+char* serializeHttpMethod(HttpMethod m)
 {
 	switch(m)
 	{
 		case GET :
 		{
-			return (char*)verb[0];
+			return "GET";
 		}
 		case POST :
 		{
-			return (char*)verb[1];
+			return "POST";
 		}
 		case PUT :
 		{
-			return (char*)verb[2];
+			return "PUT";
 		}
 		case HEAD :
 		{
-			return (char*)verb[3];
+			return "HEAD";
 		}
 		case DELETE :
 		{
-			return (char*)verb[4];
+			return "DELETE";
 		}
 		case PATCH :
 		{
-			return (char*)verb[5];
+			return "PATCH";
 		}
 		case OPTIONS :
 		{
-			return (char*)verb[6];
+			return "OPTIONS";
 		}
 		case TRACE :
 		{
-			return (char*)verb[7];
+			return "TRACE";
 		}
 		case CONNECT :
 		{
-			return (char*)verb[8];
+			return "CONNECT";
 		}
 		default :
 		{
-			return (char*)verb[9];
+			return "UNIDENTIFIED";
 		}
 	}
 }

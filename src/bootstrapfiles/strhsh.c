@@ -31,6 +31,11 @@ unsigned long long int getHashValue(char* s)
     return ans;
 }
 
+unsigned long long int getHashValueDstring(dstring* dstr)
+{
+    return getHashValue(dstr->cstring);
+}
+
 unsigned long long int getHashValueByLength(char* s,int length)
 {
     unsigned long long int ans = 0,i = 1,last = 0,curr = 0,diff = 0;
