@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+#include<dstring.h>
 #include<server.h>
 
 #include<string.h>

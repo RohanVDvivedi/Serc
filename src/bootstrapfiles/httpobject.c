@@ -6,6 +6,7 @@ HttpRequest* getNewHttpRequest()
 	HttpRequest* hr = (HttpRequest*) malloc(sizeof(HttpRequest));
 	hr->method = UNIDENTIFIED;
 	hr->path = get_dstring("", 10);
+	hr->version = get_dstring("", 10);
 	hr->parameters = get_hashmap(20, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
 	hr->headers = get_hashmap(20, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
 	hr->body = get_dstring("", 10);
@@ -30,6 +31,7 @@ void delete_entry_wrapper(const void* key, const void* value, const void* additi
 void deleteHttpRequest(HttpRequest* hr)
 {
 	delete_dstring(hr->path);
+	delete_dstring(hr->version);
 	for_each_entry_in_hash(hr->parameters, delete_entry_wrapper, NULL);
 	delete_hashmap(hr->parameters);
 	for_each_entry_in_hash(hr->headers, delete_entry_wrapper, NULL);
@@ -49,9 +51,292 @@ void deleteHttpResponse(HttpResponse* hr)
 // returns 0 when completed
 // returns -1 when error
 // returns -2 on incomplete
-int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate)
+int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
-	return 0;
+	while(*buffer != '\0')
+	{
+		char temp[2] = "X";
+		#define CURRENT_CHARACTER()          (*buffer)
+		#define INIT_PARTIAL_STRING()        (*(partialDstring)) = get_dstring("", 10);
+		#define CLEAR_PARTIAL_STRING()       (*(partialDstring)) = NULL;
+		#define APPEND_CURRENT_CHARACTER_PARTIAL()   temp[0]=(*buffer);append_to_dstring((*(partialDstring)), temp);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr)   temp[0]=(*buffer);append_to_dstring(dstr, temp);
+		#define GOTO_NEXT_CHARACTER()        buffer++;
+		switch(*Rstate)
+		{
+			case NOT_STARTED :
+			{
+				if('A' <= CURRENT_CHARACTER() || CURRENT_CHARACTER() <= 'Z')
+				{
+					*Rstate = IN_METHOD;
+					INIT_PARTIAL_STRING()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case IN_METHOD :
+			{
+				if('A' <= CURRENT_CHARACTER() && CURRENT_CHARACTER() <= 'Z')
+				{
+					APPEND_CURRENT_CHARACTER_PARTIAL()
+					GOTO_NEXT_CHARACTER()
+				}
+				else if(CURRENT_CHARACTER() == ' ')
+				{
+					*Rstate = METHOD_COMPLETE;
+					hr->method = getHttpMethod((*(partialDstring))->cstring);
+					delete_dstring( (*(partialDstring)) );
+					CLEAR_PARTIAL_STRING()
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case METHOD_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() != ' ')
+				{
+					*Rstate = IN_PATH;
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case IN_PATH :
+			{
+				if(CURRENT_CHARACTER() != ' ' && CURRENT_CHARACTER() != '?')
+				{
+					APPEND_CURRENT_CHARACTER_TO(hr->path)
+					GOTO_NEXT_CHARACTER()
+				}
+				else if(CURRENT_CHARACTER() == ' ')
+				{
+					*Rstate = PATH_PARAMS_COMPLETE;
+					CLEAR_PARTIAL_STRING()
+					GOTO_NEXT_CHARACTER()
+				}
+				else if(CURRENT_CHARACTER() == '?')
+				{
+					*Rstate = IN_PARAM_KEY;
+					hr->path = (*(partialDstring));
+					CLEAR_PARTIAL_STRING()
+					INIT_PARTIAL_STRING()
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case IN_PARAM_KEY :
+			{
+				if(CURRENT_CHARACTER() != '=')
+				{
+					APPEND_CURRENT_CHARACTER_PARTIAL()
+					GOTO_NEXT_CHARACTER()
+				}
+				else if(CURRENT_CHARACTER() == '=')
+				{
+					dstring* key = (*(partialDstring));
+					CLEAR_PARTIAL_STRING()
+					INIT_PARTIAL_STRING()
+					insert_entry_in_hash(hr->parameters, key, (*(partialDstring)));
+					*Rstate = IN_PARAM_VALUE;
+				}
+				break;
+			}
+			case IN_PARAM_VALUE :
+			{
+				if(CURRENT_CHARACTER() != '&' && CURRENT_CHARACTER() != ' ')
+				{
+					APPEND_CURRENT_CHARACTER_PARTIAL()
+					GOTO_NEXT_CHARACTER()
+				}
+				else if(CURRENT_CHARACTER() == '&')
+				{
+					CLEAR_PARTIAL_STRING()
+					*Rstate = IN_PARAM_KEY;
+					GOTO_NEXT_CHARACTER()
+				}
+				else if(CURRENT_CHARACTER() == ' ')
+				{
+					dstring* key = (*(partialDstring));
+					CLEAR_PARTIAL_STRING()
+					*Rstate = PATH_PARAMS_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case PATH_PARAMS_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() != ' ')
+				{
+					*Rstate = IN_VERSION;
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case IN_VERSION :
+			{
+				if(CURRENT_CHARACTER() == '\r')
+				{
+					*Rstate = VERSION_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					APPEND_CURRENT_CHARACTER_TO(hr->version)
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case VERSION_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					*Rstate = IN_HEADER_KEY;
+					INIT_PARTIAL_STRING()
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case HEADER_START :
+			{
+				if(CURRENT_CHARACTER() == '\r')
+				{
+					*Rstate = HEADERS_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					*Rstate = IN_HEADER_KEY;
+					INIT_PARTIAL_STRING()
+				}
+				break;
+			}
+			case IN_HEADER_KEY :
+			{
+				if(CURRENT_CHARACTER() == ':')
+				{
+					dstring* key = (*(partialDstring));
+					CLEAR_PARTIAL_STRING()
+					INIT_PARTIAL_STRING()
+					insert_entry_in_hash(hr->headers, key, (*(partialDstring)));
+					*Rstate = HEADER_KEY_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					APPEND_CURRENT_CHARACTER_PARTIAL()
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case HEADER_KEY_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == ' ')
+				{
+					*Rstate = IN_HEADER_VALUE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case IN_HEADER_VALUE :
+			{
+				if(CURRENT_CHARACTER() == '\r')
+				{
+					CLEAR_PARTIAL_STRING()
+					*Rstate = HEADER_VALUE_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					APPEND_CURRENT_CHARACTER_PARTIAL()
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case HEADER_VALUE_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					*Rstate = HEADER_START;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case HEADERS_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					*Rstate = IN_BODY;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			case IN_BODY :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					*Rstate = BODY_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					APPEND_CURRENT_CHARACTER_TO(hr->body)
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case BODY_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					*Rstate = PARSED_SUCCESSFULLY;
+					GOTO_NEXT_CHARACTER()
+					return 0;
+				}
+				else
+				{
+					return -2;
+				}
+				break;
+			}
+			default :
+			{
+				return -2;
+			}
+		}
+	}
+	return -1;
 }
 
 // returns 0 when completed

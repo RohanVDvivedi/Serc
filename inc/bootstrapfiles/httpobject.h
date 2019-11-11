@@ -38,28 +38,24 @@ enum HttpParseState
 	IN_METHOD=1,
 	METHOD_COMPLETE=2,
 	IN_PATH=3,
-	PATH_COMPLETE=4,
-	IN_VERSION=5,
-	VERSION_COMPLETE=6,
-	IN_HEADER=7,
-	HEADER_COMPLETE=8,
-	HEADERS_COMPLETE=9,
-	HEADERS_SKIPS=10,
-	IN_BODY=11,
-	BODY_COMPLETE=12,
-
-//	IN_VERSION,
-//	VERSION_COMPLETE,
-	IN_STATUS=13,
-	STATUS_COMPLETE=14,
-	IN_STATUS_STRING=15,
-	STATUS_STRING_COMPLETE=16
-//	IN_HEADER,
-//	HEADER_COMPLETE,
-//	HEADERS_COMPLETE,
-//	HEADERS_SKIPS,
-//	IN_BODY,
-//	BODY_COMPLETE,
+	IN_PARAM_KEY=4,
+	IN_PARAM_VALUE=5,
+	PATH_PARAMS_COMPLETE=6,
+	IN_VERSION=7,
+	VERSION_COMPLETE=8,
+	HEADER_START=9,
+	IN_HEADER_KEY=10,
+	HEADER_KEY_COMPLETE=11,
+	IN_HEADER_VALUE=12,
+	HEADER_VALUE_COMPLETE=13,
+	HEADERS_COMPLETE=14,
+	IN_BODY=15,
+	BODY_COMPLETE=16,
+	IN_STATUS=17,
+	STATUS_COMPLETE=18,
+	IN_STATUS_STRING=19,
+	STATUS_STRING_COMPLETE=20,
+	PARSED_SUCCESSFULLY=21
 };
 
 typedef struct HttpRequest HttpRequest;
@@ -68,6 +64,8 @@ struct HttpRequest
 	HttpMethod method;
 
 	dstring* path;
+
+	dstring* version;
 
 	hashmap* parameters;
 
@@ -91,7 +89,7 @@ struct HttpResponse
 HttpRequest* getNewHttpRequest();
 
 // parse string to populate HttpRequest
-int parseRequest(char* buffer, HttpRequest* hr, HttpParseState* state);
+int parseRequest(char* buffer, HttpRequest* hr, HttpParseState* state, dstring** partialDstring);
 
 // serialize the url of the HttpRequest
 void serializeUrl(dstring* result, HttpRequest* hr);

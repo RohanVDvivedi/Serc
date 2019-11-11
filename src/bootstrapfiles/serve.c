@@ -8,6 +8,7 @@ void connection_handler(int conn_fd)
 
 	// this is how we maintain, the state of the HTTP parser
 	HttpParseState Rstate = NOT_STARTED;
+	dstring* partialDstring = NULL;
 
 	// create a new HttpRequest Object
 	HttpRequest* hrq = getNewHttpRequest();
@@ -28,10 +29,14 @@ void connection_handler(int conn_fd)
 		bufferRequest[buffreadlength] = '\0';
 
 		// parse the RequestString to populate HttpRequest Object
-		error = parseRequest(bufferRequest, hrq, &Rstate);
+		error = parseRequest(bufferRequest, hrq, &Rstate, &partialDstring);
+		if(error == -2)
+		{
+			break;
+		}
 
 		// if the request object parsing is completed then exit
-		if(Rstate == BODY_COMPLETE)
+		if(Rstate == PARSED_SUCCESSFULLY)
 		{
 			break;
 		}
