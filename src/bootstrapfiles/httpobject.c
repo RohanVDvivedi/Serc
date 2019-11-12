@@ -55,13 +55,14 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 {
 	while(*buffer != '\0')
 	{
+		printf("%c %d\n", *buffer, *Rstate);
 		char temp[2] = "X";
-		#define CURRENT_CHARACTER()          (*buffer)
-		#define INIT_PARTIAL_STRING()        (*(partialDstring)) = get_dstring("", 10);
-		#define CLEAR_PARTIAL_STRING()       (*(partialDstring)) = NULL;
-		#define APPEND_CURRENT_CHARACTER_PARTIAL()   temp[0]=(*buffer);append_to_dstring((*(partialDstring)), temp);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr)   temp[0]=(*buffer);append_to_dstring(dstr, temp);
-		#define GOTO_NEXT_CHARACTER()        buffer++;
+		#define CURRENT_CHARACTER() 				(*buffer)
+		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
+		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);append_to_dstring((*(partialDstring)), temp);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);append_to_dstring(dstr, temp);
+		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
 		{
 			case NOT_STARTED :
@@ -206,8 +207,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					*Rstate = IN_HEADER_KEY;
-					INIT_PARTIAL_STRING()
+					*Rstate = HEADER_START;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -234,7 +234,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					dstring* key = (*(partialDstring));
+					dstring* key = (*(partialDstring)); toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 					insert_entry_in_hash(hr->headers, key, (*(partialDstring)));
@@ -304,30 +304,35 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case IN_BODY :
 			{
-				if(CURRENT_CHARACTER() == '\n')
+				dstring* content_length_key = get_dstring("content_length", 10);
+				dstring* content_length = (dstring*)find_value_from_hash(hr->headers, content_length_key);
+				delete_dstring(content_length_key);
+				if(content_length != NULL)
 				{
-					*Rstate = BODY_COMPLETE;
-					GOTO_NEXT_CHARACTER()
-				}
-				else
-				{
-					APPEND_CURRENT_CHARACTER_TO(hr->body)
-					GOTO_NEXT_CHARACTER()
-				}
-				break;
-			}
-			case BODY_COMPLETE :
-			{
-				if(CURRENT_CHARACTER() == '\n')
-				{
-					*Rstate = PARSED_SUCCESSFULLY;
-					GOTO_NEXT_CHARACTER()
-					return 0;
+					long long int body_length = -1;
+					sscanf(content_length->cstring, "%lld", &body_length);
+					if(body_length >= 0 && body_length == hr->body->bytes_occupied)
+					{
+						*Rstate = BODY_COMPLETE;
+						GOTO_NEXT_CHARACTER()
+					}
+					else
+					{
+						APPEND_CURRENT_CHARACTER_TO(hr->body)
+						GOTO_NEXT_CHARACTER()
+					}
 				}
 				else
 				{
 					return -2;
 				}
+				break;
+			}
+			case BODY_COMPLETE :
+			{
+				*Rstate = PARSED_SUCCESSFULLY;
+				GOTO_NEXT_CHARACTER()
+				return 0;
 				break;
 			}
 			default :

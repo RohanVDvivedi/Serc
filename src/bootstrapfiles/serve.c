@@ -32,7 +32,12 @@ void connection_handler(int conn_fd)
 		error = parseRequest(bufferRequest, hrq, &Rstate, &partialDstring);
 		if(error == -2)
 		{
+			printf("Error while parsing [%s] in HTTP request\n", bufferRequest);
 			break;
+		}
+		else
+		{
+			printf("Parsed : [%s] : %d\n", bufferRequest, Rstate);
 		}
 
 		// if the request object parsing is completed then exit
