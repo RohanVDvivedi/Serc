@@ -5,6 +5,7 @@
 #include<unistd.h>
 
 #include<httpobject.h>
+#include<strhsh.h>
 
 #define SERC_ROOT_PATH "./serc_root"
 
