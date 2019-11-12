@@ -2,10 +2,11 @@
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_resolved)
 {
+	printRequest(hrq);
 	if(hrq->method == GET && hrq->path->cstring[0] == '/')
 	{
 		dstring* file_path = get_dstring(SERC_ROOT_PATH, 10);
-		concatenate_dstring(file_path, hrq->path);
+		concatenate_dstring(file_path, hrq->path);printf("path : [%s]\n", file_path->cstring);
 
 		if(access(file_path->cstring, R_OK) != -1) {
     		FILE* file = fopen(file_path->cstring, "rb");

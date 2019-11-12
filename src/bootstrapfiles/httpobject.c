@@ -292,7 +292,12 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case HEADERS_COMPLETE :
 			{
-				if(CURRENT_CHARACTER() == '\n')
+				if(hr->method == GET)
+				{
+					*Rstate = PARSED_SUCCESSFULLY;
+					return 0;
+				}
+				else if(CURRENT_CHARACTER() == '\n')
 				{
 					*Rstate = IN_BODY;
 					GOTO_NEXT_CHARACTER()
