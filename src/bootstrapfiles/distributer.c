@@ -84,7 +84,12 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 
 	if(routing_resolved==0)
 	{
-		hrp->status = 404;
+		// check if we can serve the request with some file, on the server's root
+		error = file_request_controller(hrq,hrp,&routing_resolved);
+		if(routing_resolved==0)
+		{
+			hrp->status = 404;
+		}
 	}
 
 	setServerDefaultHeadersInResponse(hrp);
