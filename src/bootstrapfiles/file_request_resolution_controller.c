@@ -6,7 +6,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 	if(hrq->method == GET && hrq->path->cstring[0] == '/')
 	{
 		dstring* file_path = get_dstring(SERC_ROOT_PATH, 10);
-		concatenate_dstring(file_path, hrq->path);printf("path : [%s]\n", file_path->cstring);
+		concatenate_dstring(file_path, hrq->path);
 
 		if(access(file_path->cstring, R_OK) != -1) {
     		FILE* file = fopen(file_path->cstring, "rb");
@@ -14,17 +14,14 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
     		#define FILE_READ_BUFFER_SIZE 100
     		char file_buffer[FILE_READ_BUFFER_SIZE];
 
-    		while(1)
+    		int i = 0;
+    		while(!feof(file))
     		{
-    			int read_count = fread(file_buffer, FILE_READ_BUFFER_SIZE - 1, sizeof(char), file);
-    			file_buffer[read_count] = '\0';
+    			int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE - 1, file);
     			if(read_count >= 0)
     			{
+    				file_buffer[read_count] = '\0';
     				append_to_dstring(hrp->body, file_buffer);
-    			}
-    			else
-    			{
-    				break;
     			}
 			}
 
