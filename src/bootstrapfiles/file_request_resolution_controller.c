@@ -40,7 +40,8 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 
     		delete_dstring(extension);
 
-    		//*routing_resolved = 1;
+    		*routing_resolved = 1;
+    		hrp->status = 200;
 		}
 
 		delete_dstring(file_path);
