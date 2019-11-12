@@ -55,13 +55,12 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 {
 	while(*buffer != '\0')
 	{
-		printf("%c %d\n", *buffer, *Rstate);
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);append_to_dstring((*(partialDstring)), temp);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);append_to_dstring(dstr, temp);
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring((*(partialDstring)), temp);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring(dstr, temp);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
 		{
@@ -127,7 +126,6 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 				else if(CURRENT_CHARACTER() == '?')
 				{
 					*Rstate = IN_PARAM_KEY;
-					hr->path = (*(partialDstring));
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 					GOTO_NEXT_CHARACTER()
@@ -152,6 +150,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 					INIT_PARTIAL_STRING()
 					insert_entry_in_hash(hr->parameters, key, (*(partialDstring)));
 					*Rstate = IN_PARAM_VALUE;
+					GOTO_NEXT_CHARACTER()
 				}
 				break;
 			}
@@ -165,6 +164,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 				else if(CURRENT_CHARACTER() == '&')
 				{
 					CLEAR_PARTIAL_STRING()
+					INIT_PARTIAL_STRING()
 					*Rstate = IN_PARAM_KEY;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -234,7 +234,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					dstring* key = (*(partialDstring)); toLowercase(key);
+					dstring* key = (*(partialDstring));// toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 					insert_entry_in_hash(hr->headers, key, (*(partialDstring)));
@@ -304,7 +304,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case IN_BODY :
 			{
-				dstring* content_length_key = get_dstring("content_length", 10);
+				dstring* content_length_key = get_dstring("Content-Length", 10);
 				dstring* content_length = (dstring*)find_value_from_hash(hr->headers, content_length_key);
 				delete_dstring(content_length_key);
 				if(content_length != NULL)
@@ -313,8 +313,8 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 					sscanf(content_length->cstring, "%lld", &body_length);
 					if(body_length >= 0 && body_length == hr->body->bytes_occupied)
 					{
+						APPEND_CURRENT_CHARACTER_TO(hr->body)
 						*Rstate = BODY_COMPLETE;
-						GOTO_NEXT_CHARACTER()
 					}
 					else
 					{
@@ -330,9 +330,16 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case BODY_COMPLETE :
 			{
-				*Rstate = PARSED_SUCCESSFULLY;
 				GOTO_NEXT_CHARACTER()
-				return 0;
+				if(CURRENT_CHARACTER() == '\0')
+				{
+					*Rstate = PARSED_SUCCESSFULLY;
+					return 0;
+				}
+				else
+				{
+					return -2;
+				}
 				break;
 			}
 			default :
@@ -509,6 +516,25 @@ void serializeResponse(dstring* result, HttpResponse* hr)
 	for_each_entry_in_hash(hr->headers, (void (*)(const void*, const void*, const void*))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, hr->body);
+}
+
+void print_dstring_entry(const void* key, const void* value, const void* addpar)
+{
+	printf("\t\t[");
+	display_dstring((dstring*)key);
+	printf("]->[");
+	display_dstring((dstring*)value);
+	printf("]\n");
+}
+
+void printRequest(HttpRequest* hr)
+{
+	printf("method : %s\n", serializeHttpMethod(hr->method));
+	printf("path : "); display_dstring(hr->path); printf("\n");
+	printf("parameters : \n"); for_each_entry_in_hash(hr->parameters, print_dstring_entry, NULL); printf("\n");
+	printf("version : "); display_dstring(hr->version); printf("\n");
+	printf("headers : \n"); for_each_entry_in_hash(hr->headers, print_dstring_entry, NULL); printf("\n");
+	printf("body : "); display_dstring(hr->body); printf("\n\n");
 }
 
 // Methods common to both Request and response

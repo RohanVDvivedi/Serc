@@ -32,12 +32,7 @@ void connection_handler(int conn_fd)
 		error = parseRequest(bufferRequest, hrq, &Rstate, &partialDstring);
 		if(error == -2)
 		{
-			printf("Error while parsing [%s] in HTTP request\n", bufferRequest);
 			break;
-		}
-		else
-		{
-			printf("Parsed : [%s] : %d\n", bufferRequest, Rstate);
 		}
 
 		// if the request object parsing is completed then exit
@@ -61,7 +56,7 @@ void connection_handler(int conn_fd)
 		serializeResponse(bufferResponse, hrp);
 
 		// send the data
-		send(conn_fd, bufferResponse->cstring, bufferResponse->bytes_occupied, 0);
+		send(conn_fd, bufferResponse->cstring, bufferResponse->bytes_occupied - 1, 0);
 
 		// once data sent delete bufferResponse
 		delete_dstring(bufferResponse);

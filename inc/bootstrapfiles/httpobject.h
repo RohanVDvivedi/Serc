@@ -100,6 +100,9 @@ void serializeRequest(dstring* result, HttpRequest* hr);
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
 
+// show on console a printable HttpRequest
+void printRequest(HttpRequest* hr);
+
 // functions for Response
 // to create HttpResponse Object
 HttpResponse* getNewHttpResponse();
