@@ -234,7 +234,8 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					dstring* key = (*(partialDstring));// toLowercase(key);
+					dstring* key = (*(partialDstring));
+					toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 					insert_entry_in_hash(hr->headers, key, (*(partialDstring)));
@@ -304,7 +305,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case IN_BODY :
 			{
-				dstring* content_length_key = get_dstring("Content-Length", 10);
+				dstring* content_length_key = get_dstring("content-length", 10);
 				dstring* content_length = (dstring*)find_value_from_hash(hr->headers, content_length_key);
 				delete_dstring(content_length_key);
 				if(content_length != NULL)
