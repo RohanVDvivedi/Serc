@@ -17,12 +17,12 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 
     		FILE* file = fopen(file_path->cstring, "rb");
 
-    		#define FILE_READ_BUFFER_SIZE 100
+    		#define FILE_READ_BUFFER_SIZE 4000
     		char file_buffer[FILE_READ_BUFFER_SIZE];
 
     		while(!feof(file))
     		{
-    			long long int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE - 1, file);
+    			long long int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE, file);
     			if(read_count >= 0)
     			{
     				appendn_to_dstring(hrp->body, file_buffer, read_count);
