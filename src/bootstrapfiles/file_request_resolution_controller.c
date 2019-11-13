@@ -5,7 +5,6 @@ dstring* get_extention_from_file_path(dstring* file_path);
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_resolved)
 {
-	printRequest(hrq);
 	if(hrq->method == GET && hrq->path->cstring[0] == '/')
 	{
 		dstring* file_path = get_dstring(SERC_ROOT_PATH, 10);
