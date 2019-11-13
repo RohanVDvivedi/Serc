@@ -53,7 +53,7 @@ void deleteHttpResponse(HttpResponse* hr)
 // returns -2 on incomplete
 int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
-	while(*buffer != '\0')
+	while(*buffer != '\0' && *Rstate != PARSED_SUCCESSFULLY)
 	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
@@ -292,15 +292,19 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case HEADERS_COMPLETE :
 			{
-				if(hr->method == GET)
+				if(CURRENT_CHARACTER() == '\n')
 				{
-					*Rstate = PARSED_SUCCESSFULLY;
-					return 0;
-				}
-				else if(CURRENT_CHARACTER() == '\n')
-				{
-					*Rstate = IN_BODY;
-					GOTO_NEXT_CHARACTER()
+					if(hr->method == GET)
+					{
+						*Rstate = PARSED_SUCCESSFULLY;
+						GOTO_NEXT_CHARACTER()
+						return 0;
+					}
+					else
+					{
+						*Rstate = IN_BODY;
+						GOTO_NEXT_CHARACTER()
+					}
 				}
 				else
 				{
