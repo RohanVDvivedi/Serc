@@ -555,14 +555,15 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 {
 	char ptemp[3000];
 	sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
-	addHeader("Content-Length", ptemp, hrq->headers);
+	addHeader("content-length", ptemp, hrq->headers);
 }
 
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[3000];
 	sprintf(ptemp, "%llu", hrp->body->bytes_occupied-1);
-	addHeader("Content-Length", ptemp, hrp->headers);
+	addHeader("content-length", ptemp, hrp->headers);
+	addHeader("server", "serc0", hrp->headers);
 }
 
 HttpMethod getHttpMethod(char* verb)
