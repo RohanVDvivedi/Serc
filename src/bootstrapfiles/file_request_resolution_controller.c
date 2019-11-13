@@ -20,10 +20,9 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
     		#define FILE_READ_BUFFER_SIZE 100
     		char file_buffer[FILE_READ_BUFFER_SIZE];
 
-    		int i = 0;
     		while(!feof(file))
     		{
-    			int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE - 1, file);
+    			long long int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE - 1, file);
     			if(read_count >= 0)
     			{
     				appendn_to_dstring(hrp->body, file_buffer, read_count);
