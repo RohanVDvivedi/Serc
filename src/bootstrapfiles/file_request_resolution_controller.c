@@ -26,8 +26,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
     			int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE - 1, file);
     			if(read_count >= 0)
     			{
-    				file_buffer[read_count] = '\0';
-    				append_to_dstring(hrp->body, file_buffer);
+    				appendn_to_dstring(hrp->body, file_buffer, read_count);
     			}
 			}
 
