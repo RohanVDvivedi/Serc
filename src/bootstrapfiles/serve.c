@@ -1,5 +1,15 @@
 #include<serve.h>
 
+typedef enum connection_handler_error connection_handler_error;
+enum connection_handler_error
+{
+	REQUEST_PARSED_SUCCESSFULLY = 0,
+	NO_ERROR_REQUEST_NOT_PARSED_COMPLETELY_CONTINUE_READING = -1,
+	ERROR_OCCURRED_REQUEST_NOT_STANDARD_HTTP = -2,
+	TCP_CONNECTION_CLOSED_ABRUPTLY = -3,
+	TCP_CONNECTION_ERROR_READING = -4
+};
+
 void connection_handler(int conn_fd)
 {
 	// create buffer to read the request
@@ -12,16 +22,22 @@ void connection_handler(int conn_fd)
 
 	// create a new HttpRequest Object
 	HttpRequest* hrq = getNewHttpRequest();
-	int error = 0;
+	connection_handler_error error = 0;
 
 	while(1)
 	{
-		// read request byte array
+		// read request byte array, we must read blockingly
 		buffreadlength = recv(conn_fd, bufferRequest, buffersize-1, 0);
 
 		// if no characters read than exit
 		if(buffreadlength == -1)
 		{
+			error = TCP_CONNECTION_ERROR_READING;
+			break;
+		}
+		else if(buffreadlength == 0)
+		{
+			error = TCP_CONNECTION_CLOSED_ABRUPTLY;
 			break;
 		}
 
@@ -30,17 +46,22 @@ void connection_handler(int conn_fd)
 
 		// parse the RequestString to populate HttpRequest Object
 		error = parseRequest(bufferRequest, hrq, &Rstate, &partialDstring);
-		if(error == -2)
+		if(error == ERROR_OCCURRED_REQUEST_NOT_STANDARD_HTTP)
 		{
 			break;
+		}
+		else if(error == NO_ERROR_REQUEST_NOT_PARSED_COMPLETELY_CONTINUE_READING)
+		{
+			continue;
 		}
 
 		// if the request object parsing is completed then exit
 		if(Rstate == PARSED_SUCCESSFULLY)
 		{
+			error = REQUEST_PARSED_SUCCESSFULLY;
 			break;
 		}
-	}
+	}printRequest(hrq);
 
 	if(error == 0)
 	{
