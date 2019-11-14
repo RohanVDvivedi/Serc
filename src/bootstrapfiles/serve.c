@@ -61,7 +61,7 @@ void connection_handler(int conn_fd)
 			error = REQUEST_PARSED_SUCCESSFULLY;
 			break;
 		}
-	}printRequest(hrq);
+	}
 
 	if(error == 0)
 	{
