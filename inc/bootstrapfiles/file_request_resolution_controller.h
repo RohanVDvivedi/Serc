@@ -4,6 +4,9 @@
 #include<stdio.h>
 #include<unistd.h>
 
+#include<hashmap.h>
+#include<dstring.h>
+
 #include<httpobject.h>
 #include<strhsh.h>
 
