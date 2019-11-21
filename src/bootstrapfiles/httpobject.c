@@ -570,6 +570,18 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 	addHeader("server", "serc0", hrp->headers);
 }
 
+void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
+{
+	addHeader("content-type", "application/json", hrq->headers);
+	serialize_json(hrq->body, node_p);
+}
+
+void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
+{
+	addHeader("content-type", "application/json", hrp->headers);
+	serialize_json(hrp->body, node_p);
+}
+
 HttpMethod getHttpMethod(char* verb)
 {
 	// get hash value

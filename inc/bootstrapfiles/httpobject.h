@@ -9,6 +9,8 @@
 #include<dstring.h>
 #include<hashmap.h>
 
+#include<json_serializer.h>
+
 #include<strhsh.h>
 #include<responseStrings.h>
 
@@ -124,5 +126,9 @@ void addHeader(char* Key, char* Value, hashmap* headers);
 // set Default Header in Request like size , type , date , updated at , server type email etc
 void setServerDefaultHeadersInRequest(HttpRequest* hrq);
 void setServerDefaultHeadersInResponse(HttpResponse* hrp);
+
+// set json in body 
+void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p);
+void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p);
 
 #endif
