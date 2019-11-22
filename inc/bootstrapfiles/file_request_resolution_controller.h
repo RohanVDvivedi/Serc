@@ -1,16 +1,12 @@
 #ifndef FILE_REQUEST_RESOLUTION_CONTROLLER_H
 #define FILE_REQUEST_RESOLUTION_CONTROLLER_H
 
-#include<stdio.h>
-#include<unistd.h>
-
 #include<hashmap.h>
 #include<dstring.h>
 
-#include<httpobject.h>
-#include<strhsh.h>
+#include<file_handler.h>
 
-#define SERC_ROOT_PATH "./serc_root"
+#include<httpobject.h>
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_resolved);
 

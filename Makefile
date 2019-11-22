@@ -21,7 +21,7 @@ JSON_PARSER_LIB=-L${JSON_PARSER_PATH}/bin -ljsonpar
 ${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-BOOTSTRAP_SOURCES=${OBJ_DIR}/${BOOTSTRAPFILES}/distributer.o ${OBJ_DIR}/${BOOTSTRAPFILES}/responseStrings.o ${OBJ_DIR}/${BOOTSTRAPFILES}/serve.o ${OBJ_DIR}/${BOOTSTRAPFILES}/strhsh.o ${OBJ_DIR}/${BOOTSTRAPFILES}/httpobject.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_request_resolution_controller.o
+BOOTSTRAP_SOURCES=${OBJ_DIR}/${BOOTSTRAPFILES}/distributer.o ${OBJ_DIR}/${BOOTSTRAPFILES}/responseStrings.o ${OBJ_DIR}/${BOOTSTRAPFILES}/serve.o ${OBJ_DIR}/${BOOTSTRAPFILES}/strhsh.o ${OBJ_DIR}/${BOOTSTRAPFILES}/httpobject.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_request_resolution_controller.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_handler.o
 
 ${BIN_DIR}/$(TARGET) : ${BOOTSTRAP_SOURCES} ${OBJ_DIR}/controllers/first_controller.o
 	gcc -o $@ src/main.c $(OBJ_DIR)/${BOOTSTRAPFILES}/*.o ${OBJ_DIR}/controllers/*.o ${CFLAGS} ${CONNMAN_LIB} ${BOOMPAR_LIB} ${JSON_PARSER_LIB} ${CUTLERY_LIB}
