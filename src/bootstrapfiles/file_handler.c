@@ -54,9 +54,8 @@ int read_file_in_dstring(dstring* file_contents_result, dstring* file_path)
 	return -1;
 }
 
-dstring* get_extension_from_file_path(dstring* path)
+void get_extension_from_file_path(dstring* extension_result, dstring* path)
 {
-	dstring* extension = get_dstring("", 10);
 	char* path_t = path->cstring;
 	int in_extension = 0;
 	while((*(path_t)) != '\0')
@@ -65,7 +64,7 @@ dstring* get_extension_from_file_path(dstring* path)
 		{
 			char temp[2] = "X";
 			temp[0] = (*(path_t));
-			append_to_dstring(extension, temp);
+			append_to_dstring(extension_result, temp);
 		}
 		else if((*(path_t)) == '.')
 		{
@@ -73,5 +72,4 @@ dstring* get_extension_from_file_path(dstring* path)
 		}
 		path_t++;
 	}
-	return extension;
 }

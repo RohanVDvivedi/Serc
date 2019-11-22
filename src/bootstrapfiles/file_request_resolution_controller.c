@@ -10,10 +10,11 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 		dstring* file_path = get_dstring(SERC_ROOT_PATH, 10);
 		concatenate_dstring(file_path, hrq->path);
 
-		// extract extension string from the file path
-		dstring* extension = get_extension_from_file_path(hrq->path);
+		// extract extension dstring from the file path
+		dstring* extension = get_dstring("", 10);
+		get_extension_from_file_path(extension, hrq->path);
 
-		// if cache was hit
+		// read file contents in the response body dstring
 		if(read_file_in_dstring(hrp->body, file_path) == 0)
 		{
     		*routing_resolved = 1;
