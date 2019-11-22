@@ -2,11 +2,9 @@
 
 void distribute(HttpRequest* hrq,HttpResponse* hrp)
 {
-	printHttpRequest(hrq);
-
-	char* path_str   = hrq->Path;
-	unsigned long long int PATH   = getHashValue(hrq->Path);
-	HttpMethodType METHOD = hrq->MethodType;
+	char* path_str = hrq->path->cstring;
+	unsigned long long int PATH = getHashValue(path_str);
+	HttpMethod METHOD = hrq->method;
 
 	int routing_resolved = 0;
 	int error = 0;
@@ -24,7 +22,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					{
 						error = first_controller(hrq,hrp);
 						routing_resolved = 1;
-						hrp->Status = 200;
+						hrp->status = 200;
 					}
 					break;
 				}
@@ -42,7 +40,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					{
 						error = first_controller(hrq,hrp);
 						routing_resolved = 1;
-						hrp->Status = 200;
+						hrp->status = 200;
 					}
 					break;
 				}
@@ -53,7 +51,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					{
 						error = first_controller(hrq,hrp);
 						routing_resolved = 1;
-						hrp->Status = 200;
+						hrp->status = 200;
 					}
 					break;
 				}
@@ -71,7 +69,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					{
 						error = first_controller(hrq,hrp);
 						routing_resolved = 1;
-						hrp->Status = 200;
+						hrp->status = 200;
 					}
 					break;
 				}
@@ -80,20 +78,19 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 		}
 		default :
 		{
-			hrp->Status = 404;
+			hrp->status = 404;
 		}
 	}
 
 	if(routing_resolved==0)
 	{
-		hrp->Status = 404;
+		// check if we can serve the request with some file, on the server's root
+		error = file_request_controller(hrq,hrp,&routing_resolved);
+		if(routing_resolved==0)
+		{
+			hrp->status = 404;
+		}
 	}
 
-	setServerDefaultHeaderInResponse(hrp);
-	if(hrp->ResponseBody == NULL)
-	{
-		hrp->ResponseBodyLength = 0;
-	}
-
-	printHttpResponse(hrp);
+	setServerDefaultHeadersInResponse(hrp);
 }

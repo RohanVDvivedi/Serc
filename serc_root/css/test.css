@@ -1,0 +1,10 @@
+p {
+  color: red;
+  text-align: center;
+}
+
+img {
+	border-width: 3px;
+	border-color: black;
+	border-style: dashed;
+}

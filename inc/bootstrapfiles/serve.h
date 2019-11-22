@@ -1,12 +1,18 @@
 #ifndef SERVE_H
 #define SERVE_H
 
+#include<stdio.h>
+#include<stdlib.h>
+
+#include<dstring.h>
+#include<server.h>
+
 #include<string.h>
-#include<sys/socket.h>
 #include<httpobject.h>
 #include<distributer.h>
-#include<logger.h>
 
-void serve(int fd);
+#define buffersize 100
+
+void server_run(uint16_t PORT);
 
 #endif

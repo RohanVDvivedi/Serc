@@ -18,7 +18,6 @@ unsigned long long int getHashValue(char* s)
         }
         unsigned long long int delta = curr * i * diff * (i - lastoccur[curr]);
         ans = ans + delta;
-        //printf("curr=%lld  i=%lld diff=%lld i-lastocc=%lld, delta=%lld\n",curr,i,diff,i-lastoccur[curr],delta);
         s++;
         last = curr;
         lastoccur[curr] = i;
@@ -29,6 +28,11 @@ unsigned long long int getHashValue(char* s)
         }
     }
     return ans;
+}
+
+unsigned long long int getHashValueDstring(dstring* dstr)
+{
+    return getHashValue(dstr->cstring);
 }
 
 unsigned long long int getHashValueByLength(char* s,int length)

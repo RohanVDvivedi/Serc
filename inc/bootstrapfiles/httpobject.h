@@ -4,15 +4,18 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
+#include<ctype.h>
+
+#include<dstring.h>
+#include<hashmap.h>
+
+#include<json_serializer.h>
+
 #include<strhsh.h>
 #include<responseStrings.h>
-#include<sys/socket.h>
 
-#include<ctype.h>
-#include<combined.h>
-
-typedef enum HttpMethodType HttpMethodType;
-enum HttpMethodType
+typedef enum HttpMethod HttpMethod;
+enum HttpMethod
 {
 	GET          =    12995,
 	POST         =    9830,
@@ -26,200 +29,106 @@ enum HttpMethodType
 	UNIDENTIFIED =    166308
 };
 
-// helper enums
+// methods for Http method
+HttpMethod getHttpMethod(char* verb);
+char* serializeHttpMethod(HttpMethod m);
 
-typedef enum TillTokenState TillTokenState;
-enum TillTokenState
-{
-	TASK_COMPLETED,
-	REACHED_END_OF_STRING
-};
-
-typedef enum StringToRequestResponseState StringToRequestResponseState;
-enum StringToRequestResponseState
+typedef enum HttpParseState HttpParseState;
+enum HttpParseState
 {
 	NOT_STARTED=0,
 	IN_METHOD=1,
 	METHOD_COMPLETE=2,
 	IN_PATH=3,
-	PATH_COMPLETE=4,
-	IN_VERSION=5,
-	VERSION_COMPLETE=6,
-	IN_HEADER=7,
-	HEADER_COMPLETE=8,
-	HEADERS_COMPLETE=9,
-	HEADERS_SKIPS=10,
-	IN_BODY=11,
-	BODY_COMPLETE=12,
-
-//	IN_VERSION,
-//	VERSION_COMPLETE,
-	IN_STATUS=13,
-	STATUS_COMPLETE=14,
-	IN_STATUS_STRING=15,
-	STATUS_STRING_COMPLETE=16
-//	IN_HEADER,
-//	HEADER_COMPLETE,
-//	HEADERS_COMPLETE,
-//	HEADERS_SKIPS,
-//	IN_BODY,
-//	BODY_COMPLETE,
-};
-
-#define StringToRequestState StringToRequestResponseState
-#define StringToResponseState StringToRequestResponseState
-
-
-
-extern const char Verb[10][15];
-
-typedef struct keyvaluepair keyvaluepair;
-struct keyvaluepair
-{
-	char* Key;
-	char* Value;
+	IN_PARAM_KEY=4,
+	IN_PARAM_VALUE=5,
+	PATH_PARAMS_COMPLETE=6,
+	IN_VERSION=7,
+	VERSION_COMPLETE=8,
+	HEADER_START=9,
+	IN_HEADER_KEY=10,
+	HEADER_KEY_COMPLETE=11,
+	IN_HEADER_VALUE=12,
+	HEADER_VALUE_COMPLETE=13,
+	HEADERS_COMPLETE=14,
+	IN_BODY=15,
+	BODY_COMPLETE=16,
+	IN_STATUS=17,
+	STATUS_COMPLETE=18,
+	IN_STATUS_STRING=19,
+	STATUS_STRING_COMPLETE=20,
+	PARSED_SUCCESSFULLY=21
 };
 
 typedef struct HttpRequest HttpRequest;
 struct HttpRequest
 {
-	HttpMethodType MethodType;
+	HttpMethod method;
 
-	char* Path;
+	dstring* path;
 
-	int PathParameterSize;
-	int PathParameterCount;
-	keyvaluepair** PathParameters;
+	dstring* version;
 
-	int HeaderSize;
-	int HeaderCount;
-	keyvaluepair** Headers;
+	hashmap* parameters;
 
-	int RequestBodyLength;
-	char* RequestBody;
+	hashmap* headers;
+
+	dstring* body;
 };
 
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse
 {
-	int Status;
+	int status;
 
-	int HeaderSize;
-	int HeaderCount;
-	keyvaluepair** Headers;
+	hashmap* headers;
 
-	int ResponseBodyLength;
-	char* ResponseBody;
+	dstring* body;
 };
 
-
-
 // functions for Request
-
 // to create HttpRequest Object
 HttpRequest* getNewHttpRequest();
 
-// getter and setter for request method
-void setRequestMethod(char* Method,HttpRequest* hr);
-char* getRequestMethod(HttpRequest* hr);
-
-// setter for request path, can be accessed by .Path for get
-void setRequestPath(char* path,HttpRequest* hr);
-
-// setter for request body
-void setRequestBody(char* body,HttpRequest* hr);
-
-// setter for request body from json objects
-void setRequestBodyFromJsonObject(void* json_object,Type_Support type,HttpRequest* hr);
-
-// adds more content to request body
-void addToRequestBody(char* body,HttpRequest* hr);
-
 // parse string to populate HttpRequest
-int stringToRequestObject(char* buffer,HttpRequest* hr,StringToRequestState* state);
+int parseRequest(char* buffer, HttpRequest* hr, HttpParseState* state, dstring** partialDstring);
 
-// estimate size of request from request object
-int estimateRequestObjectSize(HttpRequest* hr);
+// serialize the url of the HttpRequest
+void serializeUrl(dstring* result, HttpRequest* hr);
 
-// turn HttpRequest to String to send over network
-int requestObjectToString(char* buffer,int* bufferlength,HttpRequest* hr);
-
-// add Header in HttpRequest
-void addHeaderInHttpRequest(char* Key,char* Value,HttpRequest* hr);
-
-// add PathParameter in HttpRequest
-void addPathParameterInHttpRequest(char* Key,char* Value,HttpRequest* hr);
+// serialize HttpRequest and append to dstring to send over network or to print
+void serializeRequest(dstring* result, HttpRequest* hr);
 
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
 
-// detele HttpRequest but before that send it to server socket file discriptor 
-int sendRequest(HttpRequest* hr,int fd);
-
-// print HttpRequest Object in a readable format
-void printHttpRequest(HttpRequest* hr);
-
-// set Default Header in Request like size , type , date , updated at , server type email etc
-void setServerDefaultHeaderInRequest(HttpRequest* hr);
-
-// returns a string that is searchable url consisting of only allowed characted and rest of which are converted to %## format
-char* getUrl(HttpRequest* hr);
-
-
+// show on console a printable HttpRequest
+void printRequest(HttpRequest* hr);
 
 // functions for Response
-
 // to create HttpResponse Object
 HttpResponse* getNewHttpResponse();
 
-// setter for Response Body
-void setResponseBody(char* body,HttpResponse* hr);
-
-// adds more content to response body
-void addToResponseBody(char* body,HttpResponse* hr);
-
-// setter for response body from json objects
-void setResponseBodyFromJsonObject(void* json_object,Type_Support type,HttpResponse* hr);
-
 // parse string to populate HttpResponse
-int stringToResponseObject(char* buffer,HttpResponse* hr,StringToResponseState* Rstate);
+int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate);
 
-// estimate size of response from request object
-int estimateResponseObjectSize(HttpResponse* hr);
-
-// turn HttpResponse to String to send over network
-int responseObjectToString(char* buffer,int* bufferlength,HttpResponse* hr);
-
-// add Header in HttpResponse 
-void addHeaderInHttpResponse(char* Key,char* Value,HttpResponse* hr);
+// serialize HttpResponse and append to dstring to send over network or to print
+void serializeResponse(dstring* result, HttpResponse* hr);
 
 // delete HttpResponse and all its attributes
 void deleteHttpResponse(HttpResponse* hr);
 
-// detele HttpResponse but before that send it to client socket file discriptor 
-int sendResponse(HttpResponse* hr,int fd);
+// functions common to request and response both
+// add Header in HttpResponse 
+void addHeader(char* Key, char* Value, hashmap* headers);
+#define addParameter addHeader
 
-// print HttpResponse Object in a readable format
-void printHttpResponse(HttpResponse* hr);
+// set Default Header in Request like size , type , date , updated at , server type email etc
+void setServerDefaultHeadersInRequest(HttpRequest* hrq);
+void setServerDefaultHeadersInResponse(HttpResponse* hrp);
 
-// set Default Header in Response like size , type , date , updated at , server type email etc
-void setServerDefaultHeaderInResponse(HttpResponse* hr);
-
-
-
-
-
-
-// helper functions
-
-
-HttpMethodType verbToHttpMethodType(char* verb);
-char* httpMethodTypeToVerb(HttpMethodType m);
-char* tillToken(char* result,int* Token,char* querystring,TillTokenState* state);
-char* skipCharacters(int* Token,char* querystring,int* count);
-long long int readInt(char* str);
-int characterAllowedInURL(char c);
-int strcmpcaseinsensitive(char* str1,char* str2);
-int strhasprefixcaseinsensitive(char* prefix,char* str);
+// set json in body 
+void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p);
+void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p);
 
 #endif
