@@ -4,7 +4,7 @@
 
 int first_controller(HttpRequest* hrq, HttpResponse* hrp)
 {
-	printRequest(hrq);
+	//printRequest(hrq);
 	dstring* static_response = get_dstring("{\"name\":\"Rohan\",\"age\":23,\"skills\":[\"coding\",\"hardware development\"]}", 10);
 	json_node* node_p = parse_json(static_response);
 	setJsonInResponseBody(hrp, node_p);
