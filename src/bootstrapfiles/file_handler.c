@@ -45,7 +45,7 @@ int read_file_in_dstring(dstring* file_contents_result, dstring* file_path)
 		fclose(file);
 	}
 
-	// if chache had been updated, we read from the cache variable
+	// if cache had been updated, we read from the cache variable
 	if(file_content_from_cache != NULL)
 	{
 		concatenate_dstring(file_contents_result, file_content_from_cache);

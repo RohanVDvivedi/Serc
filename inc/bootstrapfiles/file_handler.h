@@ -7,6 +7,8 @@
 #include<hashmap.h>
 #include<dstring.h>
 
+#include<rwlock.h>
+
 #include<strhsh.h>
 
 #define SERC_ROOT_PATH "./serc_root"
