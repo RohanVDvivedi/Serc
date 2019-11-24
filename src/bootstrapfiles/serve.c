@@ -12,11 +12,7 @@ enum connection_handler_error
 
 void connection_handler(int conn_fd)
 {
-	// below dstrings will help us, know if the connection has to be kept alive or closed
-	// it will be as specified in the request header
-	dstring* connection_header_key = get_dstring("connection", 10);
-	dstring* connection_header_value_close = get_dstring("close", 10);
-
+	// set this in the loop, if you want to close the connection
 	int close_connection = 0;
 
 	// we loop on receving the 
@@ -98,11 +94,13 @@ void connection_handler(int conn_fd)
 		}
 		else
 		{
-			break;
+			// any error in reading the request, 
+			// leads to closing of the connection
+			close_connection = 1;
 		}
 
-		dstring* connection_header_value = (dstring*) find_value_from_hash(hrq->headers, connection_header_key);
-		if(compare_dstring(connection_header_value, connection_header_value_close) == 0)
+		// close the connection, after his request, if connection:close header is provided
+		if(hasHeader("connection", "close", hrq->headers))
 		{
 			close_connection = 1;
 		}
@@ -110,9 +108,6 @@ void connection_handler(int conn_fd)
 		// delete HttpRequest Object
 		deleteHttpRequest(hrq);
 	}
-
-	delete_dstring(connection_header_value_close);
-	delete_dstring(connection_header_key);
 }
 
 void server_run(uint16_t PORT)

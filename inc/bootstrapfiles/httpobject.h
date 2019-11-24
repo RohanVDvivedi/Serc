@@ -123,6 +123,9 @@ void deleteHttpResponse(HttpResponse* hr);
 void addHeader(char* Key, char* Value, hashmap* headers);
 #define addParameter addHeader
 
+// has header with key:value pair, returns 1 if key:value entry is present
+int hasHeader(char* Key, char* Value, hashmap* headers);
+
 // set Default Header in Request like size , type , date , updated at , server type email etc
 void setServerDefaultHeadersInRequest(HttpRequest* hrq);
 void setServerDefaultHeadersInResponse(HttpResponse* hrp);

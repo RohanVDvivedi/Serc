@@ -555,6 +555,21 @@ void addHeader(char* Key, char* Value, hashmap* headers)
 	insert_entry_in_hash(headers, key, value);
 }
 
+int hasHeader(char* Key, char* Value, hashmap* headers)
+{
+	dstring* key = get_dstring(Key, 10);
+	dstring* value = get_dstring(Value, 10);
+	dstring* value_test = (dstring*) find_value_from_hash(headers, key);
+	int result = 0;
+	if(value != NULL && compare_dstring(value, value_test) == 0)
+	{
+		result = 1;
+	}
+	delete_dstring(key);
+	delete_dstring(value);
+	return result;
+}
+
 void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 {
 	char ptemp[3000];
