@@ -15,7 +15,6 @@ void connection_handler(int conn_fd)
 	// below dstrings will help us, know if the connection has to be kept alive or closed
 	// it will be as specified in the request header
 	dstring* connection_header_key = get_dstring("connection", 10);
-	dstring* connection_header_value_keep_alive = get_dstring("keep-alive", 10);
 	dstring* connection_header_value_close = get_dstring("close", 10);
 
 	int close_connection = 0;
@@ -107,17 +106,12 @@ void connection_handler(int conn_fd)
 		{
 			close_connection = 1;
 		}
-		else if(compare_dstring(connection_header_value, connection_header_value_keep_alive) == 0)
-		{
-			close_connection = 0;
-		}
 
 		// delete HttpRequest Object
 		deleteHttpRequest(hrq);
 	}
 
 	delete_dstring(connection_header_value_close);
-	delete_dstring(connection_header_value_keep_alive);
 	delete_dstring(connection_header_key);
 }
 
