@@ -13,6 +13,11 @@
 
 #define SERC_ROOT_PATH "./serc_root"
 
+// this will initialize the file cache
+// you must call this function before using 
+// the file_handlers read_file_in_dstring function
+void init_file_content_cache();
+
 // this method returns -1, if the file is absent, else 0 if no error
 int read_file_in_dstring(dstring* file_contents_result, dstring* file_path);
 
