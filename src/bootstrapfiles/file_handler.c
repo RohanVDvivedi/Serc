@@ -26,15 +26,18 @@ int read_file_in_dstring(dstring* file_contents_result, dstring* file_path)
 	// find the file from the cache, once the file has been requested from the server it gets cached, in page cache
 	read_lock(file_cache_rwlock);
 	file_content_from_cache = (file_cache_component*)(find_value_from_hash(file_cache, file_path));
-	read_unlock(file_cache_rwlock);
-
 	// if cache is hit, we read from cache itself
 	if(file_content_from_cache != NULL)
 	{
 		read_lock(file_content_from_cache->file_content_rwlock);
+		read_unlock(file_cache_rwlock);
 		concatenate_dstring(file_contents_result, file_content_from_cache->file_content);
 		read_unlock(file_content_from_cache->file_content_rwlock);
 		return 0;
+	}
+	else
+	{
+		read_unlock(file_cache_rwlock);
 	}
 
 	int file_content_from_cache_is_locked_by_this_thread = 0;
