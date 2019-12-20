@@ -1,7 +1,10 @@
 [
 	{
-		"methods"         : ["GET","POST"],
-		"paths"           : ["/index/get_post"],
-		"controller"      : "first_controller"
+		"controller"				:	"first_controller",
+		"methods"					:	["GET","POST"],
+		"paths"						:	["/index/get_post"],
+		"set_response_headers"		:	{
+			"custom_api_specific_header"	:	"custom_header_value"
+		}
 	}
 ]

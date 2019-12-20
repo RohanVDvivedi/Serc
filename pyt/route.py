@@ -68,11 +68,25 @@ for routing_file in command_line_args:
 				mydict[method] = {}
 			for path in route['paths']:
 				hashval = strhsh.getHashValue(path)
+
 				if not (hashval in mydict[method]):
 					mydict[method][hashval] = {}
-				mydict[method][hashval][path] = route['controller']
-				if not (route['controller'] in controllers_list) :
-					controllers_list += [route['controller']]
+
+				if not (path in mydict[method][hashval]):
+					mydict[method][hashval][path] = {}
+
+				# this is the controller function that will be called if, 
+				# the METHOD and PATH satisfy the condition, and they match in the request
+				controller = route['controller']
+				mydict[method][hashval][path]['controller'] = controller
+				# add the controller to the list of the controllers
+				if not (controller in controllers_list) :
+					controllers_list += [controller]
+
+				# the headers will the set for the response of every request,
+				# if it hits this controller
+				if 'set_response_headers' in route :
+					mydict[method][hashval][path]['set_response_headers'] = route['set_response_headers']
 
 
 
@@ -88,34 +102,38 @@ but note that any 2 strings can and may have same hash value
 so for this we compare all the strings having the same hash value
 """
 # create whole of case statement in case_string
-case_string              = "\tswitch(METHOD)"
-case_string             += "\n\t{"
+case_string              			 = "\tswitch(METHOD)"
+case_string             			+= "\n\t{"
 for method in mydict:
-	case_string         += "\n\t\tcase " + method + " :"
-	case_string         += "\n\t\t{"
-	case_string         += "\n\t\t\tswitch(PATH)"
-	case_string         += "\n\t\t\t{"
+	case_string         			+= "\n\t\tcase " + method + " :"
+	case_string         			+= "\n\t\t{"
+	case_string         			+= "\n\t\t\tswitch(PATH)"
+	case_string         			+= "\n\t\t\t{"
 	for hashval in mydict[method]:
-		case_string     += "\n\t\t\t\tcase " + str(hashval) + " :"
-		case_string     += "\n\t\t\t\t{"
+		case_string     			+= "\n\t\t\t\tcase " + str(hashval) + " :"
+		case_string     			+= "\n\t\t\t\t{"
 		for path in mydict[method][hashval]:
-			case_string += "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			case_string += "\n\t\t\t\t\tif( 0 == strcmp( path_str , \"" + path + "\" ) )"
-			case_string += "\n\t\t\t\t\t{"
-			case_string += "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path] + "(hrq,hrp);"
-			case_string += "\n\t\t\t\t\t\trouting_resolved = 1;"
-			case_string += "\n\t\t\t\t\t\thrp->status = 200;"
-			case_string += "\n\t\t\t\t\t}"
-		case_string     += "\n\t\t\t\t\tbreak;"
-		case_string     += "\n\t\t\t\t}"
-	case_string         += "\n\t\t\t}"
-	case_string         += "\n\t\t\tbreak;"
-	case_string         += "\n\t\t}"
-case_string				+= "\n\t\tdefault :"
-case_string				+= "\n\t\t{"
-case_string				+= "\n\t\t\thrp->status = 404;"
-case_string				+= "\n\t\t}"
-case_string             += "\n\t}\n"
+			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
+			case_string 			+= "\n\t\t\t\t\tif( 0 == strcmp(path_str, \"" + path + "\") )"
+			case_string 			+= "\n\t\t\t\t\t{"
+			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
+				for header_key, header_value in mydict[method][hashval][path]['set_response_headers'].items() :
+					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"header_key\", \"header_value\", hrp->headers);"
+			case_string 			+= "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
+			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
+			case_string 			+= "\n\t\t\t\t\t\thrp->status = 200;"
+			case_string 			+= "\n\t\t\t\t\t}"
+		case_string     			+= "\n\t\t\t\t\tbreak;"
+		case_string     			+= "\n\t\t\t\t}"
+	case_string         			+= "\n\t\t\t}"
+	case_string         			+= "\n\t\t\tbreak;"
+	case_string         			+= "\n\t\t}"
+case_string							+= "\n\t\tdefault :"
+case_string							+= "\n\t\t{"
+case_string							+= "\n\t\t\thrp->status = 404;"
+case_string							+= "\n\t\t}"
+case_string             			+= "\n\t}\n"
 		
 
 

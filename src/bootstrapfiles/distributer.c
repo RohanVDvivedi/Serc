@@ -18,9 +18,11 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 				case 1579453 :
 				{
 					// case for path = /index/get_post and supports method = GET
-					if( 0 == strcmp( path_str , "/index/get_post" ) )
+					if( 0 == strcmp(path_str, "/index/get_post") )
 					{
-						error = first_controller(hrq,hrp);
+						// now here we add headers to the response, that we have to send
+						addHeader("header_key", "header_value", hrp->headers);
+						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
 					}
@@ -36,9 +38,11 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 				case 1579453 :
 				{
 					// case for path = /index/get_post and supports method = POST
-					if( 0 == strcmp( path_str , "/index/get_post" ) )
+					if( 0 == strcmp(path_str, "/index/get_post") )
 					{
-						error = first_controller(hrq,hrp);
+						// now here we add headers to the response, that we have to send
+						addHeader("header_key", "header_value", hrp->headers);
+						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
 					}
@@ -47,9 +51,9 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 				case 1717845 :
 				{
 					// case for path = /index/delete_post and supports method = POST
-					if( 0 == strcmp( path_str , "/index/delete_post" ) )
+					if( 0 == strcmp(path_str, "/index/delete_post") )
 					{
-						error = first_controller(hrq,hrp);
+						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
 					}
@@ -65,9 +69,9 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 				case 1717845 :
 				{
 					// case for path = /index/delete_post and supports method = DELETE
-					if( 0 == strcmp( path_str , "/index/delete_post" ) )
+					if( 0 == strcmp(path_str, "/index/delete_post") )
 					{
-						error = first_controller(hrq,hrp);
+						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
 					}
