@@ -77,11 +77,12 @@ for routing_file in command_line_args:
 
 				# this is the controller function that will be called if, 
 				# the METHOD and PATH satisfy the condition, and they match in the request
-				controller = route['controller']
-				mydict[method][hashval][path]['controller'] = controller
-				# add the controller to the list of the controllers
-				if not (controller in controllers_list) :
-					controllers_list += [controller]
+				if 'controller' in route :
+					controller = route['controller']
+					mydict[method][hashval][path]['controller'] = controller
+					# add the controller to the list of the controllers
+					if not (controller in controllers_list) :
+						controllers_list += [controller]
 
 				# the headers will the set for the response of every request,
 				# if it hits this controller
@@ -116,13 +117,14 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
 			case_string 			+= "\n\t\t\t\t\tif( 0 == strcmp(path_str, \"" + path + "\") )"
 			case_string 			+= "\n\t\t\t\t\t{"
-			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-			case_string 			+= "\n\t\t\t\t\t\thrp->status = 200;"
 			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
 				for header_key, header_value in mydict[method][hashval][path]['set_response_headers'].items() :
 					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", hrp->headers);"
-			case_string 			+= "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
+			if ('controller' in mydict[method][hashval][path]) and mydict[method][hashval][path]['controller'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
+				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
+				case_string 		+= "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
