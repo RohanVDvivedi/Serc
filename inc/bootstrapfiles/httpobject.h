@@ -134,4 +134,8 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp);
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p);
 void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p);
 
+// to redirect the client, to some other page incase when the page has been moved
+// if with status is -1, a default temporary redirect happens, else we take the status form you
+void redirectTo(int with_status, char* new_path, HttpResponse* hrp);
+
 #endif

@@ -597,6 +597,20 @@ void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
 	serialize_json(hrp->body, node_p);
 }
 
+void redirectTo(int with_status, char* new_path, HttpResponse* hrp)
+{
+	// we need to make sure that the with_status provided by the user is 3xx
+	if(with_status != -1 && (with_status%100 == 3) )
+	{
+		hrp->status = with_status;
+	}
+	else
+	{
+		hrp->status = 303;
+	}
+	addHeader("Location", new_path, hrp->headers);
+}
+
 HttpMethod getHttpMethod(char* verb)
 {
 	// get hash value
