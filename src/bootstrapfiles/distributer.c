@@ -20,11 +20,11 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					// case for path = /index/get_post and supports method = GET
 					if( 0 == strcmp(path_str, "/index/get_post") )
 					{
+						routing_resolved = 1;
+						hrp->status = 200;
 						// now here we add headers to the response, that we have to send
 						addHeader("custom_api_specific_header", "custom_header_value", hrp->headers);
 						error = first_controller(hrq, hrp);
-						routing_resolved = 1;
-						hrp->status = 200;
 					}
 					break;
 				}
@@ -40,11 +40,11 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					// case for path = /index/get_post and supports method = POST
 					if( 0 == strcmp(path_str, "/index/get_post") )
 					{
+						routing_resolved = 1;
+						hrp->status = 200;
 						// now here we add headers to the response, that we have to send
 						addHeader("custom_api_specific_header", "custom_header_value", hrp->headers);
 						error = first_controller(hrq, hrp);
-						routing_resolved = 1;
-						hrp->status = 200;
 					}
 					break;
 				}
@@ -53,9 +53,9 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					// case for path = /index/delete_post and supports method = POST
 					if( 0 == strcmp(path_str, "/index/delete_post") )
 					{
-						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
+						error = first_controller(hrq, hrp);
 					}
 					break;
 				}
@@ -71,9 +71,9 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					// case for path = /index/delete_post and supports method = DELETE
 					if( 0 == strcmp(path_str, "/index/delete_post") )
 					{
-						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
+						error = first_controller(hrq, hrp);
 					}
 					break;
 				}
