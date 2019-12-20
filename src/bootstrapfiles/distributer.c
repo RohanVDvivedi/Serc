@@ -21,7 +21,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					if( 0 == strcmp(path_str, "/index/get_post") )
 					{
 						// now here we add headers to the response, that we have to send
-						addHeader("header_key", "header_value", hrp->headers);
+						addHeader("custom_api_specific_header", "custom_header_value", hrp->headers);
 						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
@@ -41,7 +41,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					if( 0 == strcmp(path_str, "/index/get_post") )
 					{
 						// now here we add headers to the response, that we have to send
-						addHeader("header_key", "header_value", hrp->headers);
+						addHeader("custom_api_specific_header", "custom_header_value", hrp->headers);
 						error = first_controller(hrq, hrp);
 						routing_resolved = 1;
 						hrp->status = 200;
