@@ -116,13 +116,13 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
 			case_string 			+= "\n\t\t\t\t\tif( 0 == strcmp(path_str, \"" + path + "\") )"
 			case_string 			+= "\n\t\t\t\t\t{"
+			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
+			case_string 			+= "\n\t\t\t\t\t\thrp->status = 200;"
 			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
 				for header_key, header_value in mydict[method][hashval][path]['set_response_headers'].items() :
 					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", hrp->headers);"
 			case_string 			+= "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
-			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-			case_string 			+= "\n\t\t\t\t\t\thrp->status = 200;"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
