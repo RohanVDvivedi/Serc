@@ -28,6 +28,16 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 					}
 					break;
 				}
+				case 820209 :
+				{
+					// case for path = /doc/go_google and supports method = GET
+					if( 0 == strcmp(path_str, "/doc/go_google") )
+					{
+						routing_resolved = 1;
+						redirectTo(-1, "http://www.google.com", hrp);
+					}
+					break;
+				}
 			}
 			break;
 		}

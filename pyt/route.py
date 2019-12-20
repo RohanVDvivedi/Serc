@@ -84,6 +84,11 @@ for routing_file in command_line_args:
 					if not (controller in controllers_list) :
 						controllers_list += [controller]
 
+				# this is the redirection that will be used if, 
+				# the METHOD and PATH satisfy the condition, and they match in the request
+				if 'redirect_to' in route :
+					mydict[method][hashval][path]['redirect_to'] = route['redirect_to']
+
 				# the headers will the set for the response of every request,
 				# if it hits this controller
 				if 'set_response_headers' in route :
@@ -125,6 +130,12 @@ for method in mydict:
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
 				case_string 		+= "\n\t\t\t\t\t\terror = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
+			if ('redirect_to' in mydict[method][hashval][path]) and mydict[method][hashval][path]['redirect_to'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
+				status = -1
+				if ('with_status' in mydict[method][hashval][path]['redirect_to']) :
+					status = mydict[method][hashval][path]['redirect_to']['with_status']
+				case_string 		+= "\n\t\t\t\t\t\tredirectTo(" + str(status) + ", \"" + mydict[method][hashval][path]['redirect_to']['url'] + "\", hrp);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
