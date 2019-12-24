@@ -1,5 +1,5 @@
-#ifndef RESPONSE_STRINGS_H
-#define RESPONSE_STRINGS_H
+#ifndef HTTP_STATUS_H
+#define HTTP_STATUS_H
 
 #include<stdio.h>
 #include<stdlib.h>

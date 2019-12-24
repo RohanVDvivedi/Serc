@@ -12,7 +12,7 @@
 #include<json_serializer.h>
 
 #include<strhsh.h>
-#include<response_strings.h>
+#include<http_status.h>
 
 typedef enum HttpMethod HttpMethod;
 enum HttpMethod
