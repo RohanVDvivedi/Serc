@@ -8,7 +8,7 @@
 #include<server.h>
 
 #include<string.h>
-#include<httpobject.h>
+#include<http_object.h>
 #include<distributer.h>
 
 #define buffersize 100

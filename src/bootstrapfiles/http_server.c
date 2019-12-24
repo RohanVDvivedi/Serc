@@ -1,7 +1,7 @@
-#include<serve.h>
+#include<httpserver.h>
 
-typedef enum connection_handler_error connection_handler_error;
-enum connection_handler_error
+typedef enum http_connection_handler_error http_connection_handler_error;
+enum http_connection_handler_error
 {
 	REQUEST_PARSED_SUCCESSFULLY = 0,
 	NO_ERROR_REQUEST_NOT_PARSED_COMPLETELY_CONTINUE_READING = -1,
@@ -10,7 +10,7 @@ enum connection_handler_error
 	TCP_CONNECTION_ERROR_READING = -4
 };
 
-void connection_handler(int conn_fd)
+void http_connection_handler(int conn_fd)
 {
 	// set this in the loop, if you want to close the connection
 	int close_connection = 0;
@@ -110,7 +110,12 @@ void connection_handler(int conn_fd)
 	}
 }
 
-void server_run(uint16_t PORT)
+void http_server_run(uint16_t PORT)
 {
-	serve_tcp_on_ipv4(PORT, connection_handler);
+	// initialize the content cache for serving the files, 
+	// because this server also has to serve the files
+	init_file_content_cache();
+
+	// start the server
+	serve_tcp_on_ipv4(PORT, http_connection_handler);
 }

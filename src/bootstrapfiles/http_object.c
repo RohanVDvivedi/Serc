@@ -1,4 +1,4 @@
-#include<httpobject.h>
+#include<http_object.h>
 
 // create new http request object and initialized with defaults
 HttpRequest* getNewHttpRequest()
