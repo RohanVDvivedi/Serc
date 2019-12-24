@@ -12,26 +12,8 @@
 #include<json_serializer.h>
 
 #include<strhsh.h>
+#include<http_method.h>
 #include<http_status.h>
-
-typedef enum HttpMethod HttpMethod;
-enum HttpMethod
-{
-	GET          =    12995,
-	POST         =    9830,
-	PUT          =    3632,
-	HEAD         =    10566,
-	DELETE       =    58129,
-	PATCH        =    53210,
-	OPTIONS      =    61639,
-	TRACE        =    22543,
-	CONNECT      =    104201,
-	UNIDENTIFIED =    166308
-};
-
-// methods for Http method
-HttpMethod getHttpMethod(char* verb);
-char* serializeHttpMethod(HttpMethod m);
 
 typedef enum HttpParseState HttpParseState;
 enum HttpParseState

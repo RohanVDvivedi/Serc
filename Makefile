@@ -22,7 +22,7 @@ RWLOCK_LIB=-L${RWLOCK_PATH}/bin -lrwlock
 ${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h
 	${CC} ${CFLAGS} -c $< -o $@
 
-BOOTSTRAP_SOURCES=${OBJ_DIR}/${BOOTSTRAPFILES}/distributer.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_status.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_server.o ${OBJ_DIR}/${BOOTSTRAPFILES}/strhsh.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_object.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_request_resolution_controller.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_handler.o
+BOOTSTRAP_SOURCES=${OBJ_DIR}/${BOOTSTRAPFILES}/distributer.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_status.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_method.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_server.o ${OBJ_DIR}/${BOOTSTRAPFILES}/strhsh.o ${OBJ_DIR}/${BOOTSTRAPFILES}/http_object.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_request_resolution_controller.o ${OBJ_DIR}/${BOOTSTRAPFILES}/file_handler.o
 
 ${BIN_DIR}/$(TARGET) : ${BOOTSTRAP_SOURCES} ${OBJ_DIR}/controllers/first_controller.o
 	gcc -o $@ src/main.c $(OBJ_DIR)/${BOOTSTRAPFILES}/*.o ${OBJ_DIR}/controllers/*.o ${CFLAGS} ${CONNMAN_LIB} ${BOOMPAR_LIB} ${JSON_PARSER_LIB} ${CUTLERY_LIB} ${RWLOCK_LIB}
