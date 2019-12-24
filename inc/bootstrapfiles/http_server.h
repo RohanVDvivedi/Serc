@@ -13,6 +13,6 @@
 
 #define buffersize 100
 
-void server_run(uint16_t PORT);
+void http_server_run(uint16_t PORT);
 
 #endif

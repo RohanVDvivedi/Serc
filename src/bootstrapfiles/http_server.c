@@ -1,4 +1,4 @@
-#include<httpserver.h>
+#include<http_server.h>
 
 typedef enum http_connection_handler_error http_connection_handler_error;
 enum http_connection_handler_error
@@ -29,7 +29,7 @@ void http_connection_handler(int conn_fd)
 
 		// create a new HttpRequest Object
 		HttpRequest* hrq = getNewHttpRequest();
-		connection_handler_error error = 0;
+		http_connection_handler_error error = 0;
 
 		while(1)
 		{

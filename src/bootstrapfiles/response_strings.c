@@ -1,4 +1,4 @@
-#include<responseStrings.h>
+#include<response_strings.h>
 
 const char HttpStatusLines[57][50] =
 {
