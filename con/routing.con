@@ -7,10 +7,10 @@
 			"custom_api_specific_header"	:	"custom_header_value"
 		}
 	},
-		{
+	{
+		"controller"	:	"first_controller",
 		"methods"		:	["DELETE","POST"],
-		"paths"			:	["/index/delete_post"],
-		"controller"	:	"first_controller"
+		"paths"			:	["/index/delete_post"]
 	},
 	{
 		"methods"		:	["GET"],

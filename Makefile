@@ -25,9 +25,14 @@ ${BIN_DIR}/$(TARGET) : ${SERC_SOURCES}
 
 route :
 	# logic to list and pass as input parameter all .con files from CON_DIR
-	python3 pyt/route.py ${CON_DIR}/routing.con
+	python3 pyt/route.py 
+	# ${CON_DIR}/routing.con
 
 all : route ${BIN_DIR}/$(TARGET)
+
+# you may use the below command to make a executable that starts the server to host a static website
+server :
+	gcc -o ${BIN_DIR}/server.out main.c ${CFLAGS} ${LFLAFS} -L${BIN_DIR} -lserc
 
 run : route all
 
