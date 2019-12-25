@@ -7,8 +7,6 @@ BIN_DIR=./bin
 CC=gcc
 RM=rm -f
 
-BOOTSTRAPFILES=bootstrapfiles
-
 TARGET=libserc.a
 
 CFLAGS=-I${INC_DIR} -I${CONNMAN_PATH}/inc -I${BOOMPAR_PATH}/inc -I${JSON_PARSER_PATH}/inc -I${CUTLERY_PATH}/inc -I${RWLOCK_PATH}/inc

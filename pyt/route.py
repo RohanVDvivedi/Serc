@@ -158,9 +158,9 @@ for function_name in controllers_list :
 
 
 
-replace.replaceLineWithCode("../pyt/distributer_source.temp","../src/bootstrapfiles/distributer.c",{"//@switch_case\n":case_string})
+replace.replaceLineWithCode("../pyt/distributer_source.temp","../src/distributer.c",{"//@switch_case\n":case_string})
 
 
-replace.replaceLineWithCode("../pyt/controller_header.temp","../inc/bootstrapfiles/controller.h",{"//@controller_definitions\n":declarations})
+replace.replaceLineWithCode("../pyt/controller_header.temp","../inc/controller.h",{"//@controller_definitions\n":declarations})
 
 
