@@ -56,6 +56,9 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	// this is the variable where we will find or make the dstring to store in cache or return
 	file_cache_component* file_content_from_cache = NULL;
 
+
+	// cache hit case ---->>>
+
 	// find the file from the cache, once the file has been requested from the server it gets cached, in page cache
 	read_lock(fcc_p->file_content_cache_hashmap_rwlock);
 	file_content_from_cache = (file_cache_component*)(find_value_from_hash(fcc_p->file_content_cache_hashmap, file_path));
@@ -73,6 +76,19 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 		read_unlock(fcc_p->file_content_cache_hashmap_rwlock);
 	}
 
+	// cache hit case <<<----
+
+	// cache miss case ---->>>
+
+	// if the file is not in cache, check if the file even exists
+	// if the file does not exist in the server root, we return with -1
+	if(access(file_path->cstring, R_OK) != 0)
+	{
+		return -1;
+	}
+
+	// Now the file exists and so the cache has to be updated
+
 	int file_content_from_cache_is_locked_by_this_thread = 0;
 
 	// write newly built file cache component to file cache
@@ -89,7 +105,7 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	write_unlock(fcc_p->file_content_cache_hashmap_rwlock);
 
 	// if we cache miss, we need to go to disk, we go to disk only if we confirm that the file is present
-	if(access(file_path->cstring, R_OK) != -1 && file_content_from_cache_is_locked_by_this_thread == 1)
+	if(file_content_from_cache_is_locked_by_this_thread == 1)
 	{	
     	// open the file
     	FILE* file = fopen(file_path->cstring, "rb");
@@ -109,11 +125,7 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 		}
 
 		fclose(file);
-	}
 
-	// the person who received the lock will only release it
-	if(file_content_from_cache_is_locked_by_this_thread == 1)
-	{
 		write_unlock(file_content_from_cache->file_content_rwlock);
 	}
 
@@ -125,6 +137,9 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 		read_unlock(file_content_from_cache->file_content_rwlock);
 		return 0;
 	}
+
+	// cache miss case <<<----
+
 	return -1;
 }
 
