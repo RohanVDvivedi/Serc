@@ -25,6 +25,9 @@ struct file_content_cache
 // the file_handlers read_file_in_dstring function
 file_content_cache* get_file_content_cache();
 
+// this will make the given file_content_cache global
+void make_global_file_content_cache(file_content_cache* fcc_p);
+
 // this method returns -1, if the file is absent, else 0 if no error
 // we go to the disk, read file, cache it, and return you the contents aswell, so next time we can serve you faster
 int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* file_path);

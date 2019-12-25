@@ -112,10 +112,13 @@ void http_connection_handler(int conn_fd)
 
 void http_server_run(uint16_t PORT)
 {
-	// initialize the content cache for serving the files, 
-	// because this server also has to serve the files
-	init_file_content_cache();
+	// initialize the content cache for serving the files
+	file_content_cache* fcc = get_file_content_cache();
+	make_global_file_content_cache(fcc);
 
 	// start the server
 	serve_tcp_on_ipv4(PORT, http_connection_handler);
+
+	// delete the file cache
+	delete_file_content_cache(fcc);
 }

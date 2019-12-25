@@ -18,7 +18,7 @@ ${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h ${CONNMAN_PATH}/inc ${BOOMPAR_PAT
 	${CC} ${CFLAGS} -c $< -o $@
 
 ${BIN_DIR}/$(TARGET) : ${SERC_SOURCES}
-	ar rcs $@ $(OBJ_DIR)/*.o ${CFLAGS}
+	ar rcs $@ $(OBJ_DIR)/*.o
 
 route :
 	python3 pyt/route.py routing routing1
