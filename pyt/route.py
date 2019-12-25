@@ -51,8 +51,12 @@ controllers_list = []
 # loop throught all the routing files and collect all paths
 for routing_file in command_line_args:
 
+	# a routing configuration file must end with .con
+	if not routing_file.endswith(".con") :
+		continue
+
 	# read the file that contains route configurations
-	routing_config_file = open(replace.dir_path + "/" + "../con/" + routing_file + ".con","r")
+	routing_config_file = open(routing_file, "r")
 
 	# since the file is in json use json.loads to use it as onject
 	routes = json.loads(routing_config_file.read())

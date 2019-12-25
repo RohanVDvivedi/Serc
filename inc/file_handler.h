@@ -11,7 +11,7 @@
 
 #include<strhsh.h>
 
-#define SERC_ROOT_PATH "./serc_root"
+#include<config.h>
 
 typedef struct file_content_cache file_content_cache;
 struct file_content_cache
