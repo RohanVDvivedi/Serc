@@ -19,7 +19,7 @@ LFLAFS=-L${CUTLERY_PATH}/bin -lcutlery -L${BOOMPAR_PATH}/bin -lboompar -L${CONNM
 
 SERC_SOURCES=${OBJ_DIR}/http_server.o ${OBJ_DIR}/distributer.o ${OBJ_DIR}/http_object.o ${OBJ_DIR}/http_request.o ${OBJ_DIR}/http_response.o ${OBJ_DIR}/http_status.o ${OBJ_DIR}/http_method.o ${OBJ_DIR}/file_request_resolution_controller.o ${OBJ_DIR}/file_handler.o ${OBJ_DIR}/strhsh.o
 
-${SRC_DIR}/distributer.c : ${CON_DIR}/*.con
+${SRC_DIR}/distributer.c ${INC_DIR}/controller.h : ${CON_DIR}/*.con
 	python3 pyt/route.py $^
 
 ${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h ${CON_DIR}/config.h ${CONNMAN_PATH}/inc ${BOOMPAR_PATH}/inc ${JSON_PARSER_PATH}/inc ${CUTLERY_PATH}/inc ${RWLOCK_PATH}/inc
