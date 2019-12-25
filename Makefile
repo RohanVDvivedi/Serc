@@ -17,18 +17,16 @@ LFLAFS=-L${CUTLERY_PATH}/bin -lcutlery -L${BOOMPAR_PATH}/bin -lboompar -L${CONNM
 
 SERC_SOURCES=${OBJ_DIR}/http_server.o ${OBJ_DIR}/distributer.o ${OBJ_DIR}/http_object.o ${OBJ_DIR}/http_request.o ${OBJ_DIR}/http_response.o ${OBJ_DIR}/http_status.o ${OBJ_DIR}/http_method.o ${OBJ_DIR}/file_request_resolution_controller.o ${OBJ_DIR}/file_handler.o ${OBJ_DIR}/strhsh.o
 
+${SRC_DIR}/distributer.c : ${CON_DIR}/*.con
+	python3 pyt/route.py $^
+
 ${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h ${CON_DIR}/config.h ${CONNMAN_PATH}/inc ${BOOMPAR_PATH}/inc ${JSON_PARSER_PATH}/inc ${CUTLERY_PATH}/inc ${RWLOCK_PATH}/inc
 	${CC} ${CFLAGS} -c $< -o $@
 
 ${BIN_DIR}/$(TARGET) : ${SERC_SOURCES}
 	ar rcs $@ $(OBJ_DIR)/*.o
 
-route :
-	# logic to list and pass as input parameter all .con files from CON_DIR
-	python3 pyt/route.py 
-	# ${CON_DIR}/routing.con
-
-all : route ${BIN_DIR}/$(TARGET)
+all : ${BIN_DIR}/$(TARGET)
 
 # you may use the below command to make a executable that starts the server to host a static website
 server :
