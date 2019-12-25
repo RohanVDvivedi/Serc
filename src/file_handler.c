@@ -14,8 +14,11 @@ struct file_cache_component
 
 void init_file_content_cache()
 {
-	file_cache = get_hashmap(30, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
-	file_cache_rwlock = get_rwlock();
+	if(file_cache == NULL)
+	{
+		file_cache = get_hashmap(30, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
+		file_cache_rwlock = get_rwlock();
+	}
 }
 
 int read_file_in_dstring(dstring* file_contents_result, dstring* file_path)
@@ -115,4 +118,14 @@ void get_extension_from_file_path(dstring* extension_result, dstring* path)
 		}
 		path_t++;
 	}
+}
+
+void clear_file_content_cache()
+{
+
+}
+
+void delete_file_content_cache()
+{
+
 }

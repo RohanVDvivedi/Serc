@@ -24,4 +24,8 @@ int read_file_in_dstring(dstring* file_contents_result, dstring* file_path);
 // extension_result is appended with the extension from the file_path
 void get_extension_from_file_path(dstring* extension_result, dstring* file_path);
 
+void clear_file_content_cache();
+
+void delete_file_content_cache();
+
 #endif
