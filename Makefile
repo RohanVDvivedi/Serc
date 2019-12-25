@@ -32,7 +32,5 @@ all : ${BIN_DIR}/$(TARGET)
 server :
 	gcc -o ${BIN_DIR}/server.out main.c ${CFLAGS} ${LFLAFS} -L${BIN_DIR} -lserc
 
-run : route all
-
 clean :
 	$(RM) $(BIN_DIR)/*.out $(OBJ_DIR)/*.o
