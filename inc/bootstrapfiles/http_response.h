@@ -1,6 +1,9 @@
 #ifndef HTTP_RESPONSE_H
 #define HTTP_RESPONSE_H
 
+#include<dstring.h>
+#include<hashmap.h>
+
 #include<http_object.h>
 
 #include<http_status.h>

@@ -2,7 +2,6 @@
 #include<stdlib.h>
 
 #include<http_server.h>
-#include<file_handler.h>
 
 int main()
 {
