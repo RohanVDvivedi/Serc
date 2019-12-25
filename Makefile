@@ -1,11 +1,13 @@
-INC_DIR=./inc
-OBJ_DIR=./obj
-LIB_DIR=./lib
-SRC_DIR=./src
-BIN_DIR=./bin
+SERC_ROOT=.
+
+INC_DIR=${SERC_ROOT}/inc
+OBJ_DIR=${SERC_ROOT}/obj
+LIB_DIR=${SERC_ROOT}/lib
+SRC_DIR=${SERC_ROOT}/src
+BIN_DIR=${SERC_ROOT}/bin
 
 # this is the config directory, where we have to store, routing and server root directory configurations
-CON_DIR=./con
+CON_DIR=${SERC_ROOT}/con
 
 CC=gcc
 RM=rm -f
