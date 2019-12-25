@@ -7,6 +7,8 @@
 #include<file_handler.h>
 
 #include<http_object.h>
+#include<http_request.h>
+#include<http_response.h>
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_resolved);
 

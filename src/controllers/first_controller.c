@@ -1,4 +1,6 @@
-#include<httpobject.h>
+#include<http_object.h>
+#include<http_request.h>
+#include<http_response.h>
 
 #include<json_parser.h>
 

@@ -5,6 +5,9 @@
 #include<string.h>
 
 #include<http_object.h>
+#include<http_request.h>
+#include<http_response.h>
+
 #include<strhsh.h>
 
 #include<controller.h>
