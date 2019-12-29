@@ -110,6 +110,15 @@ void http_connection_handler(int conn_fd)
 	}
 }
 
+volatile int listen_fd = -1;
+void intHandler(int dummy)
+{
+	if(listen_fd != -1)
+	{
+    	server_stop(listen_fd);
+    }
+}
+
 void http_server_run(uint16_t PORT)
 {
 	// initialize the content cache for serving the files
@@ -117,7 +126,9 @@ void http_server_run(uint16_t PORT)
 	make_global_file_content_cache(fcc);
 
 	// start the server
-	serve_tcp_on_ipv4(PORT, http_connection_handler);
+	connection_group* cgp = get_connection_group_tcp_ipv4(0x7f000001, 6900);
+	serve(cgp, http_connection_handler, &listen_fd);
+	delete_connection_group(cgp);
 
 	// delete the file cache
 	delete_file_content_cache(fcc);
