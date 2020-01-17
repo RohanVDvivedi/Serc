@@ -8,11 +8,11 @@ int main()
 {
 	//http_server_run(6900);
 	{
-		transaction_client http_client = get_http_client("rohandvivedi.com", 1);
+		transaction_client* http_client = get_http_client("rohandvivedi.com", 1);
 
 		HttpRequest* hrq = getNewHttpRequest();
 
-		append_to_dstring(hrp->path, "/path");
+		append_to_dstring(hrq->path, "/path");
 
 		job* promise = send_request_async(http_client, hrq);
 
