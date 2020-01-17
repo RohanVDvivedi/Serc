@@ -28,7 +28,7 @@ transaction_client* get_http_client(char* url_string, unsigned long long int con
     struct sockaddr_in* first = (struct sockaddr_in*)(results->ai_addr);
 
     // get a connection group, for which you want to open a http transaction client
-	connection_group* conn_group = get_connection_group(SOCK_STREAM, AF_INET, ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
+	connection_group* conn_group = get_connection_group_tcp_ipv4(ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
 
 	freeaddrinfo(results);
 
