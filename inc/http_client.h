@@ -7,6 +7,8 @@
 #include<http_request.h>
 #include<http_response.h>
 
+#define buffersize 100
+
 // creates a new trnsaction client that handles asynchronous http request and response
 // for connection_client = n, you will get a transaction client with n open connections, on n different threads, on 1 thread pool
 transaction_client* get_http_client(char* url_string, unsigned long long int connection_count);
@@ -54,7 +56,8 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq);
 // this function will wait for the promise, to complete, 
 // i.e. it will make the current thread wait for the request to complete, 
 // and get parsed and returned to you
-// if the request is already sent and response is already received, the response is received to you instantly
+// if the request is already sent and response is already received,
+// the response is received to you instantly, the response may be NULL if there was a connection error
 //
 // *the hrq_p should be the the place where the function must return to you, the request for which the response is received, on the given promise
 // you can pass in NULL here, if you do not wish to retrieve the HttpRequest* in case you already have it

@@ -12,7 +12,7 @@ HttpResponse* getNewHttpResponse()
 // returns 0 when completed
 // returns -1 when error
 // returns -2 on incomplete
-int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate)
+int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
 	return 0;
 }

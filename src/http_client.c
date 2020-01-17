@@ -12,6 +12,9 @@ void get_client_identifier(dstring* id_result, transaction_client* http_client)
 	get_connection_group_identifier(id_result, http_client->conn_group);
 }
 
+// Http Client transaction handler funcrtion (it is given at the last)
+HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq);
+
 job* send_request_async(transaction_client* http_client, HttpRequest* hrq)
 {
 	if(hrq == NULL)
@@ -48,10 +51,102 @@ void shutdown_and_delete_http_client(transaction_client* http_client)
 	delete_connection_group(conn_group);
 }
 
+/* **************************************************************
+	MAIN HTTP TRANSACTION HANDLER BELOW
+***************************************************************** */
 
-
-// This is the main http client transactio. handler
-void* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq)
+typedef enum http_connection_handler_error http_connection_handler_error;
+enum http_connection_handler_error
 {
+	RESPONSE_PARSED_SUCCESSFULLY = 0,
+	NO_ERROR_RESPONSE_NOT_PARSED_COMPLETELY_CONTINUE_READING = -1,
+	ERROR_OCCURRED_RESPONSE_NOT_STANDARD_HTTP = -2,
+	TCP_CONNECTION_CLOSED_ABRUPTLY = -3,
+	TCP_CONNECTION_ERROR_READING = -4
+};
 
+// This is the main http client transaction handler
+HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq)
+{
+	// this is the buffer, where we would store the serialized form of response, before sending
+	dstring* bufferRequest = get_dstring("", 10);
+
+	// serialize the request to be sent
+	serializeRequest(bufferRequest, hrq);
+
+	// send the request buffer
+	int buffsentlength = send(fd, bufferRequest->cstring, bufferRequest->bytes_occupied - 1, 0);
+
+	if(buffsentlength == 0 || buffsentlength == -1)
+	{
+		*close_connection_requested = 1;
+		return NULL;
+	}
+
+	// create buffer to read the request
+	char bufferResponse[buffersize];
+	int buffreadlength = -1;
+
+	// this is the response object, where the parsed response will bw stored in
+	HttpResponse* hrp = getNewHttpResponse();
+	http_connection_handler_error error = 0;
+
+	// the parse request state and the dstring that has been maintained to store un parsed stream
+	HttpParseState Rstate = NOT_STARTED;
+	dstring* partialDstring = NULL;
+
+	while(1)
+	{
+		// read response byte array, we must read blockingly
+		buffreadlength = recv(fd, bufferResponse, buffersize-1, 0);
+
+		// if no characters read than exit
+		if(buffreadlength == -1)
+		{
+			error = TCP_CONNECTION_ERROR_READING;
+			break;
+		}
+		else if(buffreadlength == 0)
+		{
+			error = TCP_CONNECTION_CLOSED_ABRUPTLY;
+			break;
+		}
+
+		// add '\0' at end to use it as c string
+		bufferResponse[buffreadlength] = '\0';
+
+		// parse the ResponseString to populate HttpResponse Object
+		error = parseResponse(bufferResponse, hrp, &Rstate, &partialDstring);
+		if(error == ERROR_OCCURRED_RESPONSE_NOT_STANDARD_HTTP)
+		{
+			break;
+		}
+		else if(error == NO_ERROR_RESPONSE_NOT_PARSED_COMPLETELY_CONTINUE_READING)
+		{
+			continue;
+		}
+
+		// if the request object parsing is completed then exit
+		if(Rstate == PARSED_SUCCESSFULLY)
+		{
+			error = RESPONSE_PARSED_SUCCESSFULLY;
+			break;
+		}
+	}
+
+	if(error == 0)
+	{
+		return hrp;
+	}
+	else
+	{
+		deleteHttpResponse(hrp);
+		return NULL;
+	}
 }
+
+
+
+
+
+
