@@ -29,6 +29,8 @@ int main()
 		}
 
 		deleteHttpRequest(hrq);
+
+		shutdown_and_delete_http_client(http_client);
 	}
 	return 0;
 }
