@@ -21,7 +21,13 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq)
 	{
 		return NULL;
 	}
+	// set necessary headers to be set before sending the request
+	setServerDefaultHeadersInRequest(hrq);
+
+	// queue the transaction to get it executed by the underlying transaction client
+	// but remember to pass it a http client transaction handler
 	job* promise = queue_transaction(http_client, (void* (*)(int, int*, void*))http_transaction_handler, hrq);
+
 	return promise;
 }
 
