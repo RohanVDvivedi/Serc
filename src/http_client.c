@@ -55,7 +55,7 @@ void get_client_identifier(dstring* id_result, transaction_client* http_client)
 // Http Client transaction handler funcrtion (it is given at the last)
 HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq);
 
-job* send_request_async(transaction_client* http_client, HttpRequest* hrq)
+job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char* host)
 {
 	if(hrq == NULL)
 	{
@@ -63,6 +63,8 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq)
 	}
 	// set necessary headers to be set before sending the request
 	setServerDefaultHeadersInRequest(hrq);
+	// host is a mandatory header in http 1.1 request
+	addHeader("Host", host,hrq->headers);
 
 	// queue the transaction to get it executed by the underlying transaction client
 	// but remember to pass it a http client transaction handler
@@ -119,8 +121,6 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 
 	// serialize the request to be sent
 	serializeRequest(bufferRequest, hrq);
-
-	display_dstring(bufferRequest);printf("\n");
 
 	// send the request buffer
 	int buffsentlength = send(fd, bufferRequest->cstring, bufferRequest->bytes_occupied - 1, 0);

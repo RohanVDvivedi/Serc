@@ -53,7 +53,7 @@ void get_client_identifier(dstring* id_result, transaction_client* http_client);
 
 // it will queue it as a transaction on the transaction_client to serialize the HttpRequest and 
 // then perform io on one of the other thread of the thread pool of the given transaction_client
-job* send_request_async(transaction_client* http_client, HttpRequest* hrq);
+job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char* host);
 
 // this function will wait for the promise, to complete, 
 // i.e. it will make the current thread wait for the request to complete, 
