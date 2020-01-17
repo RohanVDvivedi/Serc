@@ -26,12 +26,9 @@ transaction_client* get_http_client(char* url_string, unsigned long long int con
 
     // always using the first result
     struct sockaddr_in* first = (struct sockaddr_in*)(results->ai_addr);
-    char ip[120];
-    inet_ntop(first->sin_family, first + sizeof(first->sin_family), ip, 100);
-    printf("Trying ipv%d : %s\n", first->sin_family == AF_INET ? 4 : 6, ip);
 
     // get a connection group, for which you want to open a http transaction client
-	connection_group* conn_group = get_connection_group(SOCK_STREAM, first->sin_family, ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
+	connection_group* conn_group = get_connection_group(SOCK_STREAM, AF_INET, ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
 
 	freeaddrinfo(results);
 
