@@ -14,7 +14,7 @@ HttpResponse* getNewHttpResponse()
 // returns -2 on incomplete
 int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
-	printf("!!%s!!", buffer);
+	printf("!!%s!!\n", buffer);
 	return 0;
 }
 

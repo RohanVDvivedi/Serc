@@ -17,8 +17,9 @@ int main()
 		}
 
 		HttpRequest* hrq = getNewHttpRequest();
-
-		append_to_dstring(hrq->path, "/path");
+		hrq->method = GET;
+		append_to_dstring(hrq->path, "/api");
+		addHeader("Host", "rohandvivedi.com", hrq->headers);
 
 		job* promise = send_request_async(http_client, hrq);
 

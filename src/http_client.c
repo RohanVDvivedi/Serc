@@ -1,23 +1,34 @@
 #include<http_client.h>
 
+#include <arpa/inet.h>
 transaction_client* get_http_client(char* url_string, unsigned long long int connection_count)
 {
 	struct addrinfo hints;
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
-	struct addrinfo* results;
+	struct addrinfo* results = NULL;
 
-	int result = getaddrinfo(url_string, NULL, &hints, &results);
-    if(result)
+	int err = getaddrinfo(url_string, "80", &hints, &results);
+    if(err)
     {
     	freeaddrinfo(results);
+    	printf("Error in getaddrinfo\n");
+        return NULL;
+    }
+	else if(results == NULL)
+    {
+    	freeaddrinfo(results);
+    	printf("No results found in in getaddrinfo\n");
         return NULL;
     }
 
     // always using the first result
-    struct sockaddr_in* first = ((struct sockaddr_in*)(results->ai_addr));
+    struct sockaddr_in* first = (struct sockaddr_in*)(results->ai_addr);
+    char ip[120];
+    inet_ntop(first->sin_family, first + sizeof(first->sin_family), ip, 100);
+    printf("Trying ipv%d : %s\n", first->sin_family == AF_INET ? 4 : 6, ip);
 
     // get a connection group, for which you want to open a http transaction client
 	connection_group* conn_group = get_connection_group(SOCK_STREAM, first->sin_family, ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
@@ -29,6 +40,7 @@ transaction_client* get_http_client(char* url_string, unsigned long long int con
 	if(fd == -1)
 	{
 		delete_connection_group(conn_group);
+		printf("Error in making first connection to server\n");
 		return NULL;
 	}
 	close_connection(fd);
@@ -110,6 +122,8 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 
 	// serialize the request to be sent
 	serializeRequest(bufferRequest, hrq);
+
+	display_dstring(bufferRequest);printf("\n");
 
 	// send the request buffer
 	int buffsentlength = send(fd, bufferRequest->cstring, bufferRequest->bytes_occupied - 1, 0);
