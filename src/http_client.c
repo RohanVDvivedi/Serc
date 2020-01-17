@@ -2,7 +2,38 @@
 
 transaction_client* get_http_client(char* url_string, unsigned long long int connection_count)
 {
-	connection_group* conn_group = get_connection_group(SOCK_STREAM, sa_family_t ADDRESS_FAMILY, uint32_t SERVER_ADDRESS, 80);
+	struct addrinfo hints;
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	struct addrinfo* results;
+
+	int result = getaddrinfo(url_string, NULL, &hints, &results);
+    if(result)
+    {
+    	freeaddrinfo(results);
+        return NULL;
+    }
+
+    // always using the first result
+    struct sockaddr_in* first = ((struct sockaddr_in*)(results->ai_addr));
+
+    // get a connection group, for which you want to open a http transaction client
+	connection_group* conn_group = get_connection_group(SOCK_STREAM, first->sin_family, ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
+
+	freeaddrinfo(results);
+
+	// try to make a fake connection, if this fails, do not get a transaction client, for such a connection
+	int fd = make_connection(conn_group);
+	if(fd == -1)
+	{
+		delete_connection_group(conn_group);
+		return NULL;
+	}
+	close_connection(fd);
+
+	// open the transaction client using the connection group you built
 	transaction_client* http_client = get_transaction_client(conn_group, connection_count);
 	return http_client;
 }
