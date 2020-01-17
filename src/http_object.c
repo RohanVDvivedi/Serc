@@ -130,9 +130,25 @@ void delete_entry_wrapper(const void* key, const void* value, const void* addpar
 // Methods common to both Request and response
 void addHeader(char* Key, char* Value, hashmap* headers)
 {
+	removeHeader(Key, headers);
 	dstring* key = get_dstring(Key, 10);
 	dstring* value = get_dstring(Value, 10);
 	insert_entry_in_hash(headers, key, value);
+}
+
+int removeHeader(char* Key, hashmap* headers)
+{
+	dstring* key = get_dstring(Key, 10);
+	dstring* returnKey = NULL;
+	dstring* returnValue = NULL;
+	int was_deleted = delete_entry_from_hash(headers, Key, (const void**)&returnKey, (const void**)&returnValue);
+	if(was_deleted)
+	{
+		delete_dstring(returnKey);
+		delete_dstring(returnValue);
+	}
+	delete_dstring(returnKey);
+	return was_deleted;
 }
 
 int hasHeader(char* Key, char* Value, hashmap* headers)
