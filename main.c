@@ -10,6 +10,12 @@ int main()
 	{
 		transaction_client* http_client = get_http_client("rohandvivedi.com", 1);
 
+		if(http_client == NULL)
+		{
+			printf("Could not find server or setup connection\n");
+			return 0;
+		}
+
 		HttpRequest* hrq = getNewHttpRequest();
 
 		append_to_dstring(hrq->path, "/path");
