@@ -33,6 +33,16 @@ void get_client_identifier(dstring* id_result, transaction_client* http_client);
 	response2 = wait_or_get_response(promise2);
 	response3 = wait_or_get_response(promise3);
 
+	// do not forget to release request data
+	deleteHttpRequest(request1);
+	deleteHttpRequest(request2);
+	deleteHttpRequest(request3);
+
+	// do not forget to release response data
+	deleteHttpResponse(response1);
+	deleteHttpResponse(response2);
+	deleteHttpResponse(response3);
+
 	This way you would would be sending 3 requests in parallel on 3 completely different threads, 
 	of 2 different thread pools (because there are 2 clients)
 **************************************************** */
@@ -45,7 +55,10 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq);
 // i.e. it will make the current thread wait for the request to complete, 
 // and get parsed and returned to you
 // if the request is already sent and response is already received, the response is received to you instantly
-HttpResponse* wait_or_get_response(job* promise);
+//
+// *the hrq_p should be the the place where the function must return to you, the request for which the response is received, on the given promise
+// you can pass in NULL here, if you do not wish to retrieve the HttpRequest* in case you already have it
+HttpResponse* wait_or_get_response(job* promise, HttpRequest** hrq_p);
 
 // this will shutdown the http_client, that you started using get_http_client, and delete all of its resources
 void shutdown_and_delete_http_client(transaction_client* http_client);
