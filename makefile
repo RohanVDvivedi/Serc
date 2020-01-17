@@ -52,7 +52,11 @@ all : $(TARGET)
 
 # you may use the below command to make a executable that starts the server to host a static website
 server :
-	gcc -o ${BIN_DIR}/server.out main.c ${CFLAGS} ${LFLAFS} -L${BIN_DIR} -lserc
+	gcc -o ${BIN_DIR}/server.out server.c ${CFLAGS} ${LFLAFS} -L${BIN_DIR} -lserc
+
+# you may use the below command to make a executable creates a single threaded threadpooled http transaction client to make a test request
+client :
+	gcc -o ${BIN_DIR}/client.out client.c ${CFLAGS} ${LFLAFS} -L${BIN_DIR} -lserc
 
 clean :
 	$(RM) -r ${BIN_DIR} ${OBJ_DIR}
