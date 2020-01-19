@@ -12,6 +12,8 @@
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse
 {
+	dstring* version;
+
 	int status;
 
 	hashmap* headers;

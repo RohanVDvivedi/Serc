@@ -81,7 +81,7 @@ HttpResponse* wait_or_get_response(job* promise, HttpRequest** hrq_p)
 		hrq_p = &temp;
 	}
 	HttpResponse* hrp = (HttpResponse*) get_result_for_transaction(promise, (void**)hrq_p);
-	return NULL;
+	return hrp;
 }
 
 void shutdown_and_delete_http_client(transaction_client* http_client)

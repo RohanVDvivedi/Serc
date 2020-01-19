@@ -14,8 +14,8 @@ HttpRequest* getNewHttpRequest()
 }
 
 // returns 0 when completed
-// returns -1 when error
-// returns -2 on incomplete
+// returns -1 on incomplete
+// returns -2 when error
 int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
 	while(*buffer != '\0' && *Rstate != PARSED_SUCCESSFULLY)
