@@ -275,6 +275,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 {
 	// what will you do with compression of the response further more, 
 	// datalink layer frame size only is around 1500 bytes
+	// also do not compress, if it is already compressed
 	if(hrp->body->bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", hrp->headers))
 	{
 		return;
