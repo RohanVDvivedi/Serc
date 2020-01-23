@@ -16,6 +16,9 @@ int main()
 	HttpRequest* hrq = getNewHttpRequest();
 	hrq->method = GET;
 	append_to_dstring(hrq->path, "/api");
+	//append_to_dstring(hrq->path, "/api/project");
+	//addParameter("projectName", "project-name", hrq->parameters);
+	//addParameter("projectId", "project-id", hrq->parameters);
 
 	job* promise = send_request_async(http_client, hrq, "rohandvivedi.com");
 

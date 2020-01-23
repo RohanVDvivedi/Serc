@@ -98,10 +98,10 @@ void serialize_paramter_helper(dstring* result, dstring* input)
 
 void serialize_parameter_entry(dstring* key, dstring* value, dstring* result)
 {
-	append_to_dstring(result, "&");
 	serialize_paramter_helper(result, key);
 	append_to_dstring(result, "=");
 	serialize_paramter_helper(result, value);
+	append_to_dstring(result, "&");
 }
 
 void serialize_header_entry(dstring* key, dstring* value, dstring* result)
@@ -142,6 +142,18 @@ void addHeader(char* Key, char* Value, hashmap* headers)
 	insert_entry_in_hash(headers, key, value);
 }
 
+void addParameter(char* Key, char* Value, hashmap* parameters)
+{
+	if(Key == NULL || Value == NULL)
+	{
+		return;
+	}
+	removeParameter(Key, parameters);
+	dstring* key = get_dstring(Key, 10);
+	dstring* value = get_dstring(Value, 10);
+	insert_entry_in_hash(parameters, key, value);
+}
+
 int removeHeader(char* Key, hashmap* headers)
 {
 	dstring* key = get_dstring(Key, 10);
@@ -149,6 +161,21 @@ int removeHeader(char* Key, hashmap* headers)
 	dstring* returnKey = NULL;
 	dstring* returnValue = NULL;
 	int was_deleted = delete_entry_from_hash(headers, key, (const void**)&returnKey, (const void**)&returnValue);
+	if(was_deleted == 1)
+	{
+		delete_dstring(returnKey);
+		delete_dstring(returnValue);
+	}
+	delete_dstring(key);
+	return was_deleted;
+}
+
+int removeParameter(char* Key, hashmap* parameters)
+{
+	dstring* key = get_dstring(Key, 10);
+	dstring* returnKey = NULL;
+	dstring* returnValue = NULL;
+	int was_deleted = delete_entry_from_hash(parameters, key, (const void**)&returnKey, (const void**)&returnValue);
 	if(was_deleted == 1)
 	{
 		delete_dstring(returnKey);

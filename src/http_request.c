@@ -427,11 +427,11 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 		}
 		append_to_dstring(result, temp);
 	}
-	char* path_last_char = result->cstring + result->bytes_occupied - 1;
-	for_each_entry_in_hash(hr->parameters, (void (*)(const void*, const void*, const void*))serialize_parameter_entry, result);
-	char* path_last_char_new = result->cstring + result->bytes_occupied - 1;
-	if(path_last_char != path_last_char_new)
+	if(hr->parameters->bucket_occupancy > 0)
 	{
-		*path_last_char = '?';
+		append_to_dstring(result, "?");
+		for_each_entry_in_hash(hr->parameters, (void (*)(const void*, const void*, const void*))serialize_parameter_entry, result);
+		result->bytes_occupied--;
+		result->cstring[result->bytes_occupied-1] = '\0';
 	}
 }

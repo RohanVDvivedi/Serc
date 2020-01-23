@@ -121,7 +121,7 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 	dstring* bufferRequest = get_dstring("", 10);
 
 	// serialize the request to be sent
-	serializeRequest(bufferRequest, hrq);
+	serializeRequest(bufferRequest, hrq);display_dstring(bufferRequest);printf("\n");
 
 	// send the request buffer
 	int buffsentlength = send(fd, bufferRequest->cstring, bufferRequest->bytes_occupied - 1, 0);
