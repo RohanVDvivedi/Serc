@@ -275,7 +275,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 {
 	// what will you do with compression of the response further more, 
 	// datalink layer frame size only is around 1500 bytes
-	if(hrp->body->bytes_occupied <= 100)
+	if(hrp->body->bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", hrp->headers))
 	{
 		return;
 	}
@@ -292,15 +292,15 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 	{
 		case DEFLATE :
 		{
-			addHeader("content-type", "deflate", hrp->headers);	break;
+			addHeader("content-encoding", "deflate", hrp->headers);	break;
 		}
 		case GZIP :
 		{
-			addHeader("content-type", "gzip",    hrp->headers);	break;
+			addHeader("content-encoding", "gzip",    hrp->headers);	break;
 		}
 		case BROTLI :
 		{
-			addHeader("content-type", "br",      hrp->headers);	break;
+			addHeader("content-encoding", "br",      hrp->headers);	break;
 		}
 	}
 }

@@ -137,12 +137,15 @@ void addHeader(char* Key, char* Value, hashmap* headers)
 	removeHeader(Key, headers);
 	dstring* key = get_dstring(Key, 10);
 	dstring* value = get_dstring(Value, 10);
+	toLowercase(key);
+	toLowercase(value);
 	insert_entry_in_hash(headers, key, value);
 }
 
 int removeHeader(char* Key, hashmap* headers)
 {
 	dstring* key = get_dstring(Key, 10);
+	toLowercase(key);
 	dstring* returnKey = NULL;
 	dstring* returnValue = NULL;
 	int was_deleted = delete_entry_from_hash(headers, key, (const void**)&returnKey, (const void**)&returnValue);
@@ -162,6 +165,7 @@ int hasHeader(char* Key, char* Value, hashmap* headers)
 		return 0;
 	}
 	dstring* key = get_dstring(Key, 10);
+	toLowercase(key);
 	dstring* value = get_dstring(Value, 10);
 	dstring* value_test = (dstring*) find_value_from_hash(headers, key);
 	int result = 0;
@@ -172,4 +176,26 @@ int hasHeader(char* Key, char* Value, hashmap* headers)
 	delete_dstring(key);
 	delete_dstring(value);
 	return result;
+}
+
+int hasHeaderWithKey(char* Key, hashmap* headers)
+{
+	if(Key == NULL)
+	{
+		return 0;
+	}
+
+	dstring* key = get_dstring(Key, 10);
+	toLowercase(key);
+	dstring* value = (dstring*) find_value_from_hash(headers, key);
+	delete_dstring(key);
+
+	if(value != NULL)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }

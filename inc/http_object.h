@@ -44,4 +44,7 @@ int removeHeader(char* Key, hashmap* headers);
 // has header with key:value pair, returns 1 if key:value entry is present
 int hasHeader(char* Key, char* Value, hashmap* headers);
 
+// has header with given key, returns 1 if an entry with given key is present
+int hasHeaderWithKey(char* Key, hashmap* headers);
+
 #endif

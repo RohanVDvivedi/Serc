@@ -16,7 +16,7 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 	strm.avail_in = uncompressedData->bytes_occupied - 1;
 
 	// make buffer dstring for compressed data ready
-	dstring* compressedData = get_dstring("", compressedData->bytes_occupied);
+	dstring* compressedData = get_dstring("", uncompressedData->bytes_occupied);
 	strm.avail_out = compressedData->bytes_allocated - 1;
 	strm.next_out = (Bytef *)(compressedData->cstring);
 
