@@ -36,5 +36,5 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     concatenate_dstring(uncompressedData, compressedData);
     delete_dstring(compressedData);
 
-    return Z_OK;
+    return 1;
 }

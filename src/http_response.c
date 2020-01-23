@@ -271,6 +271,33 @@ void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
 	serialize_json(hrp->body, node_p);
 }
 
+void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
+{
+	int is_compressed = compress_in_memory(hrp->body, compr_type);
+
+	// we will not add headers if the response body was not compressed
+	if(!is_compressed)
+	{
+		return;
+	}
+
+	switch(compr_type)
+	{
+		case DEFLATE :
+		{
+			addHeader("content-type", "deflate", hrp->headers);	break;
+		}
+		case GZIP :
+		{
+			addHeader("content-type", "gzip", hrp->headers);	break;
+		}
+		case BROTLI :
+		{
+			addHeader("content-type", "br", hrp->headers);		break;
+		}
+	}
+}
+
 void deleteHttpResponse(HttpResponse* hr)
 {
 	for_each_entry_in_hash(hr->headers, delete_entry_wrapper, NULL);

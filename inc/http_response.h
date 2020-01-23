@@ -9,6 +9,8 @@
 #include<http_status.h>
 #include<http_parse_state.h>
 
+#include<in_memory_zlib_compression_wrapper.h>
+
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse
 {
@@ -35,6 +37,10 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp);
 
 // set json in body 
 void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p);
+
+// this will allow you to compress http response body, if it is not already compressed
+// this will also add appropriate content-type header to your http response
+void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type);
 
 // delete HttpResponse and all its attributes
 void deleteHttpResponse(HttpResponse* hr);

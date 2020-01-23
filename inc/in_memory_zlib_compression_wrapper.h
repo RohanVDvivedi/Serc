@@ -21,6 +21,7 @@ enum compression_type
 	BROTLI
 };
 
+// returns 1, if the compression was successfull
 int compress_in_memory(dstring* data, compression_type compr_type);
 
 #endif

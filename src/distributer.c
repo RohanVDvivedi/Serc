@@ -27,5 +27,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 		}
 	}
 
+	compressHttpResponseBody(hrp, DEFAULT_SERVER_RESPONSE_COMPRESSION);
+
 	setServerDefaultHeadersInResponse(hrp);
 }
