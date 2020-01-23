@@ -23,7 +23,7 @@ TARGET:=${BIN_DIR}/libserc.a
 CFLAGS=-I${INC_DIR} -I${CON_DIR} -I${CONNMAN_PATH}/inc -I${BOOMPAR_PATH}/inc -I${JSON_PARSER_PATH}/inc -I${CUTLERY_PATH}/inc -I${RWLOCK_PATH}/inc
 
 # the linker flags, here, which will help you compile the simple server
-LFLAFS=-L${CUTLERY_PATH}/bin -lcutlery -L${BOOMPAR_PATH}/bin -lboompar -L${CONNMAN_PATH}/bin -lconnman -L${JSON_PARSER_PATH}/bin -ljsonpar -L${RWLOCK_PATH}/bin -lrwlock
+LFLAFS=-L${CUTLERY_PATH}/bin -lcutlery -L${BOOMPAR_PATH}/bin -lboompar -L${CONNMAN_PATH}/bin -lconnman -L${JSON_PARSER_PATH}/bin -ljsonpar -L${RWLOCK_PATH}/bin -lrwlock -lz
 
 # the header files from external libraries
 HEADER_DEPENDENCIES=${CONNMAN_PATH}/inc/*.h ${BOOMPAR_PATH}/inc/*.h ${JSON_PARSER_PATH}/inc/*.h ${CUTLERY_PATH}/inc/*.h ${RWLOCK_PATH}/inc/*.h
