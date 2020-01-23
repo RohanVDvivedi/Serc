@@ -273,6 +273,13 @@ void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
 
 void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 {
+	// what will you do with compression of the response further more, 
+	// datalink layer frame size only is around 1500 bytes
+	if(hrp->body->bytes_occupied <= 100)
+	{
+		return;
+	}
+
 	int is_compressed = compress_in_memory(hrp->body, compr_type);
 
 	// we will not add headers if the response body was not compressed
@@ -289,11 +296,11 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 		}
 		case GZIP :
 		{
-			addHeader("content-type", "gzip", hrp->headers);	break;
+			addHeader("content-type", "gzip",    hrp->headers);	break;
 		}
 		case BROTLI :
 		{
-			addHeader("content-type", "br", hrp->headers);		break;
+			addHeader("content-type", "br",      hrp->headers);	break;
 		}
 	}
 }
