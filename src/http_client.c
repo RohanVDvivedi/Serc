@@ -1,7 +1,6 @@
 #include<http_client.h>
 
-#include <arpa/inet.h>
-transaction_client* get_http_client(char* url_string, unsigned long long int connection_count)
+transaction_client* get_http_client(char* url_string, char* port_string, unsigned long long int connection_count)
 {
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(hints));
@@ -10,7 +9,7 @@ transaction_client* get_http_client(char* url_string, unsigned long long int con
 
 	struct addrinfo* results = NULL;
 
-	int err = getaddrinfo(url_string, "80", &hints, &results);
+	int err = getaddrinfo(url_string, port_string, &hints, &results);
     if(err)
     {
     	freeaddrinfo(results);
@@ -61,6 +60,8 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char*
 	{
 		return NULL;
 	}
+	// compress response body
+	compressHttpRequestBody(hrq, DEFAULT_SERVER_RESPONSE_COMPRESSION);
 	// set necessary headers to be set before sending the request
 	setServerDefaultHeadersInRequest(hrq);
 	// host is a mandatory header in http 1.1 request

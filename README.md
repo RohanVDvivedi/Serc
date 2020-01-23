@@ -24,3 +24,7 @@ All the framework logic is
 	/con/*.con are config files used for routing
 	/pyt/*.py are the several python sources which help you with building the switch case logic for your routings from the routing.con files
 	/pyt/*.temp are the several templates for building the switch case routing logic (source and header files)(controller.h and distributer.c files)
+
+
+serc provides you with gzip and deflate compression support,
+it is inherently supported by zlib (https://github.com/madler/zlib) for compression

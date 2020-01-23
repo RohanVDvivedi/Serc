@@ -9,11 +9,13 @@
 #include<http_request.h>
 #include<http_response.h>
 
+#include<config.h>
+
 #define buffersize 100
 
 // creates a new trnsaction client that handles asynchronous http request and response
 // for connection_client = n, you will get a transaction client with n open connections, on n different threads, on 1 thread pool
-transaction_client* get_http_client(char* url_string, unsigned long long int connection_count);
+transaction_client* get_http_client(char* url_string, char* port_string, unsigned long long int connection_count);
 
 // this returns the identifier to identifies the http connection uniquely
 void get_client_identifier(dstring* id_result, transaction_client* http_client);

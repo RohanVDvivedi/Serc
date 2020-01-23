@@ -5,7 +5,7 @@
 
 int main()
 {
-	transaction_client* http_client = get_http_client("rohandvivedi.com", 1);
+	transaction_client* http_client = get_http_client("rohandvivedi.com", "80", 1);
 
 	if(http_client == NULL)
 	{

@@ -342,12 +342,48 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	char ptemp[3000];
 	sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
 	addHeader("content-length", ptemp, hrq->headers);
+	addHeader("accept-encoding", "gzip, deflate", hrq->headers);
 }
 
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
 {
 	addHeader("content-type", "application/json", hrq->headers);
 	serialize_json(hrq->body, node_p);
+}
+
+void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
+{
+	// what will you do with compression of the request further more, 
+	// datalink layer frame size only is around 1500 bytes
+	// also do not compress, if it is already compressed, or it is not needed if the method is GET
+	if(hrq->body->bytes_occupied <= 100 || hrq->method == GET || hasHeaderWithKey("content-encoding", hrq->headers))
+	{
+		return;
+	}
+
+	int is_compressed = compress_in_memory(hrq->body, compr_type);
+
+	// we will not add headers if the response body was not compressed
+	if(!is_compressed)
+	{
+		return;
+	}
+
+	switch(compr_type)
+	{
+		case DEFLATE :
+		{
+			addHeader("content-encoding", "deflate", hrq->headers);	break;
+		}
+		case GZIP :
+		{
+			addHeader("content-encoding", "gzip",    hrq->headers);	break;
+		}
+		case BROTLI :
+		{
+			addHeader("content-encoding", "br",      hrq->headers);	break;
+		}
+	}
 }
 
 void deleteHttpRequest(HttpRequest* hr)

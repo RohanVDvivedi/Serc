@@ -9,7 +9,24 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     strm.opaque = Z_NULL;
 
     // initialize the zlib's strm resource handle
-	deflateInit(&strm, Z_BEST_COMPRESSION);
+    switch(compr_type)
+    {
+    	case DEFLATE :
+    	{
+    		//deflateInit(&strm, Z_BEST_COMPRESSION);
+    		deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 15, 9, Z_DEFAULT_STRATEGY);
+    		break;
+    	}
+    	case GZIP :
+    	{
+    		deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 31, 9, Z_DEFAULT_STRATEGY);
+    		break;
+    	}
+    	case BROTLI :
+    	{
+    		return 0;
+    	}
+    }
 
 	// from dstring internals
 	strm.next_in = (Bytef*)(uncompressedData->cstring);
