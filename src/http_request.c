@@ -340,8 +340,12 @@ void serializeRequest(dstring* result, HttpRequest* hr)
 void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 {
 	char ptemp[3000];
-	sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
-	addHeader("content-length", ptemp, hrq->headers);
+	// content-length header only if the request is not get
+	if(hrq->method != GET)
+	{
+		sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
+		addHeader("content-length", ptemp, hrq->headers);
+	}
 	addHeader("accept-encoding", "gzip, deflate", hrq->headers);
 }
 
