@@ -108,7 +108,7 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
 
     if(err != Z_OK)
     {
-        deflateEnd(&strm);
+        inflateEnd(&strm);
         return 0;
     }
 
