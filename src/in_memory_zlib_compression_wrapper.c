@@ -8,17 +8,19 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     strm.zfree = Z_NULL;
     strm.opaque = Z_NULL;
 
+    int err = Z_OK;
+
     // initialize the zlib's strm resource handle
     switch(compr_type)
     {
     	case DEFLATE :
     	{
-    		deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 15, 9, Z_DEFAULT_STRATEGY);
+    		err = deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 15, 9, Z_DEFAULT_STRATEGY);
     		break;
     	}
     	case GZIP :
     	{
-    		deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 31, 9, Z_DEFAULT_STRATEGY);
+    		err = deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 31, 9, Z_DEFAULT_STRATEGY);
     		break;
     	}
     	case BROTLI :
@@ -31,6 +33,12 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
         }
     }
 
+    if(err != Z_OK)
+    {
+        deflateEnd(&strm);
+        return 0;
+    }
+
 	// from dstring internals
 	strm.next_in = (Bytef*)(uncompressedData->cstring);
 	strm.avail_in = uncompressedData->bytes_occupied - 1;
@@ -41,7 +49,13 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 	strm.next_out = (Bytef *)(compressedData->cstring);
 
 	// compress
-	deflate(&strm, Z_FINISH);
+	err = deflate(&strm, Z_FINISH);
+    if(err != Z_OK)
+    {
+        deflateEnd(&strm);
+        delete_dstring(compressedData);
+        return 0;
+    }
 
 	// bring the compressedData to appropriate dstring format
 	compressedData->bytes_occupied = strm.total_out + 1;
@@ -67,17 +81,19 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
     strm.zfree = Z_NULL;
     strm.opaque = Z_NULL;
 
+    int err = Z_OK;
+
     // initialize the zlib's strm resource handle
     switch(compr_type)
     {
         case DEFLATE :
         {
-            inflateInit2(&strm, 15);
+            err = inflateInit2(&strm, 15);
             break;
         }
         case GZIP :
         {
-            inflateInit2(&strm, 31);
+            err = inflateInit2(&strm, 31);
             break;
         }
         case BROTLI :
@@ -88,6 +104,12 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
         {
             return 1;
         }
+    }
+
+    if(err != Z_OK)
+    {
+        deflateEnd(&strm);
+        return 0;
     }
 
     // make buffer dstring for uncompressed data ready
@@ -101,10 +123,10 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
     strm.avail_out = uncompressedData->bytes_allocated - 1;
     strm.next_out = (Bytef *)(uncompressedData->cstring);
 
-    while(strm.total_in < compressedData->bytes_occupied - 1)
+    while(strm.total_in < compressedData->bytes_occupied - 1 && (err == Z_OK || err == Z_BUF_ERROR) && (err != Z_STREAM_END))
     {
         // compress
-        inflate(&strm, Z_FINISH);
+        err = inflate(&strm, Z_FINISH);
 
         // bring the uncompressedData to appropriate dstring format
         uncompressedData->bytes_occupied = strm.total_out + 1;
@@ -122,6 +144,13 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
         // make buffer dstring for uncompressed data ready
         strm.avail_out = uncompressedData->bytes_allocated - 1 - strm.total_out;
         strm.next_out = (Bytef *)(uncompressedData->cstring + strm.total_out);
+    }
+
+    if(err != Z_OK && err != Z_STREAM_END)
+    {
+        inflateEnd(&strm);
+        delete_dstring(uncompressedData);
+        return 0;
     }
 
     // bring the uncompressedData to appropriate dstring format
