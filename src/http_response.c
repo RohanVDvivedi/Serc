@@ -389,7 +389,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 		}
 		case IDENTITY :
 		{
-			addHeader("content-encoding", "identity", hrq->headers); break;
+			addHeader("content-encoding", "identity", hrp->headers); break;
 		}
 	}
 }
