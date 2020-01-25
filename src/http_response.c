@@ -398,6 +398,11 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 
 void uncompressHttpResponseBody(HttpResponse* hrp)
 {
+	if(hrq->body->bytes_occupied <= 1)
+	{
+		return;
+	}
+
 	// we try to figure out the compression from inspecting these headers
 	dstring* content_encoding = getHeaderValueWithKey("content-encoding", hrp->headers);
 	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", hrp->headers);

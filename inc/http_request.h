@@ -46,6 +46,9 @@ void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p);
 // this will also add appropriate content-type header to your http response
 void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type);
 
+// uncompress http request body
+void uncompressHttpRequestBody(HttpRequest* hrq);
+
 // delete HttpRequest Object and all its attributes
 void deleteHttpRequest(HttpRequest* hr);
 

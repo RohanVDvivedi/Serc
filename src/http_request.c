@@ -477,6 +477,38 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 	}
 }
 
+void uncompressHttpRequestBody(HttpRequest* hrq)
+{
+	if(hrq->method == GET || hrq->body->bytes_occupied <= 1)
+	{
+		return;
+	}
+
+	// we try to figure out the compression from inspecting these headers
+	dstring* content_encoding = getHeaderValueWithKey("content-encoding", hrq->headers);
+	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", hrq->headers);
+
+	compression_type compr_type;
+
+	if( (content_encoding != NULL && strstr(content_encoding->cstring, "br") != NULL) ||
+		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "br") != NULL) )
+	{
+		compr_type = BROTLI;
+	}
+	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "deflate") != NULL) ||
+		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "deflate") != NULL) )
+	{
+		compr_type = DEFLATE;
+	}
+	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "gzip") != NULL) ||
+		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "gzip") != NULL) )
+	{
+		compr_type = GZIP;
+	}else{return ;}
+
+	uncompress_in_memory(hrq->body, compr_type);
+}
+
 void deleteHttpRequest(HttpRequest* hr)
 {
 	delete_dstring(hr->path);
