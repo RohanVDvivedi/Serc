@@ -344,7 +344,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 		sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
 		addHeader("content-length", ptemp, hrq->headers);
 	}
-	//addHeader("accept-encoding", "gzip, deflate", hrq->headers);
+	//addHeader("accept-encoding", "gzip, deflate, identity", hrq->headers);
 }
 
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
@@ -364,10 +364,9 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 	}
 
 	int is_compressed = compress_in_memory(hrq->body, compr_type);
-
-	// we will not add headers if the response body was not compressed
-	if(!is_compressed)
+	if(is_compressed == 0)
 	{
+		// this means error, so we do not send any headers about compression
 		return;
 	}
 
@@ -384,6 +383,10 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 		case BROTLI :
 		{
 			addHeader("content-encoding", "br",      hrq->headers);	break;
+		}
+		case IDENTITY :
+		{
+			addHeader("content-encoding", "identity", hrq->headers); break;
 		}
 	}
 }

@@ -25,6 +25,10 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     	{
     		return 0;
     	}
+        case IDENTITY :
+        {
+            return 1;
+        }
     }
 
 	// from dstring internals
@@ -79,6 +83,10 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
         case BROTLI :
         {
             return 0;
+        }
+        case IDENTITY :
+        {
+            return 1;
         }
     }
 

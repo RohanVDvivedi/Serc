@@ -18,7 +18,8 @@ enum compression_type
 {
 	DEFLATE,
 	GZIP,
-	BROTLI
+	BROTLI,
+	IDENTITY
 };
 
 // returns 1, if the compression was successfull

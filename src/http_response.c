@@ -369,6 +369,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 	// we will not add headers if the response body was not compressed
 	if(!is_compressed)
 	{
+		// this means error, so we do not send any headers about compression
 		return;
 	}
 
@@ -385,6 +386,10 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 		case BROTLI :
 		{
 			addHeader("content-encoding", "br",      hrp->headers);	break;
+		}
+		case IDENTITY :
+		{
+			addHeader("content-encoding", "identity", hrq->headers); break;
 		}
 	}
 }
