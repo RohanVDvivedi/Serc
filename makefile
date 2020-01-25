@@ -50,6 +50,9 @@ ${TARGET} : ${OBJECTS} | ${BIN_DIR}
 
 all : $(TARGET)
 
+# this rule will re build all the routing of your application
+routes : ${SRC_DIR}/distributer.c ${INC_DIR}/controller.h
+
 # you may use the below command to make a executable that starts the server to host a static website
 server :
 	gcc -o ${BIN_DIR}/server.out server.c ${CFLAGS} ${LFLAFS} -L${BIN_DIR} -lserc
