@@ -50,7 +50,7 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 
 	// compress
 	err = deflate(&strm, Z_FINISH);
-    if(err != Z_OK)
+    if(err != Z_OK && err != Z_STREAM_END)
     {
         deflateEnd(&strm);
         delete_dstring(compressedData);

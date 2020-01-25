@@ -362,6 +362,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 	// also do not compress, if it is already compressed
 	if(hrp->body->bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", hrp->headers))
 	{
+		addHeader("content-encoding", "identity", hrp->headers); break;
 		return;
 	}
 
