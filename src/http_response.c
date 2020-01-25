@@ -398,7 +398,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 
 void uncompressHttpResponseBody(HttpResponse* hrp)
 {
-	if(hrq->body->bytes_occupied <= 1)
+	if(hrp->body->bytes_occupied <= 1)
 	{
 		return;
 	}
