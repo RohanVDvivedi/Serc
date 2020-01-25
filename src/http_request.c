@@ -16,15 +16,16 @@ HttpRequest* getNewHttpRequest()
 // returns 0 when completed
 // returns -1 on incomplete
 // returns -2 when error
-int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring** partialDstring)
+int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
-	while(*buffer != '\0' && *Rstate != PARSED_SUCCESSFULLY)
+	char* buff_start = buffer;
+	while((buffer < (buff_start + buffer_size - 1)) && *Rstate != PARSED_SUCCESSFULLY)
 	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring((*(partialDstring)), temp);
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((*(partialDstring)), temp, 1);
 		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(dstr, temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
@@ -344,7 +345,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 		sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
 		addHeader("content-length", ptemp, hrq->headers);
 	}
-	//addHeader("accept-encoding", "gzip, deflate, identity", hrq->headers);
+	addHeader("accept-encoding", "gzip, deflate, identity", hrq->headers);
 }
 
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)

@@ -49,10 +49,11 @@ void http_connection_handler(int conn_fd)
 			}
 
 			// add '\0' at end to use it as c string
-			bufferRequest[buffreadlength] = '\0';
+			buffreadlength++;
+			bufferRequest[buffreadlength-1] = '\0';
 
 			// parse the RequestString to populate HttpRequest Object
-			error = parseRequest(bufferRequest, hrq, &Rstate, &partialDstring);
+			error = parseRequest(bufferRequest, buffreadlength, hrq, &Rstate, &partialDstring);
 			if(error == ERROR_OCCURRED_REQUEST_NOT_STANDARD_HTTP)
 			{
 				break;

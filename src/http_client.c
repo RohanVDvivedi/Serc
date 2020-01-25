@@ -145,7 +145,7 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 	dstring* partialDstring = NULL;
 
 	while(1)
-	{printf("start\n");
+	{
 		// read response byte array, we must read blockingly
 		buffreadlength = recv(fd, bufferResponse, buffersize-1, 0);
 
@@ -162,10 +162,11 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 		}
 
 		// add '\0' at end to use it as c string
-		bufferResponse[buffreadlength] = '\0';
+		buffreadlength++;
+		bufferResponse[buffreadlength-1] = '\0';
 
 		// parse the ResponseString to populate HttpResponse Object
-		error = parseResponse(bufferResponse, hrp, &Rstate, &partialDstring);
+		error = parseResponse(bufferResponse, buffreadlength, hrp, &Rstate, &partialDstring);
 		if(error == ERROR_OCCURRED_RESPONSE_NOT_STANDARD_HTTP)
 		{
 			break;
@@ -180,8 +181,8 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 		{
 			error = RESPONSE_PARSED_SUCCESSFULLY;
 			break;
-		}printf("end\n");
-	}printf("lol\n");
+		}
+	}
 
 	if(error == 0)
 	{

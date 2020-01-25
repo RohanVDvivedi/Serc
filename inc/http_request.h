@@ -31,7 +31,7 @@ struct HttpRequest
 HttpRequest* getNewHttpRequest();
 
 // parse string to populate HttpRequest
-int parseRequest(char* buffer, HttpRequest* hr, HttpParseState* state, dstring** partialDstring);
+int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState* state, dstring** partialDstring);
 
 // serialize HttpRequest and append to dstring to send over network or to print
 void serializeRequest(dstring* result, HttpRequest* hr);

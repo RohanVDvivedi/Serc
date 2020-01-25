@@ -13,15 +13,16 @@ HttpResponse* getNewHttpResponse()
 // returns 0 when completed
 // returns -1 on incomplete
 // returns -2 when error
-int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
+int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
-	while(*buffer != '\0' && *Rstate != PARSED_SUCCESSFULLY)
-	{printf("%c %d\n", *buffer, *Rstate);
+	char* buff_start = buffer;
+	while((buffer < (buff_start + buffer_size - 1)) && *Rstate != PARSED_SUCCESSFULLY)
+	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring((*(partialDstring)), temp);
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((*(partialDstring)), temp, 1);
 		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(dstr, temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
@@ -252,7 +253,7 @@ int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstrin
 					// we here are using the state_level variable, 
 					// of dstring to store the bytes to read for this chunk
 					// we store how many bytes we still have to read, in this variables
-					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));
+					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));printf("==>>%llu\n", ((*partialDstring)->state_level));
 
 					*Rstate = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()

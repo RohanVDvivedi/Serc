@@ -27,7 +27,7 @@ struct HttpResponse
 HttpResponse* getNewHttpResponse();
 
 // parse string to populate HttpResponse
-int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring);
+int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring);
 
 // serialize HttpResponse and append to dstring to send over network or to print
 void serializeResponse(dstring* result, HttpResponse* hr);
