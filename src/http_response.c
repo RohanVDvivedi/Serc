@@ -16,13 +16,13 @@ HttpResponse* getNewHttpResponse()
 int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
 	while(*buffer != '\0' && *Rstate != PARSED_SUCCESSFULLY)
-	{
+	{printf("%c %d\n", *buffer, *Rstate);
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
 		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring((*(partialDstring)), temp);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring(dstr, temp);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(dstr, temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
 		{
@@ -249,6 +249,11 @@ int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstrin
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
+					// we here are using the state_level variable, 
+					// of dstring to store the bytes to read for this chunk
+					// we store how many bytes we still have to read, in this variables
+					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));
+
 					*Rstate = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -262,7 +267,7 @@ int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstrin
 			}
 			case IN_BODY_CHUNK_CONTENT :
 			{
-				if(CURRENT_CHARACTER() == '\r')
+				if(CURRENT_CHARACTER() == '\r' && (*partialDstring)->state_level == 0)
 				{
 					*Rstate = BODY_CHUNK_CONTENT_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -270,6 +275,7 @@ int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstrin
 				else
 				{
 					APPEND_CURRENT_CHARACTER_TO(hr->body)
+					(*partialDstring)->state_level--;
 					GOTO_NEXT_CHARACTER()
 				}
 				break;
@@ -381,6 +387,33 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 			addHeader("content-encoding", "br",      hrp->headers);	break;
 		}
 	}
+}
+
+void uncompressHttpResponseBody(HttpResponse* hrp)
+{
+	// we try to figure out the compression from inspecting these headers
+	dstring* content_encoding = getHeaderValueWithKey("content-encoding", hrp->headers);
+	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", hrp->headers);
+
+	compression_type compr_type;
+
+	if( (content_encoding != NULL && strstr(content_encoding->cstring, "br") != NULL) ||
+		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "br") != NULL) )
+	{
+		compr_type = BROTLI;
+	}
+	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "deflate") != NULL) ||
+		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "deflate") != NULL) )
+	{
+		compr_type = DEFLATE;
+	}
+	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "gzip") != NULL) ||
+		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "gzip") != NULL) )
+	{
+		compr_type = GZIP;
+	}else{return ;}
+
+	uncompress_in_memory(hrp->body, compr_type);
 }
 
 void deleteHttpResponse(HttpResponse* hr)

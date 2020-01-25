@@ -13,7 +13,6 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     {
     	case DEFLATE :
     	{
-    		//deflateInit(&strm, Z_BEST_COMPRESSION);
     		deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, 15, 9, Z_DEFAULT_STRATEGY);
     		break;
     	}
@@ -52,6 +51,83 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     make_dstring_empty(uncompressedData);
     concatenate_dstring(uncompressedData, compressedData);
     delete_dstring(compressedData);
+
+    return 1;
+}
+
+int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
+{
+    // initialize zstream, databuffer
+    z_stream strm;
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+
+    // initialize the zlib's strm resource handle
+    switch(compr_type)
+    {
+        case DEFLATE :
+        {
+            inflateInit2(&strm, 15);
+            break;
+        }
+        case GZIP :
+        {
+            inflateInit2(&strm, 31);
+            break;
+        }
+        case BROTLI :
+        {
+            return 0;
+        }
+    }
+
+    // make buffer dstring for uncompressed data ready
+    dstring* uncompressedData = get_dstring("", compressedData->bytes_occupied);
+
+    // from dstring internals
+    strm.next_in = (Bytef*)(compressedData->cstring);
+    strm.avail_in = compressedData->bytes_occupied - 1;
+
+    // make buffer dstring for uncompressed data ready
+    strm.avail_out = uncompressedData->bytes_allocated - 1;
+    strm.next_out = (Bytef *)(uncompressedData->cstring);
+
+    while(1)
+    {
+        // compress
+        inflate(&strm, Z_FINISH);
+
+        // bring the uncompressedData to appropriate dstring format
+        uncompressedData->bytes_occupied = strm.total_out + 1;
+        uncompressedData->cstring[uncompressedData->bytes_occupied - 1] = '\0';
+
+        // from dstring internals
+        strm.next_in = (Bytef*)(compressedData->cstring + strm.total_in);
+        strm.avail_in = compressedData->bytes_occupied - 1 - strm.total_in;
+
+        if(uncompressedData->bytes_occupied - strm.total_out - 1 <= 10)
+        {
+            expand_dstring(uncompressedData, uncompressedData->bytes_allocated);
+        }
+
+        // make buffer dstring for uncompressed data ready
+        strm.avail_out = uncompressedData->bytes_allocated - 1 - strm.total_out;
+        strm.next_out = (Bytef *)(uncompressedData->cstring + strm.total_out);
+    }
+
+    // bring the uncompressedData to appropriate dstring format
+    uncompressedData->bytes_occupied = strm.total_out + 1;
+    uncompressedData->cstring[uncompressedData->bytes_occupied - 1] = '\0';
+
+    // release resources from zlib
+    inflateEnd(&strm);
+
+    // place the uncompressedData in the same buffer as for the compressedData
+    // and delete the resources for the uncompressedData dstring buffer
+    make_dstring_empty(compressedData);
+    concatenate_dstring(compressedData, uncompressedData);
+    delete_dstring(uncompressedData);
 
     return 1;
 }

@@ -42,6 +42,9 @@ void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p);
 // this will also add appropriate content-type header to your http response
 void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type);
 
+// uncompress HttpResponse Body
+void uncompressHttpResponseBody(HttpResponse* hrp);
+
 // delete HttpResponse and all its attributes
 void deleteHttpResponse(HttpResponse* hr);
 

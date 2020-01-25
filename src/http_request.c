@@ -25,7 +25,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
 		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring((*(partialDstring)), temp);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';append_to_dstring(dstr, temp);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(dstr, temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
 		{

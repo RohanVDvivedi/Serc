@@ -24,4 +24,7 @@ enum compression_type
 // returns 1, if the compression was successfull
 int compress_in_memory(dstring* data, compression_type compr_type);
 
+// returns 1, if the uncompression was successfull
+int uncompress_in_memory(dstring* data, compression_type compr_type);
+
 #endif
