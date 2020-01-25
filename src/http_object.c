@@ -226,3 +226,18 @@ int hasHeaderWithKey(char* Key, hashmap* headers)
 		return 0;
 	}
 }
+
+dstring* getHeaderValueWithKey(char* Key, hashmap* headers)
+{
+	if(Key == NULL)
+	{
+		return NULL;
+	}
+
+	dstring* key = get_dstring(Key, 10);
+	toLowercase(key);
+	dstring* value = (dstring*) find_value_from_hash(headers, key);
+	delete_dstring(key);
+
+	return value;
+}

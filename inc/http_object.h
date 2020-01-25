@@ -48,4 +48,7 @@ int hasHeader(char* Key, char* Value, hashmap* headers);
 // has header with given key, returns 1 if an entry with given key is present
 int hasHeaderWithKey(char* Key, hashmap* headers);
 
+// returns value of the header, for the given Key
+dstring* getHeaderValueWithKey(char* Key, hashmap* headers);
+
 #endif

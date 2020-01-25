@@ -202,9 +202,8 @@ int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstrin
 			}
 			case IN_BODY :
 			{
-				dstring* content_length_key = get_dstring("content-length", 10);
-				dstring* content_length = (dstring*)find_value_from_hash(hr->headers, content_length_key);
-				delete_dstring(content_length_key);
+				dstring* content_length = getHeaderValueWithKey("content-length", hr->headers);
+				dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", hr->headers);
 				if(content_length != NULL)
 				{
 					long long int body_length = -1;
@@ -220,8 +219,86 @@ int parseResponse(char* buffer, HttpResponse* hr, HttpParseState* Rstate, dstrin
 						GOTO_NEXT_CHARACTER()
 					}
 				}
+				else if(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "chunked") != NULL )
+				{
+					*Rstate = IN_BODY_CHUNK_SIZE;
+					CLEAR_PARTIAL_STRING()
+					INIT_PARTIAL_STRING()
+				}
 				else
 				{
+					return -2;
+				}
+				break;
+			}
+			case IN_BODY_CHUNK_SIZE :
+			{
+				if(CURRENT_CHARACTER() == '\r')
+				{
+					*Rstate = BODY_CHUNK_SIZE_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					APPEND_CURRENT_CHARACTER_PARTIAL()
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case BODY_CHUNK_SIZE_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					*Rstate = IN_BODY_CHUNK_CONTENT;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					delete_dstring(*partialDstring);
+					CLEAR_PARTIAL_STRING()
+					return -2;
+				}
+				break;
+			}
+			case IN_BODY_CHUNK_CONTENT :
+			{
+				if(CURRENT_CHARACTER() == '\r')
+				{
+					*Rstate = BODY_CHUNK_CONTENT_COMPLETE;
+					GOTO_NEXT_CHARACTER()
+				}
+				else
+				{
+					APPEND_CURRENT_CHARACTER_TO(hr->body)
+					GOTO_NEXT_CHARACTER()
+				}
+				break;
+			}
+			case BODY_CHUNK_CONTENT_COMPLETE :
+			{
+				if(CURRENT_CHARACTER() == '\n')
+				{
+					long long int chunk_length = -1;
+					sscanf((*partialDstring)->cstring, "%llx", &chunk_length);
+					if(chunk_length == 0)
+					{
+						*Rstate = BODY_COMPLETE;
+						delete_dstring(*partialDstring);
+						CLEAR_PARTIAL_STRING()
+					}
+					else
+					{
+						*Rstate = IN_BODY_CHUNK_SIZE;
+						delete_dstring(*partialDstring);
+						CLEAR_PARTIAL_STRING()
+						INIT_PARTIAL_STRING()
+						GOTO_NEXT_CHARACTER()
+					}
+				}
+				else
+				{
+					delete_dstring(*partialDstring);
+					CLEAR_PARTIAL_STRING()
 					return -2;
 				}
 				break;

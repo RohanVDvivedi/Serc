@@ -279,9 +279,7 @@ int parseRequest(char* buffer,HttpRequest* hr, HttpParseState* Rstate, dstring**
 			}
 			case IN_BODY :
 			{
-				dstring* content_length_key = get_dstring("content-length", 10);
-				dstring* content_length = (dstring*)find_value_from_hash(hr->headers, content_length_key);
-				delete_dstring(content_length_key);
+				dstring* content_length = getHeaderValueWithKey("content-length", hr->headers);
 				if(content_length != NULL)
 				{
 					long long int body_length = -1;
@@ -346,7 +344,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 		sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
 		addHeader("content-length", ptemp, hrq->headers);
 	}
-	addHeader("accept-encoding", "gzip, deflate", hrq->headers);
+	//addHeader("accept-encoding", "gzip, deflate", hrq->headers);
 }
 
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
