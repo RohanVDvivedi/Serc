@@ -5,7 +5,7 @@
 
 int main()
 {
-	transaction_client* http_client = get_http_client("rohandvivedi.com", "80", 1);
+	transaction_client* http_client = get_http_client("localhost", "6900", 1);
 
 	if(http_client == NULL)
 	{
@@ -14,7 +14,8 @@ int main()
 	}
 
 	HttpRequest* hrq = getNewHttpRequest();
-	hrq->method = GET;
+	//hrq->method = GET;
+	hrq->method = POST;
 	//append_to_dstring(hrq->path, "/api");
 	//append_to_dstring(hrq->path, "/api/project");
 	append_to_dstring(hrq->path, "/index/get_post");
