@@ -101,7 +101,7 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
     strm.avail_out = uncompressedData->bytes_allocated - 1;
     strm.next_out = (Bytef *)(uncompressedData->cstring);
 
-    while(1)
+    while(strm.total_in < compressedData->bytes_occupied - 1)
     {
         // compress
         inflate(&strm, Z_FINISH);

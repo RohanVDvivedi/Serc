@@ -253,7 +253,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					// we here are using the state_level variable, 
 					// of dstring to store the bytes to read for this chunk
 					// we store how many bytes we still have to read, in this variables
-					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));printf("==>>%llu\n", ((*partialDstring)->state_level));
+					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));
 
 					*Rstate = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()

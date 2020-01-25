@@ -184,6 +184,9 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 		}
 	}
 
+	// uncompress response body
+	uncompressHttpResponseBody(hrp);
+
 	if(error == 0)
 	{
 		return hrp;
