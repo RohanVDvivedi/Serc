@@ -11,14 +11,30 @@ routing file must contain be a json array
 example. : 
 [
 	{
-		"methods"         : ["GET","POST"],
-		"paths"           : ["/index/get_post"],
-		"controller"      : "first_controller"
+		"controller"				:	"first_controller",
+		"methods"					:	["GET","POST"],
+		"paths"						:	["/index/get_post"],
+		"set_response_headers"		:	{
+			"custom_api_specific_header"	:	"custom_header_value"
+		}
 	},
 	{
-		"methods"         : ["GET"],
-		"paths"           : ["/read"],
-		"controller"      : "second_controller"
+		"methods"		:	["DELETE","POST"],
+		"paths"			:	["/index/delete_post"],
+		"controller"	:	"first_controller"
+	},
+	{
+		"methods"		:	["GET"],
+		"paths"			:	["/doc/go_google"],
+		"redirect_to"	:	{
+			"status"	:	303,
+			"url"		:	"http://www.google.com"
+		}
+	},
+	{
+		"controller"	:	"wild_controller",
+		"methods"		:	["*"],
+		"paths"			:	["/wild/*"]
 	}
 ]
 
@@ -39,6 +55,11 @@ def getHashValue(s):
 # read all commandline args
 import sys
 command_line_args = sys.argv.copy()[1:]
+
+# below is the list of http methods supported by the serc framework
+supported_methods = ["GET", "POST", "PUT", "DELETE",
+			"HEAD", "PATCH", "OPTIONS",
+			"TRACE", "CONNECT"]
 
 # all the routing are stored in a global dictionary
 # hence as each routing file is used conflicts are resolved by
@@ -67,6 +88,17 @@ for routing_file in command_line_args:
 	# format is mydict[method][hashvalue_of_path][path_in_string] = controller
 	# the below given loop builds up structure mydict for distributer.c and controllers_list for controller.h
 	for route in routes :
+
+		# if routing methods is a string, and it is "*", it means the context is all the methods
+		if isinstance(route['methods'], str) :
+			if route['methods'] == "*" :
+				route['methods'] = supported_methods
+			else :
+				route['methods'] = [route['methods']]
+		elif isinstance(route['methods'], list) :
+			if "*" in route['methods'] :
+				route['methods'] = supported_methods
+
 		for method in route['methods']:
 			if not (method in mydict):
 				mydict[method] = {}
