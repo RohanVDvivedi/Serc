@@ -395,8 +395,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 			}
 			case BODY_COMPLETE :
 			{
-				GOTO_NEXT_CHARACTER()
-				if(CURRENT_CHARACTER() == '\0')
+				if(buffer == buff_start + buffer_size - 1)
 				{
 					*Rstate = PARSED_SUCCESSFULLY;
 					return 0;
