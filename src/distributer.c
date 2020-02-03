@@ -29,6 +29,12 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 		}
 	}
 
+	// response for a HEAD request must not contain body
+	if(METHOD == HEAD)
+	{
+		make_dstring_empty(hrp->body);
+	}
+
 	compressHttpResponseBody(hrp, DEFAULT_SERVER_RESPONSE_COMPRESSION);
 
 	setServerDefaultHeadersInResponse(hrp);
