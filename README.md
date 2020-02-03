@@ -12,9 +12,9 @@
 * con for .con or .h configuration files
 * pyt for .py python helper scripts
 
-Enables you to
+### serc enables you to
 1. Route to your function for a http request for given http path and http method combination, as it is specified in the routing json file (in config directory).
-2. To host static content from SERC_ROOT_PATH, The SERC_ROOT_PATH can be set in config.h header in ./con folder.
+2. Host static content from SERC_ROOT_PATH, The SERC_ROOT_PATH can be set in config.h header in ./con folder.
 
 ### The framework logic is 
 * /src/*.c are the source files
