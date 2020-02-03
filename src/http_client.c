@@ -161,10 +161,6 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 			break;
 		}
 
-		// add '\0' at end to use it as c string
-		buffreadlength++;
-		bufferResponse[buffreadlength-1] = '\0';
-
 		// parse the ResponseString to populate HttpResponse Object
 		error = parseResponse(bufferResponse, buffreadlength, hrp, &Rstate, &partialDstring);
 		if(error == ERROR_OCCURRED_RESPONSE_NOT_STANDARD_HTTP)

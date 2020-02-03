@@ -16,7 +16,7 @@ HttpResponse* getNewHttpResponse()
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
 	char* buff_start = buffer;
-	while((buffer < (buff_start + buffer_size - 1)) && *Rstate != PARSED_SUCCESSFULLY)
+	while((buffer < (buff_start + buffer_size)) && *Rstate != PARSED_SUCCESSFULLY)
 	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
@@ -192,8 +192,23 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					*Rstate = IN_BODY;
-					GOTO_NEXT_CHARACTER()
+					long long int body_length = -1;
+					dstring* content_length = getHeaderValueWithKey("content-length", hr->headers);
+					if(content_length != NULL)
+					{
+						sscanf(content_length->cstring, "%lld", &body_length);
+					}
+					if(body_length == 0)
+					{
+						*Rstate = PARSED_SUCCESSFULLY;
+						GOTO_NEXT_CHARACTER()
+						return 0;
+					}
+					else
+					{
+						*Rstate = IN_BODY;
+						GOTO_NEXT_CHARACTER()
+					}
 				}
 				else
 				{

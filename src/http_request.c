@@ -19,7 +19,7 @@ HttpRequest* getNewHttpRequest()
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState* Rstate, dstring** partialDstring)
 {
 	char* buff_start = buffer;
-	while((buffer < (buff_start + buffer_size - 1)) && *Rstate != PARSED_SUCCESSFULLY)
+	while((buffer < (buff_start + buffer_size)) && *Rstate != PARSED_SUCCESSFULLY)
 	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
@@ -260,7 +260,13 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					if(hr->method == GET)
+					long long int body_length = -1;
+					dstring* content_length = getHeaderValueWithKey("content-length", hr->headers);
+					if(content_length != NULL)
+					{
+						sscanf(content_length->cstring, "%lld", &body_length);
+					}
+					if(hr->method == GET || body_length == 0)
 					{
 						*Rstate = PARSED_SUCCESSFULLY;
 						GOTO_NEXT_CHARACTER()
