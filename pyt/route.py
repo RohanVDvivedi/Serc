@@ -198,10 +198,9 @@ for method in mydict:
 			itera = 0
 			for path_part in path_parts :
 				if path_part != "" :
-					if itera == 0 :
-						case_string	+= " && (0 == strncmp(path_str, \"" + path_part + "\", " + str(len(path_part)) + "))"
-					else :
-						case_string	+= " && (NULL != (wild_card_offset = strstr(wild_card_offset, \"*\") + 1)) && (0 == strncmp( wild_card_offset, \"" + path_part + "\", " + str(len(path_part)) + "))"
+					if itera != 0 :
+						case_string	+= " && (wild_card_offset = wild_card_offset + " + str(len(path_part)) + ")"
+					case_string	+= " && (NULL != (wild_card_offset = strstr(wild_card_offset, " + path_part + ")))"
 					itera += 1
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
