@@ -107,15 +107,24 @@ for routing_file in command_line_args:
 
 				if not (hashval in mydict[method]):
 					mydict[method][hashval] = {}
+				if not ("wild_card_paths" in mydict[method]):
+					mydict[method]["wild_card_paths"] = {}
 
-				if not (path in mydict[method][hashval]):
+				is_wild_card_path = ("*" in path)
+				path_route_hash = None
+
+				if is_wild_card_path and (not (path in mydict[method]["wild_card_paths"])):
+					mydict[method]["wild_card_paths"][path] = {}
+					path_route_hash = mydict[method]["wild_card_paths"][path]
+				elif not (path in mydict[method][hashval]):
 					mydict[method][hashval][path] = {}
+					path_route_hash = mydict[method][hashval][path]
 
 				# this is the controller function that will be called if, 
 				# the METHOD and PATH satisfy the condition, and they match in the request
 				if 'controller' in route :
 					controller = route['controller']
-					mydict[method][hashval][path]['controller'] = controller
+					path_route_hash['controller'] = controller
 					# add the controller to the list of the controllers
 					if not (controller in controllers_list) :
 						controllers_list += [controller]
@@ -123,12 +132,12 @@ for routing_file in command_line_args:
 				# this is the redirection that will be used if, 
 				# the METHOD and PATH satisfy the condition, and they match in the request
 				if 'redirect_to' in route :
-					mydict[method][hashval][path]['redirect_to'] = route['redirect_to']
+					path_route_hash['redirect_to'] = route['redirect_to']
 
 				# the headers will the set for the response of every request,
 				# if it hits this controller
 				if 'set_response_headers' in route :
-					mydict[method][hashval][path]['set_response_headers'] = route['set_response_headers']
+					path_route_hash['set_response_headers'] = route['set_response_headers']
 
 
 
@@ -152,6 +161,9 @@ for method in mydict:
 	case_string         			+= "\n\t\t\tswitch(PATH)"
 	case_string         			+= "\n\t\t\t{"
 	for hashval in mydict[method]:
+		# wild card paths will be handled by the default case
+		if hashval == "wild_card_paths" :
+			continue
 		case_string     			+= "\n\t\t\t\tcase " + str(hashval) + " :"
 		case_string     			+= "\n\t\t\t\t{"
 		for path in mydict[method][hashval]:
@@ -175,6 +187,30 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
+	if len(mydict[method]["wild_card_paths"]):
+		case_string					+= "\n\t\t\t\tdefault : "
+		case_string					+= "\t\t\t\t\t{"
+		for path in mydict[method]["wild_card_paths"]:
+			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
+			case_string 			+= "\n\t\t\t\t\tif( 0 == strcmp(path_str, \"" + path + "\") )"
+			case_string 			+= "\n\t\t\t\t\t{"
+			if ('set_response_headers' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['set_response_headers'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
+				for header_key, header_value in mydict[method]["wild_card_paths"][path]['set_response_headers'].items() :
+					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", hrp->headers);"
+			if ('controller' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['controller'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
+				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
+				case_string 		+= "\n\t\t\t\t\t\terror = " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, hrp);"
+			if ('redirect_to' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['redirect_to'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
+				status = -1
+				if ('with_status' in mydict[method]["wild_card_paths"][path]['redirect_to']) :
+					status = mydict[method]["wild_card_paths"][path]['redirect_to']['with_status']
+				case_string 		+= "\n\t\t\t\t\t\tredirectTo(" + str(status) + ", \"" + mydict[method]["wild_card_paths"][path]['redirect_to']['url'] + "\", hrp);"
+			case_string 			+= "\n\t\t\t\t\t}"
+		case_string					+= "\t\t\t\t\t\thrp->status = 404;"
+		case_string					+= "\t\t\t\t\t}"
 	case_string         			+= "\n\t\t\t}"
 	case_string         			+= "\n\t\t\tbreak;"
 	case_string         			+= "\n\t\t}"
