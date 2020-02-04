@@ -196,10 +196,11 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\tif( "
 			itera = 0
 			for path_part in path_parts :
-				if itera != 0 :
-					case_string		+= " and "
-				case_string			+= "0 == strcmp(path_str, \"" + path_part + "\")"
-				itera += 1
+				if path_part != "" :
+					if itera != 0 :
+						case_string		+= " and "
+					case_string			+= "(0 == strcmp(path_str, \"" + path_part + "\"))"
+					itera += 1
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('set_response_headers' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['set_response_headers'] is not None :
