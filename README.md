@@ -24,5 +24,17 @@
 * /pyt/*.py are the several python sources which help you with building the switch case logic for your routings from the routing.con files
 * /pyt/*.temp are the several templates for building the switch case routing logic (source and header files)(controller.h and distributer.c files)
 
+#### Template application
+* Template application as an illustration to use serc framework can be found [here](https://github.com/RohanVDvivedi/serc_template_application)
 
+#### Dependencies
+##### Certain libraries must be installed before you can start using serc
+* cutlery
+* BoomPar
+* ConnMan
+* ReaderWriterLock
+* JsonParser
+* zlib
+
+### Third party acknowledgements
 serc provides you with gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib).
