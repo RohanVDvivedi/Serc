@@ -190,7 +190,7 @@ for method in mydict:
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\tint wild_card_offset = 0;"
+		case_string					+= "\n\t\t\t\t\tchar* wild_card_offset = NULL;"
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
 			path_parts = path.split("*")
@@ -198,7 +198,10 @@ for method in mydict:
 			itera = 0
 			for path_part in path_parts :
 				if path_part != "" :
-					case_string			+= " and (0 == strncmp(path_str +, \"" + path_part + "\", " + str(len(path_part)) + "))"
+					if itera == 0 :
+						case_string	+= " && (0 == strncmp(path_str, \"" + path_part + "\", " + str(len(path_part)) + "))"
+					else :
+						case_string	+= " && (NULL != (wild_card_offset = strstr(wild_card_offset, \"*\") + 1)) && (0 == strncmp( wild_card_offset, \"" + path_part + "\", " + str(len(path_part)) + "))"
 					itera += 1
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
