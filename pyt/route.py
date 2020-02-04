@@ -195,8 +195,9 @@ for method in mydict:
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
 			path_parts = path.split("*")
-			if first_wild_card == 1 :
+			if first_wild_card == True :
 				case_string			+= "\n\t\t\t\t\t"
+				first_wild_card = False
 			else :
 				case_string 		+= "\n\t\t\t\t\telse "
 			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= path_len)"
