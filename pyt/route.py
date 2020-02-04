@@ -103,22 +103,22 @@ for routing_file in command_line_args:
 			if not (method in mydict):
 				mydict[method] = {}
 			for path in route['paths']:
-				hashval = strhsh.getHashValue(path)
 
-				if not (hashval in mydict[method]):
-					mydict[method][hashval] = {}
-				if not ("wild_card_paths" in mydict[method]):
-					mydict[method]["wild_card_paths"] = {}
-
-				is_wild_card_path = ("*" in path)
 				path_route_hash = None
 
-				if is_wild_card_path and (not (path in mydict[method]["wild_card_paths"])):
-					mydict[method]["wild_card_paths"][path] = {}
-					path_route_hash = mydict[method]["wild_card_paths"][path]
-				elif not (path in mydict[method][hashval]):
-					mydict[method][hashval][path] = {}
-					path_route_hash = mydict[method][hashval][path]
+				if "*" in path :
+					if not ("wild_card_paths" in mydict[method]):
+						mydict[method]["wild_card_paths"] = {}
+					if not (path in mydict[method]["wild_card_paths"]):
+						mydict[method]["wild_card_paths"][path] = {}
+						path_route_hash = mydict[method]["wild_card_paths"][path]
+				else :
+					hashval = strhsh.getHashValue(path)
+					if not (hashval in mydict[method]):
+						mydict[method][hashval] = {}
+					if not (path in mydict[method][hashval]):
+						mydict[method][hashval][path] = {}
+						path_route_hash = mydict[method][hashval][path]
 
 				# this is the controller function that will be called if, 
 				# the METHOD and PATH satisfy the condition, and they match in the request
@@ -187,9 +187,9 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
-	if len(mydict[method]["wild_card_paths"]):
+	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
-		case_string					+= "\t\t\t\t\t{"
+		case_string					+= "\n\t\t\t\t{"
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
 			case_string 			+= "\n\t\t\t\t\tif( 0 == strcmp(path_str, \"" + path + "\") )"
@@ -209,8 +209,8 @@ for method in mydict:
 					status = mydict[method]["wild_card_paths"][path]['redirect_to']['with_status']
 				case_string 		+= "\n\t\t\t\t\t\tredirectTo(" + str(status) + ", \"" + mydict[method]["wild_card_paths"][path]['redirect_to']['url'] + "\", hrp);"
 			case_string 			+= "\n\t\t\t\t\t}"
-		case_string					+= "\t\t\t\t\t\thrp->status = 404;"
-		case_string					+= "\t\t\t\t\t}"
+		case_string					+= "\n\t\t\t\t\thrp->status = 404;"
+		case_string					+= "\n\t\t\t\t}"
 	case_string         			+= "\n\t\t\t}"
 	case_string         			+= "\n\t\t\tbreak;"
 	case_string         			+= "\n\t\t}"
