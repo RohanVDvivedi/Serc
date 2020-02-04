@@ -192,7 +192,15 @@ for method in mydict:
 		case_string					+= "\n\t\t\t\t{"
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			case_string 			+= "\n\t\t\t\t\tif( 0 == strcmp(path_str, \"" + path + "\") )"
+			path_parts = path.split("*")
+			case_string 			+= "\n\t\t\t\t\tif( "
+			itera = 0
+			for path_part in path_parts :
+				if itera != 0 :
+					case_string		+= " and "
+				case_string			+= "0 == strcmp(path_str, \"" + path_part + "\")"
+				itera += 1
+			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('set_response_headers' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
