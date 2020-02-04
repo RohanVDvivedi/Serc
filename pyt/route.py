@@ -193,6 +193,7 @@ for method in mydict:
 		case_string					+= "\n\t\t\t\t\tchar* wild_card_offset = NULL;"
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
+			case_string 			+= "\n\t\t\t\t\twild_card_offset = path_str;"
 			path_parts = path.split("*")
 			case_string 			+= "\n\t\t\t\t\tif( (" + str(len("".join(path_parts))) + " <= path_len)"
 			previous_path_part = None
