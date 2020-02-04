@@ -3,6 +3,7 @@
 void distribute(HttpRequest* hrq,HttpResponse* hrp)
 {
 	char* path_str = hrq->path->cstring;
+	unsigned long long int path_len = hrq->path->bytes_occupied;
 	unsigned long long int PATH = getHashValue(path_str);
 	HttpMethod METHOD = hrq->method;
 
