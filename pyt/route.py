@@ -195,13 +195,13 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
 			path_parts = path.split("*")
 			case_string 			+= "\n\t\t\t\t\tif( (" + str(len("".join(path_parts))) + " <= path_len)"
-			itera = 0
+			previous_path_part = None
 			for path_part in path_parts :
 				if path_part != "" :
-					if itera != 0 :
-						case_string	+= " && (wild_card_offset = wild_card_offset + " + str(len(path_part)) + ")"
-					case_string	+= " && (NULL != (wild_card_offset = strstr(wild_card_offset, " + path_part + ")))"
-					itera += 1
+					if previous_path_part is not None :
+						case_string	+= " && (wild_card_offset = wild_card_offset + " + str(len(previous_path_part)) + ")"
+					case_string	+= " && (NULL != (wild_card_offset = strstr(wild_card_offset, \"" + path_part + "\")))"
+					previous_path_part = path_part
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('set_response_headers' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['set_response_headers'] is not None :
