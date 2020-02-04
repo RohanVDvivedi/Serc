@@ -191,17 +191,27 @@ for method in mydict:
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
 		case_string					+= "\n\t\t\t\t\tchar* wild_card_offset = NULL;"
+		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			case_string 			+= "\n\t\t\t\t\twild_card_offset = path_str;"
 			path_parts = path.split("*")
-			case_string 			+= "\n\t\t\t\t\tif( (" + str(len("".join(path_parts))) + " <= path_len)"
+			if first_wild_card == 1 :
+				case_string			+= "\n\t\t\t\t\t"
+			else :
+				case_string 		+= "\n\t\t\t\t\telse "
+			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= path_len)"
 			previous_path_part = None
+			path_part_iter = 0
 			for path_part in path_parts :
 				if path_part != "" :
 					if previous_path_part is not None :
 						case_string	+= " && (wild_card_offset = wild_card_offset + " + str(len(previous_path_part)) + ")"
-					case_string	+= " && (NULL != (wild_card_offset = strstr(wild_card_offset, \"" + path_part + "\")))"
+					if path_part_iter == 0 :
+						offset = "path_str"
+					else :
+						offset = "wild_card_offset"
+					case_string		+= " && (NULL != (wild_card_offset = strstr(" + offset + ", \"" + path_part + "\")))"
+					path_part_iter += 1
 					previous_path_part = path_part
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
@@ -220,7 +230,11 @@ for method in mydict:
 					status = mydict[method]["wild_card_paths"][path]['redirect_to']['with_status']
 				case_string 		+= "\n\t\t\t\t\t\tredirectTo(" + str(status) + ", \"" + mydict[method]["wild_card_paths"][path]['redirect_to']['url'] + "\", hrp);"
 			case_string 			+= "\n\t\t\t\t\t}"
-		case_string					+= "\n\t\t\t\t\thrp->status = 404;"
+		case_string					+= "\n\t\t\t\t\telse"
+		case_string					+= "\n\t\t\t\t\t{"
+		case_string					+= "\n\t\t\t\t\t\thrp->status = 404;"
+		case_string					+= "\n\t\t\t\t\t}"
+		case_string					+= "\n\t\t\t\t\tbreak;"
 		case_string					+= "\n\t\t\t\t}"
 	case_string         			+= "\n\t\t\t}"
 	case_string         			+= "\n\t\t\tbreak;"
