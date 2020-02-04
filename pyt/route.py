@@ -199,7 +199,7 @@ for method in mydict:
 				if path_part != "" :
 					if itera != 0 :
 						case_string		+= " and "
-					case_string			+= "(0 == strcmp(path_str, \"" + path_part + "\"))"
+					case_string			+= "(0 == strncmp(path_str, \"" + path_part + "\", " + len(path_part) + "))"
 					itera += 1
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
