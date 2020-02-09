@@ -2,6 +2,7 @@
 #define FILE_HANDLER_H
 
 #include<stdio.h>
+#include<sys/stat.h>
 #include<unistd.h>
 
 #include<hashmap.h>
