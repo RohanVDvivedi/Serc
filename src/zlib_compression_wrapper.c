@@ -1,4 +1,4 @@
-#include<in_memory_zlib_compression_wrapper.h>
+#include<zlib_compression_wrapper.h>
 
 int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 {
