@@ -20,7 +20,7 @@ OBJECTS:=$(patsubst $(SRC_DIR)%.c,$(OBJ_DIR)%.o,${SOURCES})
 TARGET:=${BIN_DIR}/libserc.a
 
 # place your include directories -I flag here
-CFLAGS=-I${INC_DIR} -I${CON_DIR} -I${CONNMAN_PATH}/inc -I${BOOMPAR_PATH}/inc -I${JSON_PARSER_PATH}/inc -I${CUTLERY_PATH}/inc -I${RWLOCK_PATH}/inc
+CFLAGS=-Wall -I${INC_DIR} -I${CON_DIR} -I${CONNMAN_PATH}/inc -I${BOOMPAR_PATH}/inc -I${JSON_PARSER_PATH}/inc -I${CUTLERY_PATH}/inc -I${RWLOCK_PATH}/inc
 
 # the linker flags, here, which will help you compile the simple server
 LFLAFS=-L${CONNMAN_PATH}/bin -lconnman -L${BOOMPAR_PATH}/bin -lpthread -lboompar -L${JSON_PARSER_PATH}/bin -ljsonpar -L${CUTLERY_PATH}/bin -lcutlery -L${RWLOCK_PATH}/bin -lrwlock -lz
