@@ -3,7 +3,7 @@
 // create new http request object and initialized with defaults
 HttpRequest* getNewHttpRequest()
 {
-	HttpRequest* hr = (HttpRequest*) malloc(sizeof(HttpRequest));
+	HttpRequest* hr = malloc(sizeof(HttpRequest));
 	hr->method = UNIDENTIFIED;
 	hr->path = get_dstring("", 10);
 	hr->version = get_dstring("", 10);

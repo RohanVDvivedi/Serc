@@ -3,7 +3,7 @@
 // create new http response object and initialized with defaults
 HttpResponse* getNewHttpResponse()
 {
-	HttpResponse* hr = (HttpResponse*) malloc(sizeof(HttpResponse));
+	HttpResponse* hr = malloc(sizeof(HttpResponse));
 	hr->version = get_dstring("", 10);
 	hr->headers = get_hashmap(20, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
 	hr->body = get_dstring("", 10);

@@ -27,19 +27,18 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
     struct sockaddr_in* first = (struct sockaddr_in*)(results->ai_addr);
 
     // get a connection group, for which you want to open a http transaction client
-	connection_group* conn_group = get_connection_group_tcp_ipv4(ntohl(first->sin_addr.s_addr), ntohs(first->sin_port));
+	connection_group conn_group = get_connection_group_tcp_ipv4(inet_ntoa(first->sin_addr), ntohs(first->sin_port));
 
 	freeaddrinfo(results);
 
 	// try to make a fake connection, if this fails, do not get a transaction client, for such a connection
-	int fd = make_connection(conn_group);
+	int fd = make_connection(&conn_group);
 	if(fd == -1)
 	{
-		delete_connection_group(conn_group);
 		printf("Error in making first connection to server\n");
 		return NULL;
 	}
-	close_connection(fd);
+	close(fd);
 
 	// open the transaction client using the connection group you built
 	transaction_client* http_client = get_transaction_client(conn_group, connection_count);
@@ -48,7 +47,7 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
 
 void get_client_identifier(dstring* id_result, transaction_client* http_client)
 {
-	get_connection_group_identifier(id_result, http_client->conn_group);
+	get_connection_group_identifier(id_result, &(http_client->conn_group));
 }
 
 // Http Client transaction handler funcrtion (it is given at the last)
@@ -87,17 +86,11 @@ HttpResponse* wait_or_get_response(job* promise, HttpRequest** hrq_p)
 
 void shutdown_and_delete_http_client(transaction_client* http_client)
 {
-	// pluck out the reference to the connection group first, so we have it to delete it
-	connection_group* conn_group = http_client->conn_group;
-
 	// shutdown the transaction client, 
 	shutdown_transaction_client(http_client);
 
 	// delete the transasction client, after the shutdown
 	delete_transaction_client(http_client);
-
-	// delete the connection group used for the http transaction client
-	delete_connection_group(conn_group);
 }
 
 /* **************************************************************
