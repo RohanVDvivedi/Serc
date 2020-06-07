@@ -33,6 +33,40 @@ void* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
 	return value;
 }
 
+static void queue_elements_wrapper(const void* dentry, const void* additional_params)
+{
+	push_queue(((queue*)additional_params), dentry);
+}
+
+static void rehash_if_necessary(dmap* dmapp)
+{
+	if(dmapp->map.occupancy == dmapp->map.total_bucket_count)
+	{
+		hashmap new_map;
+		initialize_hashmap(&(new_map), ROBINHOOD_HASHING, dmapp->map.total_bucket_count * 2, key_hash_dentry, key_compare_dentry, 0);
+
+		queue elements_to_delete;
+		initialize_queue(&elements_to_delete, dmapp->map.occupancy);
+
+		for_each_in_hashmap(&(dmapp->map), queue_elements_wrapper, &elements_to_delete);
+
+		while(!isQueueEmpty(&elements_to_delete))
+		{
+			dentry* dent = (dentry*) get_top_queue(&elements_to_delete);
+			pop_queue(&elements_to_delete);
+
+			remove_from_hashmap(&(dmapp->map), dent);
+			insert_in_hashmap(&(new_map), dent);
+		}
+
+		deinitialize_queue(&elements_to_delete);
+
+		deinitialize_hashmap(&(dmapp->map));
+
+		dmapp->map = new_map;
+	}
+}
+
 int insert_in_dmap(dmap* dmapp, dstring* key, void* value)
 {
 	if(key == NULL)
@@ -43,6 +77,7 @@ int insert_in_dmap(dmap* dmapp, dstring* key, void* value)
 	int inserted = 1;
 	if(value != NULL)
 	{
+		rehash_if_necessary(dmapp);
 		dentry* dent = get_dentry(key, value);
 		inserted = insert_in_hashmap(&(dmapp->map), dent);
 		if(!inserted)
@@ -80,11 +115,6 @@ int remove_from_dmap(dmap* dmapp, dstring* key)
 		delete_dentry(dent, dmapp->value_destroyer);
 	}
 	return removed;
-}
-
-static void queue_elements_wrapper(const void* dentry, const void* additional_params)
-{
-	push_queue(((queue*)additional_params), dentry);
 }
 
 void remove_all_from_dmap(dmap* dmapp)

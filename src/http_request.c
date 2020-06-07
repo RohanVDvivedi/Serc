@@ -7,8 +7,8 @@ HttpRequest* getNewHttpRequest()
 	hr->method = UNIDENTIFIED;
 	hr->path = get_dstring("", 10);
 	hr->version = get_dstring("", 10);
-	hr->parameters = get_dmap(200, (void(*)(void*))delete_dstring);
-	hr->headers = get_dmap(200, (void(*)(void*))delete_dstring);
+	hr->parameters = get_dmap(3, (void(*)(void*))delete_dstring);
+	hr->headers = get_dmap(3, (void(*)(void*))delete_dstring);
 	hr->body = get_dstring("", 10);
 	return hr;
 }
