@@ -122,7 +122,7 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 }
 
 // Methods common to both Request and response
-void addHeader(char* Key, char* Value, hashmap* headers)
+void addHeader(char* Key, char* Value, dmap* headers)
 {
 	if(Key == NULL || Value == NULL)
 	{
@@ -136,7 +136,7 @@ void addHeader(char* Key, char* Value, hashmap* headers)
 	insert_entry_in_hash(headers, key, value);
 }
 
-void addParameter(char* Key, char* Value, hashmap* parameters)
+void addParameter(char* Key, char* Value, dmap* parameters)
 {
 	if(Key == NULL || Value == NULL)
 	{
@@ -148,7 +148,7 @@ void addParameter(char* Key, char* Value, hashmap* parameters)
 	insert_entry_in_hash(parameters, key, value);
 }
 
-int removeHeader(char* Key, hashmap* headers)
+int removeHeader(char* Key, dmap* headers)
 {
 	dstring* key = get_dstring(Key, 10);
 	toLowercase(key);
@@ -164,7 +164,7 @@ int removeHeader(char* Key, hashmap* headers)
 	return was_deleted;
 }
 
-int removeParameter(char* Key, hashmap* parameters)
+int removeParameter(char* Key, dmap* parameters)
 {
 	dstring* key = get_dstring(Key, 10);
 	dstring* returnKey = NULL;
@@ -179,7 +179,7 @@ int removeParameter(char* Key, hashmap* parameters)
 	return was_deleted;
 }
 
-int hasHeader(char* Key, char* Value, hashmap* headers)
+int hasHeader(char* Key, char* Value, dmap* headers)
 {
 	if(Key == NULL || Value == NULL)
 	{
@@ -199,7 +199,7 @@ int hasHeader(char* Key, char* Value, hashmap* headers)
 	return result;
 }
 
-int hasHeaderWithKey(char* Key, hashmap* headers)
+int hasHeaderWithKey(char* Key, dmap* headers)
 {
 	if(Key == NULL)
 	{
@@ -221,7 +221,7 @@ int hasHeaderWithKey(char* Key, hashmap* headers)
 	}
 }
 
-dstring* getHeaderValueWithKey(char* Key, hashmap* headers)
+dstring* getHeaderValueWithKey(char* Key, dmap* headers)
 {
 	if(Key == NULL)
 	{
