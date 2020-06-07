@@ -136,7 +136,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
-					insert_entry_in_hash(hr->headers, key, (*(partialDstring)));
+					insert_in_dmap(hr->headers, key, (*(partialDstring)));
 					*Rstate = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -350,7 +350,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
 	append_to_dstring(result, getHttpResponseStatus(hr->status));
-	for_each_entry_in_hash(hr->headers, (void (*)(const void*, const void*, const void*))serialize_header_entry, result);
+	for_each_in_dmap(hr->headers, (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, hr->body);
 }
@@ -444,15 +444,15 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 void deleteHttpResponse(HttpResponse* hr)
 {
-	delete_dmap(hr->headers, delete_dstring);
-	delete_dstring(hr->body, delete_dstring);
+	delete_dmap(hr->headers, (void(*)(void* value))delete_dstring);
+	delete_dstring(hr->body);
 	free(hr);
 }
 
 void printResponse(HttpResponse* hr)
 {
 	printf("status : %d\n", hr->status);
-	printf("headers : \n"); for_each_entry_in_hash(hr->headers, print_entry_wrapper, NULL); printf("\n");
+	printf("headers : \n"); for_each_in_dmap(hr->headers, (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
 	printf("body : "); display_dstring(hr->body); printf("\n\n");
 }
 

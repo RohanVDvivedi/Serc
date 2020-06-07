@@ -114,7 +114,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 					dstring* key = (*(partialDstring));
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
-					insert_entry_in_hash(hr->parameters, key, (*(partialDstring)));
+					insert_in_dmap(hr->parameters, key, (*(partialDstring)));
 					*Rstate = IN_PARAM_VALUE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -136,7 +136,6 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 				}
 				else if(CURRENT_CHARACTER() == ' ')
 				{
-					dstring* key = (*(partialDstring));
 					CLEAR_PARTIAL_STRING()
 					*Rstate = PATH_PARAMS_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -204,7 +203,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 					toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
-					insert_entry_in_hash(hr->headers, key, (*(partialDstring)));
+					insert_in_dmap(hr->headers, key, (*(partialDstring)));
 					*Rstate = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -421,7 +420,7 @@ void serializeRequest(dstring* result, HttpRequest* hr)
 	append_to_dstring(result, " ");
 	serializeUrl(result, hr);
 	append_to_dstring(result, " HTTP/1.1\r\n");
-	for_each_entry_in_hash(hr->headers, (void (*)(const void*, const void*, const void*))serialize_header_entry, result);
+	for_each_in_dmap(hr->headers, (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, hr->body);
 }
@@ -518,8 +517,8 @@ void deleteHttpRequest(HttpRequest* hr)
 {
 	delete_dstring(hr->path);
 	delete_dstring(hr->version);
-	delete_dmap(hr->parameters, delete_dstring);
-	delete_dmap(hr->headers, delete_dstring);
+	delete_dmap(hr->parameters, (void (*)(void*))delete_dstring);
+	delete_dmap(hr->headers, (void (*)(void*))delete_dstring);
 	delete_dstring(hr->body);
 	free(hr);
 }
@@ -528,9 +527,9 @@ void printRequest(HttpRequest* hr)
 {
 	printf("method : %s\n", serializeHttpMethod(hr->method));
 	printf("path : "); display_dstring(hr->path); printf("\n");
-	printf("parameters : \n"); for_each_entry_in_hash(hr->parameters, print_entry_wrapper, NULL); printf("\n");
+	printf("parameters : \n"); for_each_in_dmap(hr->parameters, (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
 	printf("version : "); display_dstring(hr->version); printf("\n");
-	printf("headers : \n"); for_each_entry_in_hash(hr->headers, print_entry_wrapper, NULL); printf("\n");
+	printf("headers : \n"); for_each_in_dmap(hr->headers, (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
 	printf("body : "); display_dstring(hr->body); printf("\n\n");
 }
 
@@ -553,10 +552,10 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 		}
 		append_to_dstring(result, temp);
 	}
-	if(hr->parameters->bucket_occupancy > 0)
+	if(hr->parameters->occupancy > 0)
 	{
 		append_to_dstring(result, "?");
-		for_each_entry_in_hash(hr->parameters, (void (*)(const void*, const void*, const void*))serialize_parameter_entry, result);
+		for_each_in_dmap(hr->parameters, (void (*)(dstring *, void *, const void *))serialize_parameter_entry, result);
 		result->bytes_occupied--;
 		result->cstring[result->bytes_occupied-1] = '\0';
 	}

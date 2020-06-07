@@ -43,6 +43,24 @@ static void queue_elements_wrapper(const void* dentry, const void* additional_pa
 	push_queue(((queue*)additional_params), dentry);
 }
 
+void remove_all_from_dmap(dmap* dmapp, void (*value_destroyer)(void* value))
+{
+	queue elements_to_delete;
+	initialize_queue(&elements_to_delete, dmapp->occupancy);
+	for_each_in_hashmap(dmapp, queue_elements_wrapper, &elements_to_delete);
+	while(!isQueueEmpty(&elements_to_delete))
+	{
+		dentry* dent = (dentry*) get_top_queue(&elements_to_delete);
+		pop_queue(&elements_to_delete);
+
+		// remove entry from hashmap
+		remove_from_hashmap(dmapp, dent);
+		// delete entry
+		delete_dentry(dent, value_destroyer);
+	}
+	deinitialize_queue(&elements_to_delete);
+}
+
 void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, void* value, const void* additional_params), const void* additional_params)
 {
 	queue elements_to_delete;
@@ -59,16 +77,7 @@ void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, void* value, 
 
 void delete_dmap(dmap* dmapp, void (*value_destroyer)(void* value))
 {
-	queue elements_to_delete;
-	initialize_queue(&elements_to_delete, dmapp->occupancy);
-	for_each_in_hashmap(dmapp, queue_elements_wrapper, &elements_to_delete);
-	while(!isQueueEmpty(&elements_to_delete))
-	{
-		dentry* dent = (dentry*) get_top_queue(&elements_to_delete);
-		pop_queue(&elements_to_delete);
-		delete_dentry(dent, value_destroyer);
-	}
-	deinitialize_queue(&elements_to_delete);
+	remove_all_from_dmap(dmapp, value_destroyer);
 	deinitialize_hashmap(dmapp);
 	free(dmapp);
 }

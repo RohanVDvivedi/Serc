@@ -5,12 +5,8 @@
 #include<sys/stat.h>
 #include<unistd.h>
 
-#include<hashmap.h>
-#include<dstring.h>
-
 #include<rwlock.h>
-
-#include<strhsh.h>
+#include<dstring_hashmap.h>
 
 #include<config.h>
 

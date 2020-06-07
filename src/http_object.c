@@ -75,7 +75,7 @@ int characterAllowedInURL(char c)
 	}
 }
 
-void serialize_paramter_helper(dstring* result, dstring* input)
+static void serialize_paramter_helper(dstring* result, const dstring* input)
 {
 	char temp[10];
 	for(int i=0; i<strlen(input->cstring); i++)
@@ -112,10 +112,10 @@ void serialize_header_entry(dstring* key, dstring* value, dstring* result)
 	append_to_dstring(result, "\r\n");
 }
 
-void print_entry_wrapper(const void* key, const void* value, const void* addpar)
+void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 {
 	printf("\t\t[");
-	display_dstring((dstring*)key);
+	display_dstring(key);
 	printf("]->[");
 	display_dstring((dstring*)value);
 	printf("]\n");

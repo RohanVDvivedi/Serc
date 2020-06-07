@@ -25,7 +25,7 @@ void urlToString(char* path_param_str);
 
 // functions to handle hashmap (dstring -> dstring) entries
 // this functions can be used on headers, parameters of the reponse and request
-void print_entry_wrapper(const void* key, const void* value, const void* addpar);
+void print_entry_wrapper(dstring* key, dstring* value, const void* addpar);
 
 // serialization utility functions used by both request and response
 void serialize_parameter_entry(dstring* key, dstring* value, dstring* result);
