@@ -74,6 +74,10 @@ void http_connection_handler(int conn_fd)
 
 			distribute(hrq,hrp);
 
+			// Uncomment to Debug
+			// printRequest(hrq);
+			// printResponse(hrp);
+
 			// serialize HttpResponse to send it
 			dstring* bufferResponse = get_dstring("", 10);
 

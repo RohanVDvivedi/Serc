@@ -5,7 +5,7 @@ HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = malloc(sizeof(HttpResponse));
 	hr->version = get_dstring("", 10);
-	hr->headers = get_dmap(20, (void(*)(void*))delete_dstring);
+	hr->headers = get_dmap(200, (void(*)(void*))delete_dstring);
 	hr->body = get_dstring("", 10);
 	return hr;
 }

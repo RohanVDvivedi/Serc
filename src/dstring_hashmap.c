@@ -16,6 +16,7 @@ void* find_equals_in_dmap(dmap* dmapp, dstring* key)
 	}
 	dentry temp_dentry;
 	temp_dentry.key = key;
+	temp_dentry.key_hash_value = 0;
 	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &temp_dentry);
 	return (dent != NULL) ? dent->value : NULL;
 }
@@ -67,8 +68,13 @@ int remove_from_dmap(dmap* dmapp, dstring* key)
 {
 	dentry temp_dentry;
 	temp_dentry.key = key;
+	temp_dentry.key_hash_value = 0;
 	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &temp_dentry);
-	int removed = remove_from_hashmap(&(dmapp->map), dent);
+	int removed = 0;
+	if(dent != NULL)
+	{
+		removed = remove_from_hashmap(&(dmapp->map), dent);
+	}
 	if(removed)
 	{
 		delete_dentry(dent, dmapp->value_destroyer);
@@ -91,10 +97,13 @@ void remove_all_from_dmap(dmap* dmapp)
 		dentry* dent = (dentry*) get_top_queue(&elements_to_delete);
 		pop_queue(&elements_to_delete);
 
-		// remove entry from hashmap
-		remove_from_hashmap(&(dmapp->map), dent);
-		// delete entry
-		delete_dentry(dent, dmapp->value_destroyer);
+		if(dent != NULL)
+		{
+			// remove entry from hashmap
+			remove_from_hashmap(&(dmapp->map), dent);
+			// delete entry
+			delete_dentry(dent, dmapp->value_destroyer);
+		}
 	}
 	deinitialize_queue(&elements_to_delete);
 }
