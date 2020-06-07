@@ -1,27 +1,31 @@
 #include<dstring_entry.h>
 
-dstring_entry* get_dstring_entry(dstring* key, unsigned long long int value_size)
+dentry* get_dstring_entry(dstring* key, void* value)
 {
-	dstring_entry* entryp = malloc(sizeof(dstring_entry));
+	dentry* entryp = malloc(sizeof(dentry));
 	entryp->key = key;
-	entryp->value = get_dstring("", value_size);
-	entryp->key_hash_value;
+	entryp->value = value;
+	entryp->key_hash_value = 0;
 	return entryp;
 }
 
 int key_compare_dstring_entry(const void* entry1, const void* entry2)
 {
-	return compare_dstring(((dstring_entry*)entry1)->key, ((dstring_entry*)entry2)->key);
+	return compare_dstring(((dentry*)entry1)->key, ((dentry*)entry2)->key);
 }
 
-int key_hash_dstring_entry(const void* entryp)
+unsigned long long int key_hash_dstring_entry(const void* entryp)
 {
-	return getHashValueDstring(((dstring_entry*)entryp)->key);
+	if(((dentry*)entryp)->key_hash_value == 0)
+	{
+		((dentry*)entryp)->key_hash_value = getHashValueDstring(((dentry*)entryp)->key);
+	}
+	return ((dentry*)entryp)->key_hash_value;
 }
 
-void delete_dstring_entry(dstring_entry* entryp)
+void delete_dstring_entry(dentry* entryp, void (*value_destroyer)(void* value))
 {
 	delete_dstring(entryp->key);
-	delete_dstring(entryp->value);
+	value_destroyer(entryp->value);
 	free(entryp);
 }
