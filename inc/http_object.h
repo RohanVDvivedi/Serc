@@ -6,8 +6,7 @@
 #include<stdio.h>
 #include<ctype.h>
 
-#include<dstring.h>
-#include<hashmap.h>
+#include<dstring_hashmap.h>
 
 #include<json_serializer.h>
 
@@ -27,7 +26,6 @@ void urlToString(char* path_param_str);
 // functions to handle hashmap (dstring -> dstring) entries
 // this functions can be used on headers, parameters of the reponse and request
 void print_entry_wrapper(const void* key, const void* value, const void* addpar);
-void delete_entry_wrapper(const void* key, const void* value, const void* addpar);
 
 // serialization utility functions used by both request and response
 void serialize_parameter_entry(dstring* key, dstring* value, dstring* result);
@@ -35,20 +33,20 @@ void serialize_header_entry(dstring* key, dstring* value, dstring* result);
 
 // functions common to request and response both
 // add Header in HttpResponse 
-void addHeader(char* Key, char* Value, hashmap* headers);
-void addParameter(char* Key, char* Value, hashmap* parameters);
+void addHeader(char* Key, char* Value, dmap* headers);
+void addParameter(char* Key, char* Value, dmap* parameters);
 
 // it will remove a header, with Key if present, if a header gets deleted, 1 is returned
-int removeHeader(char* Key, hashmap* headers);
-int removeParameter(char* Key, hashmap* parameters);
+int removeHeader(char* Key, dmap* headers);
+int removeParameter(char* Key, dmap* parameters);
 
 // has header with key:value pair, returns 1 if key:value entry is present
-int hasHeader(char* Key, char* Value, hashmap* headers);
+int hasHeader(char* Key, char* Value, dmap* headers);
 
 // has header with given key, returns 1 if an entry with given key is present
-int hasHeaderWithKey(char* Key, hashmap* headers);
+int hasHeaderWithKey(char* Key, dmap* headers);
 
 // returns value of the header, for the given Key
-dstring* getHeaderValueWithKey(char* Key, hashmap* headers);
+dstring* getHeaderValueWithKey(char* Key, dmap* headers);
 
 #endif

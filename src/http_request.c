@@ -7,8 +7,8 @@ HttpRequest* getNewHttpRequest()
 	hr->method = UNIDENTIFIED;
 	hr->path = get_dstring("", 10);
 	hr->version = get_dstring("", 10);
-	hr->parameters = get_hashmap(20, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
-	hr->headers = get_hashmap(20, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
+	hr->parameters = get_dmap(20);
+	hr->headers = get_dmap(20);
 	hr->body = get_dstring("", 10);
 	return hr;
 }
@@ -518,10 +518,8 @@ void deleteHttpRequest(HttpRequest* hr)
 {
 	delete_dstring(hr->path);
 	delete_dstring(hr->version);
-	for_each_entry_in_hash(hr->parameters, delete_entry_wrapper, NULL);
-	delete_hashmap(hr->parameters);
-	for_each_entry_in_hash(hr->headers, delete_entry_wrapper, NULL);
-	delete_hashmap(hr->headers);
+	delete_dmap(hr->parameters, delete_dstring);
+	delete_dmap(hr->headers, delete_dstring);
 	delete_dstring(hr->body);
 	free(hr);
 }

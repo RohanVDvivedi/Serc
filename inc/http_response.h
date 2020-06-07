@@ -1,8 +1,7 @@
 #ifndef HTTP_RESPONSE_H
 #define HTTP_RESPONSE_H
 
-#include<dstring.h>
-#include<hashmap.h>
+#include<dstring_hashmap.h>
 
 #include<http_object.h>
 
@@ -18,7 +17,7 @@ struct HttpResponse
 
 	int status;
 
-	hashmap* headers;
+	dmap* headers;
 
 	dstring* body;
 };

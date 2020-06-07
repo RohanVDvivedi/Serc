@@ -5,7 +5,7 @@ HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = malloc(sizeof(HttpResponse));
 	hr->version = get_dstring("", 10);
-	hr->headers = get_hashmap(20, (unsigned long long int (*)(const void*))getHashValueDstring, (int (*)(const void*, const void*))compare_dstring, ELEMENTS_AS_RED_BLACK_BST);
+	hr->headers = get_dmap(20);
 	hr->body = get_dstring("", 10);
 	return hr;
 }
@@ -444,9 +444,8 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 void deleteHttpResponse(HttpResponse* hr)
 {
-	for_each_entry_in_hash(hr->headers, delete_entry_wrapper, NULL);
-	delete_hashmap(hr->headers);
-	delete_dstring(hr->body);
+	delete_dmap(hr->headers, delete_dstring);
+	delete_dstring(hr->body, delete_dstring);
 	free(hr);
 }
 

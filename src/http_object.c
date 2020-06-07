@@ -121,12 +121,6 @@ void print_entry_wrapper(const void* key, const void* value, const void* addpar)
 	printf("]\n");
 }
 
-void delete_entry_wrapper(const void* key, const void* value, const void* addpar)
-{
-	delete_dstring((dstring*)key);
-	delete_dstring((dstring*)value);
-}
-
 // Methods common to both Request and response
 void addHeader(char* Key, char* Value, hashmap* headers)
 {

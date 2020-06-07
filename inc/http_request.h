@@ -1,8 +1,7 @@
 #ifndef HTTP_REQUEST_H
 #define HTTP_REQUEST_H
 
-#include<dstring.h>
-#include<hashmap.h>
+#include<dstring_hashmap.h>
 
 #include<http_object.h>
 
@@ -20,9 +19,9 @@ struct HttpRequest
 
 	dstring* version;
 
-	hashmap* parameters;
+	dmap* parameters;
 
-	hashmap* headers;
+	dmap* headers;
 
 	dstring* body;
 };
