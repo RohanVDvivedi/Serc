@@ -16,15 +16,35 @@ void* find_equals_in_dmap(dmap* dmapp, dstring* key)
 	return (dent != NULL) ? dent->value : NULL;
 }
 
+void* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
+{
+	dstring* key_dstr = get_dstring(key, 0);
+	void* value = find_equals_in_dmap(dmapp, key_dstr);
+	delete_dstring(key_dstr);
+	return value;
+}
+
 int insert_in_dmap(dmap* dmapp, dstring* key, void* value)
 {
 	remove_from_dmap(dmapp, key);
-	return insert_in_hashmap(&(dmapp->map), get_dentry(key, value));
+	dentry* dent = get_dentry(key, value);
+	int inserted = insert_in_hashmap(&(dmapp->map), dent);
+	if(!inserted)
+	{
+		free(dent);
+	}
+	return inserted;
 }
 
 int insert_in_dmap_cstr(dmap* dmapp, char* key, void* value)
 {
-	return insert_in_dmap(dmapp, get_dstring(key, 10), value);
+	dstring* key_dstr = get_dstring(key, 10);
+	int inserted = insert_in_dmap(dmapp, key_dstr, value);
+	if(!inserted)
+	{
+		delete_dstring(key_dstr);
+	}
+	return inserted;
 }
 
 int remove_from_dmap(dmap* dmapp, dstring* key)

@@ -19,6 +19,8 @@ dmap* get_dmap(unsigned long long int size, void (*value_destroyer)(void* value)
 
 void* find_equals_in_dmap(dmap* dmapp, dstring* key);
 
+void* find_equals_in_dmap_cstr(dmap* dmapp, char* key);
+
 int insert_in_dmap(dmap* dmapp, dstring* key, void* value);
 
 int insert_in_dmap_cstr(dmap* dmapp, char* key, void* value);
