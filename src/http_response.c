@@ -5,7 +5,7 @@ HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = malloc(sizeof(HttpResponse));
 	hr->version = get_dstring("", 10);
-	hr->headers = get_dmap(20);
+	hr->headers = get_dmap(20, (void(*)(void*))delete_dstring);
 	hr->body = get_dstring("", 10);
 	return hr;
 }
@@ -444,7 +444,7 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 void deleteHttpResponse(HttpResponse* hr)
 {
-	delete_dmap(hr->headers, (void(*)(void* value))delete_dstring);
+	delete_dmap(hr->headers);
 	delete_dstring(hr->body);
 	free(hr);
 }

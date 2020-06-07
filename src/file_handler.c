@@ -27,7 +27,7 @@ static void delete_file_cache_component(file_cache_component* fcc_component_p)
 file_content_cache* get_file_content_cache()
 {
 	file_content_cache* fcc_p = (file_content_cache*) malloc(sizeof(file_content_cache));
-	fcc_p->file_content_cache_hashmap = get_dmap(30);
+	fcc_p->file_content_cache_hashmap = get_dmap(30, (void(*)(void*))delete_file_cache_component);
 	fcc_p->file_content_cache_hashmap_rwlock = get_rwlock();
 	return fcc_p;
 }
@@ -152,14 +152,14 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 void clear_file_content_cache(file_content_cache* fcc_p)
 {
 	write_lock(fcc_p->file_content_cache_hashmap_rwlock);
-	remove_all_from_dmap(fcc_p->file_content_cache_hashmap, (void (*)(void *))delete_file_cache_component);
+	remove_all_from_dmap(fcc_p->file_content_cache_hashmap);
 	write_unlock(fcc_p->file_content_cache_hashmap_rwlock);
 }
 
 void delete_file_content_cache(file_content_cache* fcc_p)
 {
 	clear_file_content_cache(fcc_p);
-	delete_dmap(fcc_p->file_content_cache_hashmap, (void (*)(void *))delete_file_cache_component);
+	delete_dmap(fcc_p->file_content_cache_hashmap);
 	delete_rwlock(fcc_p->file_content_cache_hashmap_rwlock);
 	free(fcc_p);
 }

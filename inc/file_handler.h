@@ -13,7 +13,7 @@
 typedef struct file_content_cache file_content_cache;
 struct file_content_cache
 {
-	hashmap* file_content_cache_hashmap;
+	dmap* file_content_cache_hashmap;
 	rwlock* file_content_cache_hashmap_rwlock;
 };
 

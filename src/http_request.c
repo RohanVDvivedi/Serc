@@ -7,8 +7,8 @@ HttpRequest* getNewHttpRequest()
 	hr->method = UNIDENTIFIED;
 	hr->path = get_dstring("", 10);
 	hr->version = get_dstring("", 10);
-	hr->parameters = get_dmap(20);
-	hr->headers = get_dmap(20);
+	hr->parameters = get_dmap(20, (void(*)(void*))delete_dstring);
+	hr->headers = get_dmap(20, (void(*)(void*))delete_dstring);
 	hr->body = get_dstring("", 10);
 	return hr;
 }
@@ -517,8 +517,8 @@ void deleteHttpRequest(HttpRequest* hr)
 {
 	delete_dstring(hr->path);
 	delete_dstring(hr->version);
-	delete_dmap(hr->parameters, (void (*)(void*))delete_dstring);
-	delete_dmap(hr->headers, (void (*)(void*))delete_dstring);
+	delete_dmap(hr->parameters);
+	delete_dmap(hr->headers);
 	delete_dstring(hr->body);
 	free(hr);
 }
@@ -552,7 +552,7 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 		}
 		append_to_dstring(result, temp);
 	}
-	if(hr->parameters->occupancy > 0)
+	if(hr->parameters->map.occupancy > 0)
 	{
 		append_to_dstring(result, "?");
 		for_each_in_dmap(hr->parameters, (void (*)(dstring *, void *, const void *))serialize_parameter_entry, result);
