@@ -10,6 +10,10 @@ dmap* get_dmap(unsigned long long int size, void (*value_destroyer)(void* value)
 
 void* find_equals_in_dmap(dmap* dmapp, dstring* key)
 {
+	if(key == NULL)
+	{
+		return NULL;
+	}
 	dentry temp_dentry;
 	temp_dentry.key = key;
 	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &temp_dentry);
@@ -18,6 +22,10 @@ void* find_equals_in_dmap(dmap* dmapp, dstring* key)
 
 void* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
 {
+	if(key == NULL)
+	{
+		return NULL;
+	}
 	dstring* key_dstr = get_dstring(key, 0);
 	void* value = find_equals_in_dmap(dmapp, key_dstr);
 	delete_dstring(key_dstr);
@@ -26,12 +34,20 @@ void* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
 
 int insert_in_dmap(dmap* dmapp, dstring* key, void* value)
 {
-	remove_from_dmap(dmapp, key);
-	dentry* dent = get_dentry(key, value);
-	int inserted = insert_in_hashmap(&(dmapp->map), dent);
-	if(!inserted)
+	if(key == NULL)
 	{
-		free(dent);
+		return 0;
+	}
+	remove_from_dmap(dmapp, key);
+	int inserted = 1;
+	if(value != NULL)
+	{
+		dentry* dent = get_dentry(key, value);
+		inserted = insert_in_hashmap(&(dmapp->map), dent);
+		if(!inserted)
+		{
+			free(dent);
+		}
 	}
 	return inserted;
 }

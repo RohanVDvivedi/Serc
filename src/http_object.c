@@ -133,7 +133,7 @@ void addHeader(char* Key, char* Value, dmap* headers)
 	dstring* value = get_dstring(Value, 10);
 	toLowercase(key);
 	toLowercase(value);
-	insert_entry_in_hash(headers, key, value);
+	insert_in_dmap(headers, key, value);
 }
 
 void addParameter(char* Key, char* Value, dmap* parameters)
@@ -145,36 +145,30 @@ void addParameter(char* Key, char* Value, dmap* parameters)
 	removeParameter(Key, parameters);
 	dstring* key = get_dstring(Key, 10);
 	dstring* value = get_dstring(Value, 10);
-	insert_entry_in_hash(parameters, key, value);
+	insert_in_dmap(parameters, key, value);
 }
 
 int removeHeader(char* Key, dmap* headers)
 {
+	if(Key == NULL)
+	{
+		return 1;
+	}
 	dstring* key = get_dstring(Key, 10);
 	toLowercase(key);
-	dstring* returnKey = NULL;
-	dstring* returnValue = NULL;
-	int was_deleted = delete_entry_from_hash(headers, key, (const void**)&returnKey, (const void**)&returnValue);
-	if(was_deleted == 1)
-	{
-		delete_dstring(returnKey);
-		delete_dstring(returnValue);
-	}
+	int was_deleted = remove_from_dmap(headers, key);
 	delete_dstring(key);
 	return was_deleted;
 }
 
 int removeParameter(char* Key, dmap* parameters)
 {
-	dstring* key = get_dstring(Key, 10);
-	dstring* returnKey = NULL;
-	dstring* returnValue = NULL;
-	int was_deleted = delete_entry_from_hash(parameters, key, (const void**)&returnKey, (const void**)&returnValue);
-	if(was_deleted == 1)
+	if(Key == NULL)
 	{
-		delete_dstring(returnKey);
-		delete_dstring(returnValue);
+		return 1;
 	}
+	dstring* key = get_dstring(Key, 10);
+	int was_deleted = remove_from_dmap(parameters, key);
 	delete_dstring(key);
 	return was_deleted;
 }
@@ -188,7 +182,7 @@ int hasHeader(char* Key, char* Value, dmap* headers)
 	dstring* key = get_dstring(Key, 10);
 	toLowercase(key);
 	dstring* value = get_dstring(Value, 10);
-	dstring* value_test = (dstring*) find_value_from_hash(headers, key);
+	dstring* value_test = (dstring*) find_equals_in_dmap(headers, key);
 	int result = 0;
 	if(value_test != NULL && compare_dstring(value, value_test) == 0)
 	{
@@ -208,7 +202,7 @@ int hasHeaderWithKey(char* Key, dmap* headers)
 
 	dstring* key = get_dstring(Key, 10);
 	toLowercase(key);
-	dstring* value = (dstring*) find_value_from_hash(headers, key);
+	dstring* value = (dstring*) find_equals_in_dmap(headers, key);
 	delete_dstring(key);
 
 	if(value != NULL)
@@ -230,7 +224,7 @@ dstring* getHeaderValueWithKey(char* Key, dmap* headers)
 
 	dstring* key = get_dstring(Key, 10);
 	toLowercase(key);
-	dstring* value = (dstring*) find_value_from_hash(headers, key);
+	dstring* value = (dstring*) find_equals_in_dmap(headers, key);
 	delete_dstring(key);
 
 	return value;
