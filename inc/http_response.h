@@ -9,7 +9,7 @@
 #include<http_status.h>
 #include<http_parse_state.h>
 
-#include<in_memory_zlib_compression_wrapper.h>
+#include<zlib_compression_wrapper.h>
 
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse

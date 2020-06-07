@@ -9,7 +9,7 @@
 #include<http_method.h>
 #include<http_parse_state.h>
 
-#include<in_memory_zlib_compression_wrapper.h>
+#include<zlib_compression_wrapper.h>
 
 typedef struct HttpRequest HttpRequest;
 struct HttpRequest
