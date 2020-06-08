@@ -15,15 +15,15 @@ struct HttpRequest
 {
 	HttpMethod method;
 
-	dstring* path;
+	dstring path;
 
-	dstring* version;
+	dstring version;
 
 	dmap parameters;
 
 	dmap headers;
 
-	dstring* body;
+	dstring body;
 };
 
 // to create HttpRequest Object

@@ -13,13 +13,13 @@
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse
 {
-	dstring* version;
+	dstring version;
 
 	int status;
 
 	dmap headers;
 
-	dstring* body;
+	dstring body;
 };
 
 // to create HttpResponse Object

@@ -4,9 +4,9 @@
 HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = malloc(sizeof(HttpResponse));
-	hr->version = get_dstring("", 10);
+	init_dstring(&(hr->version), "", 10);
 	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
-	hr->body = get_dstring("", 10);
+	init_dstring(&(hr->body), "", 10);
 	return hr;
 }
 
@@ -23,7 +23,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
 		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((*(partialDstring)), temp, 1);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(dstr, temp, 1);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((dstr), temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
 		{
@@ -48,7 +48,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				}
 				else
 				{
-					APPEND_CURRENT_CHARACTER_TO(hr->version)
+					APPEND_CURRENT_CHARACTER_TO(&(hr->version))
 					GOTO_NEXT_CHARACTER()
 				}
 				break;
@@ -224,14 +224,14 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				{
 					long long int body_length = -1;
 					sscanf(content_length->cstring, "%lld", &body_length);
-					if(body_length >= 0 && body_length == hr->body->bytes_occupied)
+					if(body_length >= 0 && body_length == hr->body.bytes_occupied)
 					{
-						APPEND_CURRENT_CHARACTER_TO(hr->body)
+						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 						*Rstate = BODY_COMPLETE;
 					}
 					else
 					{
-						APPEND_CURRENT_CHARACTER_TO(hr->body)
+						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 						GOTO_NEXT_CHARACTER()
 					}
 				}
@@ -290,7 +290,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				}
 				else
 				{
-					APPEND_CURRENT_CHARACTER_TO(hr->body)
+					APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 					(*partialDstring)->state_level--;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -352,13 +352,13 @@ void serializeResponse(dstring* result, HttpResponse* hr)
 	append_to_dstring(result, getHttpResponseStatus(hr->status));
 	for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
-	concatenate_dstring(result, hr->body);
+	concatenate_dstring(result, &(hr->body));
 }
 
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[3000];
-	sprintf(ptemp, "%llu", hrp->body->bytes_occupied-1);
+	sprintf(ptemp, "%llu", hrp->body.bytes_occupied-1);
 	addHeader("content-length", ptemp, &(hrp->headers));
 	addHeader("server", "serc0", &(hrp->headers));
 }
@@ -366,7 +366,7 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
 {
 	addHeader("content-type", "application/json", &(hrp->headers));
-	serialize_json(hrp->body, node_p);
+	serialize_json(&(hrp->body), node_p);
 }
 
 void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
@@ -374,13 +374,13 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 	// what will you do with compression of the response further more, 
 	// datalink layer frame size only is around 1500 bytes
 	// also do not compress, if it is already compressed
-	if(hrp->body->bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", &(hrp->headers)))
+	if(hrp->body.bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", &(hrp->headers)))
 	{
 		addHeader("content-encoding", "identity", &(hrp->headers));
 		return;
 	}
 
-	int is_compressed = compress_in_memory(hrp->body, compr_type);
+	int is_compressed = compress_in_memory(&(hrp->body), compr_type);
 
 	// we will not add headers if the response body was not compressed
 	if(!is_compressed)
@@ -412,7 +412,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 
 void uncompressHttpResponseBody(HttpResponse* hrp)
 {
-	if(hrp->body->bytes_occupied <= 1)
+	if(hrp->body.bytes_occupied <= 1)
 	{
 		return;
 	}
@@ -439,13 +439,14 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 		compr_type = GZIP;
 	}else{return ;}
 
-	uncompress_in_memory(hrp->body, compr_type);
+	uncompress_in_memory(&(hrp->body), compr_type);
 }
 
 void deleteHttpResponse(HttpResponse* hr)
 {
+	deinit_dstring(&(hr->version));
 	deinitialize_dmap(&(hr->headers));
-	delete_dstring(hr->body);
+	deinit_dstring(&(hr->body));
 	free(hr);
 }
 
@@ -453,7 +454,7 @@ void printResponse(HttpResponse* hr)
 {
 	printf("status : %d\n", hr->status);
 	printf("headers : \n"); for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
-	printf("body : "); display_dstring(hr->body); printf("\n\n");
+	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
 }
 
 void redirectTo(int with_status, char* new_path, HttpResponse* hrp)

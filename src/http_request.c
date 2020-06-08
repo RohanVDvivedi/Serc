@@ -5,11 +5,11 @@ HttpRequest* getNewHttpRequest()
 {
 	HttpRequest* hr = malloc(sizeof(HttpRequest));
 	hr->method = UNIDENTIFIED;
-	hr->path = get_dstring("", 10);
-	hr->version = get_dstring("", 10);
+	init_dstring(&(hr->path), "", 10);
+	init_dstring(&(hr->version), "", 10);
 	initialize_dmap(&(hr->parameters), 3, (void(*)(void*))delete_dstring);
 	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
-	hr->body = get_dstring("", 10);
+	init_dstring(&(hr->body), "", 10);
 	return hr;
 }
 
@@ -26,7 +26,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
 		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
 		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((*(partialDstring)), temp, 1);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(dstr, temp, 1);
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((dstr), temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(*Rstate)
 		{
@@ -80,7 +80,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 			{
 				if(CURRENT_CHARACTER() != ' ' && CURRENT_CHARACTER() != '?')
 				{
-					APPEND_CURRENT_CHARACTER_TO(hr->path)
+					APPEND_CURRENT_CHARACTER_TO(&(hr->path))
 					GOTO_NEXT_CHARACTER()
 				}
 				else if(CURRENT_CHARACTER() == ' ')
@@ -163,7 +163,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 				}
 				else
 				{
-					APPEND_CURRENT_CHARACTER_TO(hr->version)
+					APPEND_CURRENT_CHARACTER_TO(&(hr->version))
 					GOTO_NEXT_CHARACTER()
 				}
 				break;
@@ -291,14 +291,14 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 				{
 					long long int body_length = -1;
 					sscanf(content_length->cstring, "%lld", &body_length);
-					if(body_length >= 0 && body_length == hr->body->bytes_occupied)
+					if(body_length >= 0 && body_length == hr->body.bytes_occupied)
 					{
-						APPEND_CURRENT_CHARACTER_TO(hr->body)
+						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 						*Rstate = BODY_COMPLETE;
 					}
 					else
 					{
-						APPEND_CURRENT_CHARACTER_TO(hr->body)
+						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 						GOTO_NEXT_CHARACTER()
 					}
 				}
@@ -357,7 +357,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 				}
 				else
 				{
-					APPEND_CURRENT_CHARACTER_TO(hr->body)
+					APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 					(*partialDstring)->state_level--;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -422,7 +422,7 @@ void serializeRequest(dstring* result, HttpRequest* hr)
 	append_to_dstring(result, " HTTP/1.1\r\n");
 	for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
-	concatenate_dstring(result, hr->body);
+	concatenate_dstring(result, &(hr->body));
 }
 
 void setServerDefaultHeadersInRequest(HttpRequest* hrq)
@@ -431,7 +431,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{
-		sprintf(ptemp, "%llu", hrq->body->bytes_occupied-1);
+		sprintf(ptemp, "%llu", hrq->body.bytes_occupied-1);
 		addHeader("content-length", ptemp, &(hrq->headers));
 	}
 	addHeader("accept-encoding", "gzip, deflate, identity", &(hrq->headers));
@@ -440,7 +440,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
 {
 	addHeader("content-type", "application/json", &(hrq->headers));
-	serialize_json(hrq->body, node_p);
+	serialize_json(&(hrq->body), node_p);
 }
 
 void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
@@ -448,12 +448,12 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 	// what will you do with compression of the request further more, 
 	// datalink layer frame size only is around 1500 bytes
 	// also do not compress, if it is already compressed, or it is not needed if the method is GET
-	if(hrq->body->bytes_occupied <= 100 || hrq->method == GET || hasHeaderWithKey("content-encoding", &(hrq->headers)))
+	if(hrq->body.bytes_occupied <= 100 || hrq->method == GET || hasHeaderWithKey("content-encoding", &(hrq->headers)))
 	{
 		return;
 	}
 
-	int is_compressed = compress_in_memory(hrq->body, compr_type);
+	int is_compressed = compress_in_memory(&(hrq->body), compr_type);
 	if(is_compressed == 0)
 	{
 		// this means error, so we do not send any headers about compression
@@ -483,7 +483,7 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 
 void uncompressHttpRequestBody(HttpRequest* hrq)
 {
-	if(hrq->method == GET || hrq->body->bytes_occupied <= 1)
+	if(hrq->method == GET || hrq->body.bytes_occupied <= 1)
 	{
 		return;
 	}
@@ -510,44 +510,44 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 		compr_type = GZIP;
 	}else{return ;}
 
-	uncompress_in_memory(hrq->body, compr_type);
+	uncompress_in_memory(&(hrq->body), compr_type);
 }
 
 void deleteHttpRequest(HttpRequest* hr)
 {
-	delete_dstring(hr->path);
-	delete_dstring(hr->version);
+	deinit_dstring(&(hr->path));
+	deinit_dstring(&(hr->version));
 	deinitialize_dmap(&(hr->parameters));
 	deinitialize_dmap(&(hr->headers));
-	delete_dstring(hr->body);
+	deinit_dstring(&(hr->body));
 	free(hr);
 }
 
 void printRequest(HttpRequest* hr)
 {
 	printf("method : %s\n", serializeHttpMethod(hr->method));
-	printf("path : "); display_dstring(hr->path); printf("\n");
+	printf("path : "); display_dstring(&(hr->path)); printf("\n");
 	printf("parameters : \n"); for_each_in_dmap(&(hr->parameters), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
-	printf("version : "); display_dstring(hr->version); printf("\n");
+	printf("version : "); display_dstring(&(hr->version)); printf("\n");
 	printf("headers : \n"); for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
-	printf("body : "); display_dstring(hr->body); printf("\n\n");
+	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
 }
 
 void serializeUrl(dstring* result, HttpRequest* hr)
 {
-	for(int i=0; i<strlen(hr->path->cstring); i++)
+	for(int i=0; i<strlen(hr->path.cstring); i++)
 	{
 		char temp[10];
-		if( characterAllowedInURL(hr->path->cstring[i]) || hr->path->cstring[i]=='/')
+		if( characterAllowedInURL(hr->path.cstring[i]) || hr->path.cstring[i]=='/')
 		{
-			temp[0] = hr->path->cstring[i];
+			temp[0] = hr->path.cstring[i];
 			temp[1] = '\0';
 		}
 		else
 		{
 			temp[0] = '%';
-			temp[1] = hexToChar((hr->path->cstring[i] >> 4) & 0x0f);
-			temp[2] = hexToChar(hr->path->cstring[i] & 0x0f);
+			temp[1] = hexToChar((hr->path.cstring[i] >> 4) & 0x0f);
+			temp[2] = hexToChar(hr->path.cstring[i] & 0x0f);
 			temp[3] = '\0';
 		}
 		append_to_dstring(result, temp);
