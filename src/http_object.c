@@ -125,12 +125,10 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 void addHeader(char* Key, char* Value, dmap* headers)
 {
 	if(Key == NULL || Value == NULL)
-	{
 		return;
-	}
-	removeHeader(Key, headers);
-	dstring* key = get_dstring(Key, 10);
-	dstring* value = get_dstring(Value, 10);
+
+	dstring* key = get_dstring(Key, 0);
+	dstring* value = get_dstring(Value, 0);
 	toLowercase(key);
 	toLowercase(value);
 	insert_in_dmap(headers, key, value);
@@ -139,93 +137,94 @@ void addHeader(char* Key, char* Value, dmap* headers)
 void addParameter(char* Key, char* Value, dmap* parameters)
 {
 	if(Key == NULL || Value == NULL)
-	{
 		return;
-	}
-	removeParameter(Key, parameters);
-	dstring* key = get_dstring(Key, 10);
-	dstring* value = get_dstring(Value, 10);
+
+	dstring* key = get_dstring(Key, 0);
+	dstring* value = get_dstring(Value, 0);
 	insert_in_dmap(parameters, key, value);
 }
 
 int removeHeader(char* Key, dmap* headers)
 {
 	if(Key == NULL)
-	{
 		return 1;
-	}
-	dstring* key = get_dstring(Key, 10);
-	toLowercase(key);
-	int was_deleted = remove_from_dmap(headers, key);
-	delete_dstring(key);
-	return was_deleted;
+
+	dstring key; init_dstring(&key, Key, 0);
+	toLowercase(&key);
+
+	int res = remove_from_dmap(headers, &key);
+
+	deinit_dstring(&key);
+	return res;
 }
 
 int removeParameter(char* Key, dmap* parameters)
 {
 	if(Key == NULL)
-	{
 		return 1;
-	}
-	dstring* key = get_dstring(Key, 10);
-	int was_deleted = remove_from_dmap(parameters, key);
-	delete_dstring(key);
-	return was_deleted;
+
+	dstring key; init_dstring(&key, Key, 0);
+
+	int res = remove_from_dmap(parameters, &key);
+
+	deinit_dstring(&key);
+	return res;
 }
 
 int hasHeader(char* Key, char* Value, dmap* headers)
 {
 	if(Key == NULL || Value == NULL)
-	{
 		return 0;
-	}
-	dstring* key = get_dstring(Key, 10);
-	toLowercase(key);
-	dstring* value = get_dstring(Value, 10);
-	dstring* value_test = (dstring*) find_equals_in_dmap(headers, key);
-	int result = 0;
-	if(value_test != NULL && compare_dstring(value, value_test) == 0)
-	{
-		result = 1;
-	}
-	delete_dstring(key);
-	delete_dstring(value);
-	return result;
+
+	dstring key; init_dstring(&key, Key, 0);
+	toLowercase(&key);
+
+	dstring value; init_dstring(&value, Value, 0);
+	toLowercase(&value);
+
+	dstring* value_test = (dstring*) find_equals_in_dmap(headers, &key);
+
+	deinit_dstring(&key);
+
+	int res = 0;
+
+	if(value_test != NULL && compare_dstring(&value, value_test) == 0)
+		res = 1;
+
+	deinit_dstring(&value);
+
+	return res;
 }
 
 int hasHeaderWithKey(char* Key, dmap* headers)
 {
 	if(Key == NULL)
-	{
 		return 0;
-	}
 
-	dstring* key = get_dstring(Key, 10);
-	toLowercase(key);
-	dstring* value = (dstring*) find_equals_in_dmap(headers, key);
-	delete_dstring(key);
+	dstring key; init_dstring(&key, Key, 0);
+	toLowercase(&key);
+
+	dstring* value = (dstring*) find_equals_in_dmap(headers, &key);
+
+	deinit_dstring(&key);
 
 	if(value != NULL)
-	{
 		return 1;
-	}
 	else
-	{
 		return 0;
-	}
 }
 
 dstring* getHeaderValueWithKey(char* Key, dmap* headers)
 {
 	if(Key == NULL)
-	{
 		return NULL;
-	}
 
-	dstring* key = get_dstring(Key, 10);
-	toLowercase(key);
-	dstring* value = (dstring*) find_equals_in_dmap(headers, key);
-	delete_dstring(key);
+	dstring key; init_dstring(&key, Key, 0);
+	toLowercase(&key);
+
+	dstring* value = (dstring*) find_equals_in_dmap(headers, &key);
+
+	deinit_dstring(&key);
 
 	return value;
 }
