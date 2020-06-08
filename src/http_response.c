@@ -1,6 +1,6 @@
 #include<http_response.h>
 
-void initNewHttpResponse(HttpResponse* hr)
+void initHttpResponse(HttpResponse* hr)
 {
 	init_dstring(&(hr->version), "", 10);
 	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
