@@ -1,16 +1,13 @@
 #include<http_request.h>
 
-// create new http request object and initialized with defaults
-HttpRequest* getNewHttpRequest()
+void initHttpRequest(HttpRequest* hr)
 {
-	HttpRequest* hr = malloc(sizeof(HttpRequest));
 	hr->method = UNIDENTIFIED;
 	init_dstring(&(hr->path), "", 10);
 	init_dstring(&(hr->version), "", 10);
 	initialize_dmap(&(hr->parameters), 3, (void(*)(void*))delete_dstring);
 	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
 	init_dstring(&(hr->body), "", 10);
-	return hr;
 }
 
 // returns 0 when completed
@@ -513,14 +510,13 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 	uncompress_in_memory(&(hrq->body), compr_type);
 }
 
-void deleteHttpRequest(HttpRequest* hr)
+void deinitHttpRequest(HttpRequest* hr)
 {
 	deinit_dstring(&(hr->path));
 	deinit_dstring(&(hr->version));
 	deinitialize_dmap(&(hr->parameters));
 	deinitialize_dmap(&(hr->headers));
 	deinit_dstring(&(hr->body));
-	free(hr);
 }
 
 void printRequest(HttpRequest* hr)

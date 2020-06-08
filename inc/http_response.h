@@ -22,8 +22,8 @@ struct HttpResponse
 	dstring body;
 };
 
-// to create HttpResponse Object
-HttpResponse* getNewHttpResponse();
+// to init/create HttpResponse Object, by initializing and allocating memory for all its attributes
+void initHttpResponse(HttpResponse* hr);
 
 // parse string to populate HttpResponse
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring);
@@ -44,8 +44,8 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type);
 // uncompress HttpResponse Body
 void uncompressHttpResponseBody(HttpResponse* hrp);
 
-// delete HttpResponse and all its attributes
-void deleteHttpResponse(HttpResponse* hr);
+// release memory occupied by attributes of HttpResponse
+void deinitHttpResponse(HttpResponse* hr);
 
 // show on console a printable HttpResponse
 void printResponse(HttpResponse* hr);

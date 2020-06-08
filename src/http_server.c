@@ -28,7 +28,7 @@ void http_connection_handler(int conn_fd)
 		dstring* partialDstring = NULL;
 
 		// create a new HttpRequest Object
-		HttpRequest* hrq = getNewHttpRequest();
+		HttpRequest hrq; initHttpRequest(&hrq);
 		http_connection_handler_error error = 0;
 
 		while(1)
@@ -49,7 +49,7 @@ void http_connection_handler(int conn_fd)
 			}
 
 			// parse the RequestString to populate HttpRequest Object
-			error = parseRequest(bufferRequest, buffreadlength, hrq, &Rstate, &partialDstring);
+			error = parseRequest(bufferRequest, buffreadlength, &hrq, &Rstate, &partialDstring);
 			if(error == ERROR_OCCURRED_REQUEST_NOT_STANDARD_HTTP)
 			{
 				break;
@@ -70,28 +70,28 @@ void http_connection_handler(int conn_fd)
 		if(error == 0)
 		{
 			// create a HttpResponse Object here
-			HttpResponse* hrp = getNewHttpResponse();
+			HttpResponse hrp; initHttpResponse(&hrp);
 
-			distribute(hrq,hrp);
+			distribute(&hrq, &hrp);
 
 			// Uncomment to Debug
-			// printRequest(hrq);
-			// printResponse(hrp);
+			// printRequest(&hrq);
+			// printResponse(&hrp);
 
 			// serialize HttpResponse to send it
-			dstring* bufferResponse = get_dstring("", 10);
+			dstring bufferResponse; init_dstring(&bufferResponse, "", 10);
 
 			// sertialize the response object in tot the string
-			serializeResponse(bufferResponse, hrp);
+			serializeResponse(&bufferResponse, &hrp);
 
 			// send the data
-			send(conn_fd, bufferResponse->cstring, bufferResponse->bytes_occupied - 1, 0);
+			send(conn_fd, bufferResponse.cstring, bufferResponse.bytes_occupied - 1, 0);
 
 			// once data sent delete bufferResponse
-			delete_dstring(bufferResponse);
+			deinit_dstring(&bufferResponse);
 
 			// delete HttpResponse Object
-			deleteHttpResponse(hrp);
+			deinitHttpResponse(&hrp);
 		}
 		else
 		{
@@ -101,13 +101,13 @@ void http_connection_handler(int conn_fd)
 		}
 
 		// close the connection, after his request, if connection:close header is provided
-		if(hasHeader("connection", "close", &(hrq->headers)))
+		if(hasHeader("connection", "close", &(hrq.headers)))
 		{
 			close_connection = 1;
 		}
 
-		// delete HttpRequest Object
-		deleteHttpRequest(hrq);
+		// deinitialize HttpRequest Object
+		deinitHttpRequest(&hrq);
 	}
 }
 

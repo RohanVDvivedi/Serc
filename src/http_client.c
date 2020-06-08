@@ -75,13 +75,7 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char*
 
 HttpResponse* wait_or_get_response(job* promise, HttpRequest** hrq_p)
 {
-	HttpRequest* temp = NULL;
-	if(hrq_p == NULL)
-	{
-		hrq_p = &temp;
-	}
-	HttpResponse* hrp = (HttpResponse*) get_result_for_transaction(promise, (void**)hrq_p);
-	return hrp;
+	return (HttpResponse*) get_result_for_transaction(promise, (void**)hrq_p);
 }
 
 void shutdown_and_delete_http_client(transaction_client* http_client)
@@ -130,7 +124,8 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 	int buffreadlength = -1;
 
 	// this is the response object, where the parsed response will bw stored in
-	HttpResponse* hrp = getNewHttpResponse();
+	HttpResponse* hrp = malloc(sizeof(HttpResponse));
+	initHttpResponse(hrp);
 	http_connection_handler_error error = 0;
 
 	// the parse request state and the dstring that has been maintained to store un parsed stream
@@ -182,7 +177,8 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 	}
 	else
 	{
-		deleteHttpResponse(hrp);
+		deinitHttpResponse(hrp);
+		free(hrp);
 		return NULL;
 	}
 }

@@ -26,8 +26,8 @@ struct HttpRequest
 	dstring body;
 };
 
-// to create HttpRequest Object
-HttpRequest* getNewHttpRequest();
+// to init/create HttpRequest Object, by initializing and allocating memory for all its attributes
+void initHttpRequest(HttpRequest* hr);
 
 // parse string to populate HttpRequest
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState* state, dstring** partialDstring);
@@ -48,8 +48,8 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type);
 // uncompress http request body
 void uncompressHttpRequestBody(HttpRequest* hrq);
 
-// delete HttpRequest Object and all its attributes
-void deleteHttpRequest(HttpRequest* hr);
+// release memory occupied by attributes of HttpResponse
+void deinitHttpRequest(HttpRequest* hr);
 
 // show on console a printable HttpRequest
 void printRequest(HttpRequest* hr);

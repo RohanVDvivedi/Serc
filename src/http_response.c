@@ -1,13 +1,10 @@
 #include<http_response.h>
 
-// create new http response object and initialized with defaults
-HttpResponse* getNewHttpResponse()
+void initNewHttpResponse(HttpResponse* hr)
 {
-	HttpResponse* hr = malloc(sizeof(HttpResponse));
 	init_dstring(&(hr->version), "", 10);
 	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
 	init_dstring(&(hr->body), "", 10);
-	return hr;
 }
 
 // returns 0 when completed
@@ -442,12 +439,11 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 	uncompress_in_memory(&(hrp->body), compr_type);
 }
 
-void deleteHttpResponse(HttpResponse* hr)
+void deinitHttpResponse(HttpResponse* hr)
 {
 	deinit_dstring(&(hr->version));
 	deinitialize_dmap(&(hr->headers));
 	deinit_dstring(&(hr->body));
-	free(hr);
 }
 
 void printResponse(HttpResponse* hr)

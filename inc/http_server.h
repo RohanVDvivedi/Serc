@@ -12,7 +12,7 @@
 #include<http_response.h>
 #include<distributer.h>
 
-#define buffersize 100
+#define buffersize 1024
 
 // if you want to start multiple servers, in the same application
 // you must start all of them in the same thread
