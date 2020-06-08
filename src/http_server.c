@@ -101,7 +101,7 @@ void http_connection_handler(int conn_fd)
 		}
 
 		// close the connection, after his request, if connection:close header is provided
-		if(hasHeader("connection", "close", hrq->headers))
+		if(hasHeader("connection", "close", &(hrq->headers)))
 		{
 			close_connection = 1;
 		}

@@ -15,7 +15,7 @@ struct dmap
 	void (*value_destroyer)(void* value);		// destructor for the void* value
 };
 
-dmap* get_dmap(unsigned long long int size, void (*value_destroyer)(void* value));
+void initialize_dmap(dmap* dmapp, unsigned long long int size, void (*value_destroyer)(void* value));
 
 void* find_equals_in_dmap(dmap* dmapp, dstring* key);
 
@@ -31,6 +31,6 @@ void remove_all_from_dmap(dmap* dmapp);
 
 void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, void* value, const void* additional_params), const void* additional_params);
 
-void delete_dmap(dmap* dmapp);
+void deinitialize_dmap(dmap* dmapp);
 
 #endif

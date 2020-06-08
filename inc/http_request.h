@@ -19,9 +19,9 @@ struct HttpRequest
 
 	dstring* version;
 
-	dmap* parameters;
+	dmap parameters;
 
-	dmap* headers;
+	dmap headers;
 
 	dstring* body;
 };

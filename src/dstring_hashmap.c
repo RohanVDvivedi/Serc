@@ -1,11 +1,9 @@
 #include<dstring_hashmap.h>
 
-dmap* get_dmap(unsigned long long int size, void (*value_destroyer)(void* value))
+void initialize_dmap(dmap* dmapp, unsigned long long int size, void (*value_destroyer)(void* value))
 {
-	dmap* dmapp = malloc(sizeof(dmap));
 	initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry, 0);
 	dmapp->value_destroyer = value_destroyer;
-	return dmapp;
 }
 
 void* find_equals_in_dmap(dmap* dmapp, dstring* key)
@@ -152,9 +150,8 @@ void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, void* value, 
 	deinitialize_queue(&elements_to_delete);
 }
 
-void delete_dmap(dmap* dmapp)
+void deinitialize_dmap(dmap* dmapp)
 {
 	remove_all_from_dmap(dmapp);
 	deinitialize_hashmap(&(dmapp->map));
-	free(dmapp);
 }

@@ -5,7 +5,7 @@ HttpResponse* getNewHttpResponse()
 {
 	HttpResponse* hr = malloc(sizeof(HttpResponse));
 	hr->version = get_dstring("", 10);
-	hr->headers = get_dmap(3, (void(*)(void*))delete_dstring);
+	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
 	hr->body = get_dstring("", 10);
 	return hr;
 }
@@ -136,7 +136,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
-					insert_in_dmap(hr->headers, key, (*(partialDstring)));
+					insert_in_dmap(&(hr->headers), key, (*(partialDstring)));
 					*Rstate = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -193,7 +193,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				if(CURRENT_CHARACTER() == '\n')
 				{
 					long long int body_length = -1;
-					dstring* content_length = getHeaderValueWithKey("content-length", hr->headers);
+					dstring* content_length = getHeaderValueWithKey("content-length", &(hr->headers));
 					if(content_length != NULL)
 					{
 						sscanf(content_length->cstring, "%lld", &body_length);
@@ -218,8 +218,8 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			}
 			case IN_BODY :
 			{
-				dstring* content_length = getHeaderValueWithKey("content-length", hr->headers);
-				dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", hr->headers);
+				dstring* content_length = getHeaderValueWithKey("content-length", &hr->headers);
+				dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", &hr->headers);
 				if(content_length != NULL)
 				{
 					long long int body_length = -1;
@@ -350,7 +350,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
 	append_to_dstring(result, getHttpResponseStatus(hr->status));
-	for_each_in_dmap(hr->headers, (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
+	for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, hr->body);
 }
@@ -359,13 +359,13 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[3000];
 	sprintf(ptemp, "%llu", hrp->body->bytes_occupied-1);
-	addHeader("content-length", ptemp, hrp->headers);
-	addHeader("server", "serc0", hrp->headers);
+	addHeader("content-length", ptemp, &(hrp->headers));
+	addHeader("server", "serc0", &(hrp->headers));
 }
 
 void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
 {
-	addHeader("content-type", "application/json", hrp->headers);
+	addHeader("content-type", "application/json", &(hrp->headers));
 	serialize_json(hrp->body, node_p);
 }
 
@@ -374,9 +374,9 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 	// what will you do with compression of the response further more, 
 	// datalink layer frame size only is around 1500 bytes
 	// also do not compress, if it is already compressed
-	if(hrp->body->bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", hrp->headers))
+	if(hrp->body->bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", &(hrp->headers)))
 	{
-		addHeader("content-encoding", "identity", hrp->headers);
+		addHeader("content-encoding", "identity", &(hrp->headers));
 		return;
 	}
 
@@ -393,19 +393,19 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 	{
 		case DEFLATE :
 		{
-			addHeader("content-encoding", "deflate", hrp->headers);	break;
+			addHeader("content-encoding", "deflate", &(hrp->headers));	break;
 		}
 		case GZIP :
 		{
-			addHeader("content-encoding", "gzip",    hrp->headers);	break;
+			addHeader("content-encoding", "gzip",    &(hrp->headers));	break;
 		}
 		case BROTLI :
 		{
-			addHeader("content-encoding", "br",      hrp->headers);	break;
+			addHeader("content-encoding", "br",      &(hrp->headers));	break;
 		}
 		case IDENTITY :
 		{
-			addHeader("content-encoding", "identity", hrp->headers); break;
+			addHeader("content-encoding", "identity", &(hrp->headers)); break;
 		}
 	}
 }
@@ -418,8 +418,8 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 	}
 
 	// we try to figure out the compression from inspecting these headers
-	dstring* content_encoding = getHeaderValueWithKey("content-encoding", hrp->headers);
-	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", hrp->headers);
+	dstring* content_encoding = getHeaderValueWithKey("content-encoding", &(hrp->headers));
+	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", &(hrp->headers));
 
 	compression_type compr_type;
 
@@ -444,7 +444,7 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 void deleteHttpResponse(HttpResponse* hr)
 {
-	delete_dmap(hr->headers);
+	deinitialize_dmap(&(hr->headers));
 	delete_dstring(hr->body);
 	free(hr);
 }
@@ -452,7 +452,7 @@ void deleteHttpResponse(HttpResponse* hr)
 void printResponse(HttpResponse* hr)
 {
 	printf("status : %d\n", hr->status);
-	printf("headers : \n"); for_each_in_dmap(hr->headers, (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
+	printf("headers : \n"); for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
 	printf("body : "); display_dstring(hr->body); printf("\n\n");
 }
 
@@ -467,5 +467,5 @@ void redirectTo(int with_status, char* new_path, HttpResponse* hrp)
 	{
 		hrp->status = 303;
 	}
-	addHeader("Location", new_path, hrp->headers);
+	addHeader("Location", new_path, &(hrp->headers));
 }

@@ -27,7 +27,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 			// and set tha status to 200
 			if(extension->cstring[0] != '\0')
     		{
-    			addHeader("content-type", get_content_type_from_file_extension(extension->cstring), hrp->headers);
+    			addHeader("content-type", get_content_type_from_file_extension(extension->cstring), &(hrp->headers));
     		}
     		hrp->status = 200;
     	}

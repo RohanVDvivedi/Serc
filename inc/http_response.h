@@ -17,7 +17,7 @@ struct HttpResponse
 
 	int status;
 
-	dmap* headers;
+	dmap headers;
 
 	dstring* body;
 };

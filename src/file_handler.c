@@ -6,29 +6,29 @@ typedef struct file_cache_component file_cache_component;
 struct file_cache_component
 {
 	dstring* file_content;
-	rwlock* file_content_rwlock;
+	rwlock file_content_rwlock;
 };
 
 static file_cache_component* get_file_cache_component()
 {
 	file_cache_component* fcc_component_p = (file_cache_component*)malloc(sizeof(file_cache_component));
 	fcc_component_p->file_content = get_dstring("", 10);
-	fcc_component_p->file_content_rwlock = get_rwlock();
+	initialize_rwlock(&(fcc_component_p->file_content_rwlock));
 	return fcc_component_p;
 }
 
 static void delete_file_cache_component(file_cache_component* fcc_component_p)
 {
 	delete_dstring(fcc_component_p->file_content);
-	delete_rwlock(fcc_component_p->file_content_rwlock);
+	deinitialize_rwlock(&(fcc_component_p->file_content_rwlock));
 	free(fcc_component_p);
 }
 
 file_content_cache* get_file_content_cache()
 {
 	file_content_cache* fcc_p = (file_content_cache*) malloc(sizeof(file_content_cache));
-	fcc_p->file_content_cache_hashmap = get_dmap(30, (void(*)(void*))delete_file_cache_component);
-	fcc_p->file_content_cache_hashmap_rwlock = get_rwlock();
+	initialize_dmap(&(fcc_p->file_content_cache_hashmap), 30, (void(*)(void*))delete_file_cache_component);
+	initialize_rwlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 	return fcc_p;
 }
 
@@ -60,20 +60,20 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	// cache hit case ---->>>
 
 	// find the file from the cache, once the file has been requested from the server it gets cached, in page cache
-	read_lock(fcc_p->file_content_cache_hashmap_rwlock);
-	file_content_from_cache = (file_cache_component*)(find_equals_in_dmap(fcc_p->file_content_cache_hashmap, file_path));
+	read_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
+	file_content_from_cache = (file_cache_component*)(find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), file_path));
 	// if cache is hit, we read from cache itself
 	if(file_content_from_cache != NULL)
 	{
-		read_lock(file_content_from_cache->file_content_rwlock);
-		read_unlock(fcc_p->file_content_cache_hashmap_rwlock);
+		read_lock(&(file_content_from_cache->file_content_rwlock));
+		read_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 		concatenate_dstring(file_contents_result, file_content_from_cache->file_content);
-		read_unlock(file_content_from_cache->file_content_rwlock);
+		read_unlock(&(file_content_from_cache->file_content_rwlock));
 		return 0;
 	}
 	else
 	{
-		read_unlock(fcc_p->file_content_cache_hashmap_rwlock);
+		read_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 	}
 
 	// cache hit case <<<----
@@ -98,17 +98,17 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	int file_content_from_cache_is_locked_by_this_thread = 0;
 
 	// write newly built file cache component to file cache
-	write_lock(fcc_p->file_content_cache_hashmap_rwlock);
-	file_content_from_cache = (file_cache_component*)find_equals_in_dmap(fcc_p->file_content_cache_hashmap, file_path);
+	write_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
+	file_content_from_cache = (file_cache_component*)find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), file_path);
 	if(file_content_from_cache == NULL)
 	{
 		// insert the cache entry, so we do not miss the cache next time
 		file_content_from_cache = get_file_cache_component();
-		write_lock(file_content_from_cache->file_content_rwlock);
-		insert_in_dmap_cstr(fcc_p->file_content_cache_hashmap, file_path->cstring, file_content_from_cache);
+		write_lock(&(file_content_from_cache->file_content_rwlock));
+		insert_in_dmap_cstr(&(fcc_p->file_content_cache_hashmap), file_path->cstring, file_content_from_cache);
 		file_content_from_cache_is_locked_by_this_thread = 1;
 	}
-	write_unlock(fcc_p->file_content_cache_hashmap_rwlock);
+	write_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 
 	// if we cache miss, we need to go to disk, we go to disk only if we confirm that the file is present
 	if(file_content_from_cache_is_locked_by_this_thread == 1)
@@ -132,15 +132,15 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 
 		fclose(file);
 
-		write_unlock(file_content_from_cache->file_content_rwlock);
+		write_unlock(&(file_content_from_cache->file_content_rwlock));
 	}
 
 	// if cache has been updated, we read from the cache variable
 	if(file_content_from_cache != NULL)
 	{
-		read_lock(file_content_from_cache->file_content_rwlock);
+		read_lock(&(file_content_from_cache->file_content_rwlock));
 		concatenate_dstring(file_contents_result, file_content_from_cache->file_content);
-		read_unlock(file_content_from_cache->file_content_rwlock);
+		read_unlock(&(file_content_from_cache->file_content_rwlock));
 		return 0;
 	}
 
@@ -151,16 +151,16 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 
 void clear_file_content_cache(file_content_cache* fcc_p)
 {
-	write_lock(fcc_p->file_content_cache_hashmap_rwlock);
-	remove_all_from_dmap(fcc_p->file_content_cache_hashmap);
-	write_unlock(fcc_p->file_content_cache_hashmap_rwlock);
+	write_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
+	remove_all_from_dmap(&(fcc_p->file_content_cache_hashmap));
+	write_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 }
 
 void delete_file_content_cache(file_content_cache* fcc_p)
 {
 	clear_file_content_cache(fcc_p);
-	delete_dmap(fcc_p->file_content_cache_hashmap);
-	delete_rwlock(fcc_p->file_content_cache_hashmap_rwlock);
+	deinitialize_dmap(&(fcc_p->file_content_cache_hashmap));
+	deinitialize_rwlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 	free(fcc_p);
 }
 

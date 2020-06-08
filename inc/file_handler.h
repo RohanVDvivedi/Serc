@@ -13,8 +13,8 @@
 typedef struct file_content_cache file_content_cache;
 struct file_content_cache
 {
-	dmap* file_content_cache_hashmap;
-	rwlock* file_content_cache_hashmap_rwlock;
+	dmap file_content_cache_hashmap;
+	rwlock file_content_cache_hashmap_rwlock;
 };
 
 // this will initialize the file cache
