@@ -15,7 +15,7 @@ struct dmap
 	void (*value_destroyer)(void* value);		// destructor for the void* value
 };
 
-void initialize_dmap(dmap* dmapp, unsigned long long int size, void (*value_destroyer)(void* value));
+void initialize_dmap(dmap* dmapp, unsigned int size, void (*value_destroyer)(void* value));
 
 void* find_equals_in_dmap(dmap* dmapp, dstring* key);
 

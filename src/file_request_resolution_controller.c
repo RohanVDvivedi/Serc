@@ -43,7 +43,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 
 char* get_content_type_from_file_extension(char* extension)
 {
-	unsigned long long int ext_hash = getHashValue(extension);
+	unsigned int ext_hash = getHashValue(extension);
 	switch(ext_hash)
 	{
 		case 20037 :

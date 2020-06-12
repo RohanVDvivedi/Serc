@@ -1,6 +1,6 @@
 #include<http_client.h>
 
-transaction_client* get_http_client(char* url_string, char* port_string, unsigned long long int connection_count)
+transaction_client* get_http_client(char* url_string, char* port_string, unsigned int connection_count)
 {
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(hints));

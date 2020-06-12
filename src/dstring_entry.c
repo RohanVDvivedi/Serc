@@ -14,7 +14,7 @@ int key_compare_dentry(const void* entry1, const void* entry2)
 	return compare_dstring(((dentry*)entry1)->key, ((dentry*)entry2)->key);
 }
 
-unsigned long long int key_hash_dentry(const void* entryp)
+unsigned int key_hash_dentry(const void* entryp)
 {
 	if(((dentry*)entryp)->key_hash_value == 0)
 	{

@@ -332,7 +332,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState*
 					// we here are using the state_level variable, 
 					// of dstring to store the bytes to read for this chunk
 					// we store how many bytes we still have to read, in this variables
-					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));
+					sscanf((*partialDstring)->cstring, "%x", &((*partialDstring)->state_level));
 
 					*Rstate = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()
@@ -428,7 +428,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{
-		sprintf(ptemp, "%llu", hrq->body.bytes_occupied-1);
+		sprintf(ptemp, "%u", hrq->body.bytes_occupied-1);
 		addHeader("content-length", ptemp, &(hrq->headers));
 	}
 	addHeader("accept-encoding", "gzip, deflate, identity", &(hrq->headers));

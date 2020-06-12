@@ -1,6 +1,6 @@
 #include<dstring_hashmap.h>
 
-void initialize_dmap(dmap* dmapp, unsigned long long int size, void (*value_destroyer)(void* value))
+void initialize_dmap(dmap* dmapp, unsigned int size, void (*value_destroyer)(void* value))
 {
 	initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry, 0);
 	dmapp->value_destroyer = value_destroyer;

@@ -265,7 +265,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					// we here are using the state_level variable, 
 					// of dstring to store the bytes to read for this chunk
 					// we store how many bytes we still have to read, in this variables
-					sscanf((*partialDstring)->cstring, "%llx", &((*partialDstring)->state_level));
+					sscanf((*partialDstring)->cstring, "%x", &((*partialDstring)->state_level));
 
 					*Rstate = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()
@@ -355,7 +355,7 @@ void serializeResponse(dstring* result, HttpResponse* hr)
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[3000];
-	sprintf(ptemp, "%llu", hrp->body.bytes_occupied-1);
+	sprintf(ptemp, "%u", hrp->body.bytes_occupied-1);
 	addHeader("content-length", ptemp, &(hrp->headers));
 	addHeader("server", "serc0", &(hrp->headers));
 }
