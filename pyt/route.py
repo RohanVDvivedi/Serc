@@ -173,7 +173,7 @@ for method in mydict:
 			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
 				for header_key, header_value in mydict[method][hashval][path]['set_response_headers'].items() :
-					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", hrp->headers);"
+					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", &(hrp->headers));"
 			if ('controller' in mydict[method][hashval][path]) and mydict[method][hashval][path]['controller'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
@@ -219,7 +219,7 @@ for method in mydict:
 			if ('set_response_headers' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
 				for header_key, header_value in mydict[method]["wild_card_paths"][path]['set_response_headers'].items() :
-					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", hrp->headers);"
+					case_string 	+= "\n\t\t\t\t\t\taddHeader(\"" + header_key + "\", \"" + header_value + "\", &(hrp->headers));"
 			if ('controller' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['controller'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"

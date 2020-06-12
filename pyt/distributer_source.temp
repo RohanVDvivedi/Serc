@@ -2,8 +2,8 @@
 
 void distribute(HttpRequest* hrq,HttpResponse* hrp)
 {
-	char* path_str = hrq->path->cstring;
-	unsigned long long int path_len = hrq->path->bytes_occupied;
+	char* path_str = hrq->path.cstring;
+	unsigned long long int path_len = hrq->path.bytes_occupied;
 	unsigned long long int PATH = getHashValue(path_str);
 	HttpMethod METHOD = hrq->method;
 
@@ -27,7 +27,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 	// response for a HEAD request must not contain body
 	if(METHOD == HEAD)
 	{
-		make_dstring_empty(hrp->body);
+		make_dstring_empty(&(hrp->body));
 	}
 
 	compressHttpResponseBody(hrp, DEFAULT_SERVER_RESPONSE_COMPRESSION);
