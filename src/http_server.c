@@ -128,7 +128,7 @@ void http_server_run(uint16_t PORT)
 
 	// start the server
 	connection_group cgp = get_connection_group_tcp_ipv4("127.0.0.1", 6900);
-	serve(&cgp, http_connection_handler, &listen_fd);
+	serve(&cgp, http_connection_handler, 100, &listen_fd);
 
 	// delete the file cache
 	delete_file_content_cache(fcc);
