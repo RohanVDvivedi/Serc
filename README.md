@@ -34,7 +34,9 @@
 * ConnMan
 * ReaderWriterLock
 * JsonParser
-* zlib
+* zlib		($ sudo apt install zlib1g-dev)
+* openssl	($ sudo apt-get install libssl-dev)
 
 ### Third party acknowledgements
-serc provides you with gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib).
+gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib) checkout their website [here](https://zlib.net/).
+SSL and TLS encryption for https, internally supported by [openssl](https://github.com/openssl/openssl) checkout their website [here](https://www.openssl.org/).

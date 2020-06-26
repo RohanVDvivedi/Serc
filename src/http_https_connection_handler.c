@@ -103,6 +103,15 @@ void http_connection_handler(int conn_fd)
 
 void https_connection_handler(int conn_fd)
 {
+	SSL* ssl = SSL_new(/*ctx*/NULL);
+	SSL_set_fd(ssl, conn_fd);
+
+	if(SSL_accept(ssl) == -1)
+	{
+		SSL_free(ssl);
+		return;
+	}
+
 	// set this in the loop, if you want to close the connection
 	int close_connection = 0;
 
@@ -124,8 +133,8 @@ void https_connection_handler(int conn_fd)
 
 		while(1)
 		{
-			// read request byte array, we must read blockingly
-			buffreadlength = recv(conn_fd, bufferRequest, buffersize-1, 0);
+			// read ssl encrypted request byte array, we must read blockingly
+			buffreadlength = SSL_read(ssl, bufferRequest, buffersize-1);
 
 			// if no characters read than exit
 			if(buffreadlength == -1)
@@ -176,7 +185,7 @@ void https_connection_handler(int conn_fd)
 			serializeResponse(&bufferResponse, &hrp);
 
 			// send the data
-			send(conn_fd, bufferResponse.cstring, bufferResponse.bytes_occupied - 1, 0);
+			SSL_write(ssl, bufferResponse.cstring, bufferResponse.bytes_occupied - 1);
 
 			// once data sent delete bufferResponse
 			deinit_dstring(&bufferResponse);
@@ -200,4 +209,6 @@ void https_connection_handler(int conn_fd)
 		// deinitialize HttpRequest Object
 		deinitHttpRequest(&hrq);
 	}
+
+	SSL_free(ssl);
 }

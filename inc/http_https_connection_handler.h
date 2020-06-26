@@ -8,6 +8,9 @@
 
 #include<server.h>
 
+#include<openssl/err.h>
+#include<openssl/ssl.h>
+
 #include<http_request.h>
 #include<http_response.h>
 #include<distributer.h>
