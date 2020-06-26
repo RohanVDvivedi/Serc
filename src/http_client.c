@@ -45,11 +45,6 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
 	return http_client;
 }
 
-void get_client_identifier(dstring* id_result, transaction_client* http_client)
-{
-	get_connection_group_identifier(id_result, &(http_client->conn_group));
-}
-
 // Http Client transaction handler funcrtion (it is given at the last)
 HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq);
 

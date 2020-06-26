@@ -17,9 +17,6 @@
 // for connection_client = n, you will get a transaction client with n open connections, on n different threads, on 1 thread pool
 transaction_client* get_http_client(char* url_string, char* port_string, unsigned int connection_count);
 
-// this returns the identifier to identifies the http connection uniquely
-void get_client_identifier(dstring* id_result, transaction_client* http_client);
-
 /* *************************************************
 	There are 2 steps involved in sending a http request and then receiving the response
 	1. job* promise_p = send_request_async(http_client_p, hrq);
