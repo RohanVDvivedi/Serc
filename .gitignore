@@ -5,3 +5,8 @@
 *.pyc
 *.DS_store
 *.o
+
+# ignore ssl certificates and pkey files
+*.pem
+*.key
+*.pub
