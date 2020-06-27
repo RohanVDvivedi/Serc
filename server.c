@@ -5,6 +5,7 @@
 
 int main()
 {
-	http_server_run(6900, 0);
+	http_server_run(80, 0);
+	//http_server_run(443, 1);
 	return 0;
 }
