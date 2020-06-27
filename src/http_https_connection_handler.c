@@ -103,7 +103,7 @@ void http_connection_handler(int conn_fd)
 
 void https_connection_handler(int conn_fd)
 {
-	SSL* ssl = SSL_new(/*ctx*/NULL);
+	SSL* ssl = SSL_new(ssl_context);
 	SSL_set_fd(ssl, conn_fd);
 
 	if(SSL_accept(ssl) == -1)
