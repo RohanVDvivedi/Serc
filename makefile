@@ -63,3 +63,6 @@ client :
 
 clean :
 	$(RM) -r ${BIN_DIR} ${OBJ_DIR}
+
+ssl_cert :
+	openssl req -new -x509 -pubkey -newkey rsa:4096 -days 365 -nodes -keyout ${CON_DIR}/server_priv_key.key -out ${CON_DIR}/server_pub_cert.crt

@@ -6,10 +6,10 @@ SSL_CTX* gbl_server_ssl_ctx = NULL;
 
 void load_certificates()
 {
-    if(SSL_CTX_use_certificate_file(gbl_server_ssl_ctx, SSL_CERTIFICATION_AND_KEYS, SSL_FILETYPE_PEM) <= 0)
+    if(SSL_CTX_use_certificate_file(gbl_server_ssl_ctx, SSL_PUB_CERTIFICATE, SSL_FILETYPE_PEM) <= 0)
     	exit(-1);
 
-	if(SSL_CTX_use_PrivateKey_file(gbl_server_ssl_ctx, SSL_CERTIFICATION_AND_KEYS, SSL_FILETYPE_PEM) <= 0)
+	if(SSL_CTX_use_PrivateKey_file(gbl_server_ssl_ctx, SSL_PRIVATE_KEY, SSL_FILETYPE_PEM) <= 0)
     	exit(-1);
 
 	if(!SSL_CTX_check_private_key(gbl_server_ssl_ctx))
