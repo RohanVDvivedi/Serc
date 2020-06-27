@@ -103,7 +103,7 @@ void http_connection_handler(int conn_fd)
 
 void https_connection_handler(int conn_fd)
 {
-	SSL* ssl = SSL_new(ssl_context);
+	SSL* ssl = SSL_new(gbl_server_ssl_ctx);
 	SSL_set_fd(ssl, conn_fd);
 
 	if(SSL_accept(ssl) == -1)
@@ -118,7 +118,6 @@ void https_connection_handler(int conn_fd)
 	// we loop on receving the 
 	while(!close_connection)
 	{
-
 		// create buffer to read the request
 		char bufferRequest[buffersize];
 		int buffreadlength = -1;

@@ -4,10 +4,11 @@
 #include<openssl/ssl.h>
 #include<openssl/err.h>
 
-extern SSL_CTX* ssl_context;
+#include<config.h>
 
-void initialize_ssl_context();
+extern SSL_CTX* gbl_server_ssl_ctx;
 
-void destroy_ssl_context();
+void init_gbl_server_ssl_ctx();
+void deinit_gbl_server_ssl_ctx();
 
 #endif
