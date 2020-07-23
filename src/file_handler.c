@@ -70,8 +70,6 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	if(S_ISDIR(file_stat.st_mode))
 		return -1;
 
-	deinit_dstring(&(file_path));
-
 	// Now the file exists and so the cache has to be updated
 
 	int file_content_from_cache_is_locked_by_this_thread = 0;
@@ -113,6 +111,8 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 
 		write_unlock(&(file_content_from_cache->file_content_rwlock));
 	}
+
+	deinit_dstring(&(file_path));
 
 	// if cache has been updated, we read from the cache variable
 	if(file_content_from_cache != NULL)
