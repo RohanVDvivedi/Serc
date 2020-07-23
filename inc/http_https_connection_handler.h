@@ -26,7 +26,7 @@ enum http_connection_handler_error
 	TCP_CONNECTION_ERROR_READING = -4
 };
 
-void http_connection_handler(int conn_fd);
-void https_connection_handler(int conn_fd);
+void http_connection_handler(int conn_fd, void* additional_params);
+void https_connection_handler(int conn_fd, void* additional_params);
 
 #endif
