@@ -3,7 +3,6 @@
 
 #include<server.h>
 
-#include<ssl_globals.h>
 #include<http_https_connection_handler.h>
 
 // if OVER_SSL = 1, then your network stacck will be HTTP/SSL/TCP/IP

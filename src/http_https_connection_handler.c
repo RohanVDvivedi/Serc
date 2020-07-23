@@ -1,6 +1,6 @@
 #include<http_https_connection_handler.h>
 
-void http_connection_handler(int conn_fd, void* additional_params)
+void http_connection_handler(int conn_fd, void* server_global_params)
 {
 	// set this in the loop, if you want to close the connection
 	int close_connection = 0;
@@ -101,7 +101,7 @@ void http_connection_handler(int conn_fd, void* additional_params)
 	}
 }
 
-void https_connection_handler(int conn_fd, void* additional_params)
+void https_connection_handler(int conn_fd, void* server_global_params)
 {
 	SSL* ssl = SSL_new(gbl_server_ssl_ctx);
 	SSL_set_fd(ssl, conn_fd);

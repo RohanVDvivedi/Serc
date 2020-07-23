@@ -8,10 +8,11 @@
 
 #include<server.h>
 
-#include<ssl_globals.h>
 #include<http_request.h>
 #include<http_response.h>
 #include<distributer.h>
+
+#include<server_global_params.h>
 
 // this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
 #define buffersize 1024
@@ -26,7 +27,7 @@ enum http_connection_handler_error
 	TCP_CONNECTION_ERROR_READING = -4
 };
 
-void http_connection_handler(int conn_fd, void* additional_params);
-void https_connection_handler(int conn_fd, void* additional_params);
+void http_connection_handler(int conn_fd, void* server_global_params);
+void https_connection_handler(int conn_fd, void* server_global_params);
 
 #endif
