@@ -6,9 +6,7 @@
 
 #include<config.h>
 
-extern SSL_CTX* gbl_server_ssl_ctx;
-
-void init_gbl_server_ssl_ctx();
-void deinit_gbl_server_ssl_ctx();
+SSL_CTX* create_gbl_server_ssl_ctx();
+void destroy_gbl_server_ssl_ctx(SSL_CTX* server_ssl_ctx);
 
 #endif

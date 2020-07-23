@@ -22,15 +22,15 @@ void http_server_run(uint16_t PORT, int OVER_SSL)
 
 	if(OVER_SSL)
 	{
-		// for HTTPS server, you also need to create appropriate global ssl context
-		// we leave that task to ssl_globals source
-		init_gbl_server_ssl_ctx();
-		sgp.server_ssl_ctx = gbl_server_ssl_ctx;
-		serve(&cgp, &sgp, https_connection_handler, 100, &listen_fd);
-		deinit_gbl_server_ssl_ctx();
+		// for HTTPS server, you also need to create appropriate ssl context
+		sgp.server_ssl_ctx = create_gbl_server_ssl_ctx();
+			serve(&cgp, &sgp, https_connection_handler, 100, &listen_fd);
+		destroy_gbl_server_ssl_ctx(sgp.server_ssl_ctx);
 	}
 	else
+	{
 		serve(&cgp, &sgp, http_connection_handler, 100, &listen_fd);
+	}
 
 	// delete the file cache
 	delete_file_content_cache(sgp.files_cached);
