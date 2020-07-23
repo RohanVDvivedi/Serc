@@ -7,13 +7,13 @@ void intHandler(int dummy)
     	server_stop(listen_fd);
 }
 
-void http_server_run(uint16_t PORT, int OVER_SSL)
+void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL)
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {0};
 
 	// initialize the content cache for serving the files
-	sgp.files_cached = get_file_content_cache();
+	sgp.files_cached = get_file_content_cache(ROOT_PATH);
 
 	// start the server using https connection handler
 	connection_group cgp = get_connection_group_tcp_ipv4("127.0.0.1", PORT);

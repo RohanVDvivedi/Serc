@@ -13,6 +13,7 @@
 typedef struct file_content_cache file_content_cache;
 struct file_content_cache
 {
+	char* root_path;
 	dmap file_content_cache_hashmap;
 	rwlock file_content_cache_hashmap_rwlock;
 };
@@ -20,11 +21,11 @@ struct file_content_cache
 // this will initialize the file cache
 // you must call this function before using 
 // the file_handlers read_file_in_dstring function
-file_content_cache* get_file_content_cache();
+file_content_cache* get_file_content_cache(char* root_path);
 
 // this method returns -1, if the file is absent, else 0 if no error
 // we go to the disk, read file, cache it, and return you the contents aswell, so next time we can serve you faster
-int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* file_path);
+int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* relative_file_path);
 
 // this function can be used to clear all the contents of the cache,
 // this does not destroy the content cache, hence the object can be reused to cache more other files

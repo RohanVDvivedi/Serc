@@ -22,25 +22,25 @@ static void delete_file_cache_component(file_cache_component* fcc_component_p)
 	free(fcc_component_p);
 }
 
-file_content_cache* get_file_content_cache()
+file_content_cache* get_file_content_cache(char* root_path)
 {
 	file_content_cache* fcc_p = (file_content_cache*) malloc(sizeof(file_content_cache));
+	fcc_p->root_path = root_path;
 	initialize_dmap(&(fcc_p->file_content_cache_hashmap), 30, (void(*)(void*))delete_file_cache_component);
 	initialize_rwlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 	return fcc_p;
 }
 
-int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* file_path)
+int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* relative_file_path)
 {
 	// this is the variable where we will find or make the dstring to store in cache or return
 	file_cache_component* file_content_from_cache = NULL;
-
 
 	// cache hit case ---->>>
 
 	// find the file from the cache, once the file has been requested from the server it gets cached, in page cache
 	read_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	file_content_from_cache = (file_cache_component*)(find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), file_path));
+	file_content_from_cache = (file_cache_component*)(find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), relative_file_path));
 	// if cache is hit, we read from cache itself
 	if(file_content_from_cache != NULL)
 	{
@@ -51,26 +51,26 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 		return 0;
 	}
 	else
-	{
 		read_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	}
 
 	// cache hit case <<<----
 
 	// cache miss case ---->>>
 
+	dstring file_path;
+	init_dstring(&file_path, fcc_p->root_path, 10);
+	concatenate_dstring(&file_path, relative_file_path);
+
 	// if the file is not in cache, check if the file even exists
 	// if the file does not exist, or if it is a folder in the server root, we return with -1
-	if(access(file_path->cstring, R_OK) != 0)
-	{
+	if(access(file_path.cstring, R_OK) != 0)
 		return -1;
-	}
 	struct stat file_stat;
-	stat(file_path->cstring, &file_stat);
+	stat(file_path.cstring, &file_stat);
 	if(S_ISDIR(file_stat.st_mode))
-	{
 		return -1;
-	}
+
+	deinit_dstring(&(file_path));
 
 	// Now the file exists and so the cache has to be updated
 
@@ -78,13 +78,13 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 
 	// write newly built file cache component to file cache
 	write_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	file_content_from_cache = (file_cache_component*)find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), file_path);
+	file_content_from_cache = (file_cache_component*)find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), relative_file_path);
 	if(file_content_from_cache == NULL)
 	{
 		// insert the cache entry, so we do not miss the cache next time
 		file_content_from_cache = get_file_cache_component();
 		write_lock(&(file_content_from_cache->file_content_rwlock));
-		insert_in_dmap_cstr(&(fcc_p->file_content_cache_hashmap), file_path->cstring, file_content_from_cache);
+		insert_in_dmap_cstr(&(fcc_p->file_content_cache_hashmap), relative_file_path->cstring, file_content_from_cache);
 		file_content_from_cache_is_locked_by_this_thread = 1;
 	}
 	write_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
@@ -93,7 +93,7 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	if(file_content_from_cache_is_locked_by_this_thread == 1)
 	{	
     	// open the file
-    	FILE* file = fopen(file_path->cstring, "rb");
+    	FILE* file = fopen(file_path.cstring, "rb");
 
     	// buffer to read the new file, for which we missed the cache
     	#define FILE_READ_BUFFER_SIZE 4000
