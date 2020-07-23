@@ -7,10 +7,11 @@ void intHandler(int dummy)
     	server_stop(listen_fd);
 }
 
-void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL)
+void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL, void (*connection_started)(), void (*connection_finished)())
 {
 	// these values will be constant through out all the connections of this specific server
-	server_global_params sgp = {0};
+	server_global_params sgp = {.connection_started_callback = connection_started,
+								.connection_finished_callback = connection_finished};
 
 	// initialize the content cache for serving the files
 	sgp.files_cached = get_file_content_cache(ROOT_PATH);
