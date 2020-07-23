@@ -4,6 +4,9 @@ char* get_content_type_from_file_extension(char* extension);
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_content_cache* fcc_p, int* routing_resolved)
 {
+	if(fcc_p == NULL)
+		return 0;
+
 	if(hrq->method == GET && hrq->path.cstring[0] == '/')
 	{
 		// extract extension dstring from the file path
