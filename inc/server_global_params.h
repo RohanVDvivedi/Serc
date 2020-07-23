@@ -18,8 +18,9 @@ struct server_global_params
 	// hence you may use pthread_key get and set attribites to pass params between connection start and end
 	// connection_started_callback will be called before receiving the first request
 	// connection_finished_callback will be called after sending the last response
-	void (*connection_started_callback)();
-	void (*connection_finished_callback)();
+	// the connection call back functions will receive the same parametrs as ones received by the connection handler of http
+	void (*connection_started_callback)(int conn_fd, void* server_specific_params);
+	void (*connection_finished_callback)(int conn_fd, void* server_specific_params);
 };
 
 #endif

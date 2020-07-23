@@ -7,7 +7,7 @@ void intHandler(int dummy)
     	server_stop(listen_fd);
 }
 
-void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL, void (*connection_started)(), void (*connection_finished)())
+void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL, void (*connection_started)(int conn_fd, void* server_specific_params), void (*connection_finished)(int conn_fd, void* server_specific_params))
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {.connection_started_callback = connection_started,
