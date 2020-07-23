@@ -1,7 +1,5 @@
 #include<file_handler.h>
 
-volatile file_content_cache* global_file_content_cache = NULL;
-
 typedef struct file_cache_component file_cache_component;
 struct file_cache_component
 {
@@ -32,27 +30,8 @@ file_content_cache* get_file_content_cache()
 	return fcc_p;
 }
 
-void make_global_file_content_cache(file_content_cache* fcc_p)
-{
-	if(fcc_p != NULL)
-	{
-		global_file_content_cache = fcc_p;
-	}
-}
-
 int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* file_path)
 {
-	// if no file_content_cache is provided, we use the global_file_content_cache
-	if(fcc_p == NULL && global_file_content_cache != NULL)
-	{
-		fcc_p = (file_content_cache*) global_file_content_cache;
-	}
-	// if no cache is provided, we quit function with error
-	else
-	{
-		return -1;
-	}
-
 	// this is the variable where we will find or make the dstring to store in cache or return
 	file_cache_component* file_content_from_cache = NULL;
 
