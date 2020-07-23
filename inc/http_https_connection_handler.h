@@ -28,6 +28,5 @@ enum http_connection_handler_error
 };
 
 void http_connection_handler(int conn_fd, void* server_global_params);
-void https_connection_handler(int conn_fd, void* server_global_params);
 
 #endif
