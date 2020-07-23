@@ -1,7 +1,9 @@
 #include<http_https_connection_handler.h>
 
-void http_connection_handler(int conn_fd, void* server_global_params)
+void http_connection_handler(int conn_fd, void* server_specific_params)
 {
+	server_global_params* sgpp = server_specific_params;
+
 	// set this in the loop, if you want to close the connection
 	int close_connection = 0;
 
@@ -101,9 +103,11 @@ void http_connection_handler(int conn_fd, void* server_global_params)
 	}
 }
 
-void https_connection_handler(int conn_fd, void* server_global_params)
+void https_connection_handler(int conn_fd, void* server_specific_params)
 {
-	SSL* ssl = SSL_new(gbl_server_ssl_ctx);
+	server_global_params* sgpp = server_specific_params;
+
+	SSL* ssl = SSL_new(sgpp->server_ssl_ctx);
 	SSL_set_fd(ssl, conn_fd);
 
 	if(SSL_accept(ssl) == -1)

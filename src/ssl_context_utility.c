@@ -1,4 +1,4 @@
-#include<ssl_globals.h>
+#include<ssl_context_utility.h>
 
 // for sample programs for building SSL applications use https://aticleworld.com/ssl-server-client-using-openssl-in-c/
 
@@ -20,7 +20,7 @@ SSL_CTX* create_gbl_server_ssl_ctx()
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
 
-    SSL_CTX* server_ssl_ctx = NULL
+    SSL_CTX* server_ssl_ctx = NULL;
 
     if(!(server_ssl_ctx = SSL_CTX_new(SSL_SERVER_METHOD())))
     	exit(-1);
