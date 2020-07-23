@@ -12,6 +12,6 @@
 #include<controller.h>
 #include<file_request_resolution_controller.h>
 
-void distribute(HttpRequest* hrq, HttpResponse* hrp);
+void distribute(HttpRequest* hrq, HttpResponse* hrp, file_content_cache* fcc_p);
 
 #endif

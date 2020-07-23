@@ -2,7 +2,7 @@
 
 char* get_content_type_from_file_extension(char* extension);
 
-int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_resolved)
+int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_content_cache* fcc_p, int* routing_resolved)
 {
 	if(hrq->method == GET && hrq->path.cstring[0] == '/')
 	{
@@ -17,7 +17,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, int* routing_re
 		get_extension_from_file_path(&extension, &(hrq->path));
 
 		// read file contents in the response body dstring
-		if(read_file_in_dstring(&(hrp->body), NULL, &file_path) == 0)
+		if(read_file_in_dstring(&(hrp->body), fcc_p, &file_path) == 0)
 		{
     		*routing_resolved = 1;
 		}

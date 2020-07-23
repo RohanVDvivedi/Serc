@@ -1,6 +1,6 @@
 #include<distributer.h>
 
-void distribute(HttpRequest* hrq,HttpResponse* hrp)
+void distribute(HttpRequest* hrq,HttpResponse* hrp,file_content_cache* fcc_p)
 {
 	char* path_str = hrq->path.cstring;
 	unsigned long long int path_len = hrq->path.bytes_occupied;
@@ -17,7 +17,7 @@ void distribute(HttpRequest* hrq,HttpResponse* hrp)
 	if(routing_resolved==0)
 	{
 		// check if we can serve the request with some file, on the server's root
-		error = file_request_controller(hrq,hrp,&routing_resolved);
+		error = file_request_controller(hrq,hrp,fcc_p,&routing_resolved);
 		if(routing_resolved==0)
 		{
 			hrp->status = 404;

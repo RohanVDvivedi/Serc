@@ -64,7 +64,7 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			// create a HttpResponse Object here
 			HttpResponse hrp; initHttpResponse(&hrp);
 
-			distribute(&hrq, &hrp);
+			distribute(&hrq, &hrp, sgpp->files_cached);
 
 			// Uncomment to Debug
 			// printRequest(&hrq);
@@ -175,7 +175,7 @@ void https_connection_handler(int conn_fd, void* server_specific_params)
 			// create a HttpResponse Object here
 			HttpResponse hrp; initHttpResponse(&hrp);
 
-			distribute(&hrq, &hrp);
+			distribute(&hrq, &hrp, sgpp->files_cached);
 
 			// Uncomment to Debug
 			// printRequest(&hrq);
