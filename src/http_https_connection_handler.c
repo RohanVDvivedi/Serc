@@ -7,9 +7,6 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 {
 	server_global_params* sgpp = server_specific_params;
 
-	if(sgpp->connection_started_callback != NULL)
-		sgpp->connection_started_callback(conn_fd, sgpp->connection_callback_params);
-
 	int is_secured_http = (sgpp->server_ssl_ctx != NULL);
 	SSL* ssl = NULL;
 
@@ -131,7 +128,4 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 
 	if(is_secured_http)
 		SSL_free(ssl);
-
-	if(sgpp->connection_finished_callback != NULL)
-		sgpp->connection_finished_callback(conn_fd, sgpp->connection_callback_params);
 }

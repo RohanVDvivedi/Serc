@@ -13,16 +13,6 @@ struct server_global_params
 	// this is the file content cache for the server
 	// this is where the server will cache the files that it will read from the disk, once it serves them for the first time
 	file_content_cache* files_cached;
-
-	// the each connection will live on its own thread during its life time
-	// hence you may use pthread_key get and set attribites to pass params between connection start and end
-	// connection_started_callback will be called before receiving the first request
-	// connection_finished_callback will be called after sending the last response
-	// the connection call back functions will receive the same conn_fd as the connection_handler
-	// and it will also receive the connection_callback_params as the parameter
-	void (*connection_started_callback)(int conn_fd, const void* connection_callback_params);
-	void (*connection_finished_callback)(int conn_fd, const void* connection_callback_params);
-	const void* connection_callback_params;
 };
 
 #endif
