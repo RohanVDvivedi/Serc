@@ -34,7 +34,7 @@ ${OBJ_DIR} :
 	mkdir -p $@
 
 # generic rule to build any object file
-${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h ${CON_DIR}/config.h ${HEADER_DEPENDENCIES} | ${OBJ_DIR}
+${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h ${CON_DIR}/config.h | ${OBJ_DIR}
 	${CC} ${CFLAGS} -c $< -o $@
 
 # rule to make the directory for binaries or libraries
