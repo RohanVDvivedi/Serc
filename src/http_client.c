@@ -1,5 +1,8 @@
 #include<http_client.h>
 
+// this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
+#define buffersize 1024
+
 transaction_client* get_http_client(char* url_string, char* port_string, unsigned int connection_count)
 {
 	struct addrinfo hints;

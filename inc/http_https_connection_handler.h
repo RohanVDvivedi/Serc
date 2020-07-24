@@ -14,9 +14,6 @@
 
 #include<server_global_params.h>
 
-// this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
-#define buffersize 1024
-
 typedef enum http_connection_handler_error http_connection_handler_error;
 enum http_connection_handler_error
 {

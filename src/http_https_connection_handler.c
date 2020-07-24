@@ -1,5 +1,8 @@
 #include<http_https_connection_handler.h>
 
+// this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
+#define buffersize 1024
+
 void http_connection_handler(int conn_fd, void* server_specific_params)
 {
 	server_global_params* sgpp = server_specific_params;
