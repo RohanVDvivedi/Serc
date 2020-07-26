@@ -75,8 +75,8 @@ install : all
 	cp ${INC_DIR}/* /usr/local/include
 	cp ${LIB_DIR}/* /usr/local/lib
 	cp ${BIN_DIR}/* /usr/local/bin
-	cp ${PYT_DIR}/* /usr/local/bin
-	cp ${TMP_DIR}/* /usr/local/share
+	cp ${PYT_DIR}/*.py /usr/local/bin
+	cp ${TMP_DIR}/*.temp /usr/local/share
 
 # builds a self signed ssl key and certificate for your server
 ssl_cert :
