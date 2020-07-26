@@ -290,7 +290,7 @@ case_string             			+= "\n\t}\n"
 # below for loop builds forward declations for all the controllers that you will be using in your application
 declarations = ""
 for function_name in controllers_list :
-	declarations += "\n\tint " + function_name + "(HttpRequest* hrq,HttpResponse* hrp);"
+	declarations += "\nint " + function_name + "(HttpRequest* hrq,HttpResponse* hrp);"
 
 
 
