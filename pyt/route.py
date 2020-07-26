@@ -153,7 +153,7 @@ for routing_file in command_line_args:
 						mydict[method]["wild_card_paths"][path] = {}
 						path_route_hash = mydict[method]["wild_card_paths"][path]
 				else :
-					hashval = strhsh.getHashValue(path)
+					hashval = getHashValue(path)
 					if not (hashval in mydict[method]):
 						mydict[method][hashval] = {}
 					if not (path in mydict[method][hashval]):
