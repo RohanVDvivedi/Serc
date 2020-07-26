@@ -5,16 +5,18 @@
 
 ### Project Directory Description
 
-* src for .c c source files
-* inc for .h header files
-* obj for .o intermediate object files
-* bin for .out or .lib binaries
-* con for .con or .h configuration files
-* pyt for .py python helper scripts
+ * src for .c c source files
+ * inc for .h header files
+ * obj for .o intermediate object files
+ * lib for .a or .so libraries
+ * bin for .out binaries
+ * con for .con or .h configuration files
+ * pyt for .py python helper scripts
+ * share for .temp template file ***that python scripts like route.py will use***
 
 ### serc enables you to
-1. Route to your function for a http request for given http path and http method combination, as it is specified in the routing json file (in config directory).
-2. Host static content from SERC_ROOT_PATH, The SERC_ROOT_PATH can be set in config.h header in ./con folder.
+ 1. Route to your function for a http request for given http path and http method combination, as it is specified in the routing json file (in config directory).
+ 2. Host static content from SERC_ROOT_PATH, The SERC_ROOT_PATH can be set in config.h header in ./con folder.
 
 ### The framework logic is 
 * /src/*.c are the source files
@@ -36,6 +38,19 @@
 * JsonParser
 * zlib		($ sudo apt install zlib1g-dev)
 * openssl	($ sudo apt-get install libssl-dev)
+
+#### setup
+### Considering that you have all the dependencies needed
+ * git clone https://github.com/RohanVDvivedi/c_template_application.git
+ * cd c_template_application
+ * sudo make clean install
+ * add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
+
+#### usage
+ * route.py <routing_file_1> <routing_file_2> <routing_file_3> ...
+ * above step will create distributer.c file in your `pwd`
+ * you can you compile your source with this distributer.c
+ * don't forget to add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
 ### Third party acknowledgements
  * *gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib) checkout their website [here](https://zlib.net/).*

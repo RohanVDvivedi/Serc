@@ -51,7 +51,7 @@ import sys
 import os
 
 # gets the directory path where the script is stored
-# the template file distributer_source.temp, must be stored right beside the script file
+# the template file distributer_source.temp, must be stored in share folder right beside the directory of this script file
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # same as getHashValue function in c in strhsh (it must be same as the implementation you find in c source code of serc)
@@ -81,7 +81,7 @@ def getHashValue(s):
 # else it will copy paste the same line from templateFile to the codeFile
 def replaceLineWithCode(templateFileName,codeFileName,compareCodeHash):
 	global dir_path
-	templatefile = open(dir_path + "/" + templateFileName,"r");
+	templatefile = open(dir_path + "/../share/" + templateFileName,"r");
 	codefile = open(codeFileName,"w");
 
 	for line in templatefile:
