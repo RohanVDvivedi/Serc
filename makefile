@@ -78,5 +78,6 @@ install : all
 	cp ${PYT_DIR}/* /usr/local/bin
 	cp ${TMP_DIR}/* /usr/local/share
 
+# builds a self signed ssl key and certificate for your server
 ssl_cert :
 	openssl req -new -x509 -pubkey -newkey rsa:4096 -days 365 -nodes -keyout ${CON_DIR}/server_priv_key.key -out ${CON_DIR}/server_pub_cert.crt
