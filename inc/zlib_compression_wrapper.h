@@ -22,6 +22,9 @@ enum compression_type
 	IDENTITY
 };
 
+// this will be the default compressionthat will be useds
+#define DEFAULT_COMPRESSION GZIP
+
 // returns 1, if the compression was successfull
 int compress_in_memory(dstring* data, compression_type compr_type);
 

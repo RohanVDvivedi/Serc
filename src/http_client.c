@@ -58,7 +58,7 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char*
 		return NULL;
 	}
 	// compress response body
-	compressHttpRequestBody(hrq, DEFAULT_SERVER_RESPONSE_COMPRESSION);
+	compressHttpRequestBody(hrq, DEFAULT_COMPRESSION);
 	// set necessary headers to be set before sending the request
 	setServerDefaultHeadersInRequest(hrq);
 	// host is a mandatory header in http 1.1 request

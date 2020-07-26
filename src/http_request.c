@@ -442,20 +442,26 @@ void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
 
 void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 {
+	// no compression/decompression for a GET request
+	if(hrq->method == GET)
+		return;
+
 	// what will you do with compression of the request further more, 
 	// datalink layer frame size only is around 1500 bytes
-	// also do not compress, if it is already compressed, or it is not needed if the method is GET
-	if(hrq->body.bytes_occupied <= 100 || hrq->method == GET || hasHeaderWithKey("content-encoding", &(hrq->headers)))
+	if(hrq->body.bytes_occupied <= 100)
 	{
+		addHeader("content-encoding", "identity", &(hrq->headers));
 		return;
 	}
 
-	int is_compressed = compress_in_memory(&(hrq->body), compr_type);
-	if(is_compressed == 0)
-	{
-		// this means error, so we do not send any headers about compression
+	// also do not compress, if it is already compressed (i.e. it has content-encoding header and it is not identity)
+	if(hasHeaderWithKey("content-encoding", &(hrq->headers)) && !hasHeader("content-encoding", "identity", &(hrq->headers)))
 		return;
-	}
+
+	// is_compressed == 0, means error, so we do not send any headers about compression
+	int is_compressed = compress_in_memory(&(hrq->body), compr_type);
+	if(!is_compressed)
+		return;
 
 	switch(compr_type)
 	{
@@ -480,10 +486,9 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 
 void uncompressHttpRequestBody(HttpRequest* hrq)
 {
-	if(hrq->method == GET || hrq->body.bytes_occupied <= 1)
-	{
+	// no compression/decompression for a GET request
+	if(hrq->method == GET)
 		return;
-	}
 
 	// we try to figure out the compression from inspecting these headers
 	dstring* content_encoding = getHeaderValueWithKey("content-encoding", &(hrq->headers));
@@ -493,21 +498,19 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	if( (content_encoding != NULL && strstr(content_encoding->cstring, "br") != NULL) ||
 		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "br") != NULL) )
-	{
 		compr_type = BROTLI;
-	}
 	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "deflate") != NULL) ||
 		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "deflate") != NULL) )
-	{
 		compr_type = DEFLATE;
-	}
 	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "gzip") != NULL) ||
 		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "gzip") != NULL) )
-	{
 		compr_type = GZIP;
-	}else{return ;}
+	else{return ;}
 
 	uncompress_in_memory(&(hrq->body), compr_type);
+
+	removeHeader("content-encoding", &(hrq->headers));
+	removeHeader("transfer-encoding", &(hrq->headers));
 }
 
 void deinitHttpRequest(HttpRequest* hr)

@@ -370,21 +370,22 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 {
 	// what will you do with compression of the response further more, 
 	// datalink layer frame size only is around 1500 bytes
-	// also do not compress, if it is already compressed
-	if(hrp->body.bytes_occupied <= 100 || hasHeaderWithKey("content-encoding", &(hrp->headers)))
+	if(hrp->body.bytes_occupied <= 100)
 	{
 		addHeader("content-encoding", "identity", &(hrp->headers));
 		return;
 	}
 
+	// also do not compress, if it is already compressed (i.e. it has content-encoding header and it is not identity)
+	if(hasHeaderWithKey("content-encoding", &(hrp->headers)) && !hasHeader("content-encoding", "identity", &(hrp->headers)))
+		return;
+
 	int is_compressed = compress_in_memory(&(hrp->body), compr_type);
 
 	// we will not add headers if the response body was not compressed
+	// this means error, so we do not send any headers about compression
 	if(!is_compressed)
-	{
-		// this means error, so we do not send any headers about compression
 		return;
-	}
 
 	switch(compr_type)
 	{
@@ -409,11 +410,6 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 
 void uncompressHttpResponseBody(HttpResponse* hrp)
 {
-	if(hrp->body.bytes_occupied <= 1)
-	{
-		return;
-	}
-
 	// we try to figure out the compression from inspecting these headers
 	dstring* content_encoding = getHeaderValueWithKey("content-encoding", &(hrp->headers));
 	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", &(hrp->headers));
@@ -422,21 +418,19 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 	if( (content_encoding != NULL && strstr(content_encoding->cstring, "br") != NULL) ||
 		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "br") != NULL) )
-	{
 		compr_type = BROTLI;
-	}
 	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "deflate") != NULL) ||
 		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "deflate") != NULL) )
-	{
 		compr_type = DEFLATE;
-	}
 	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "gzip") != NULL) ||
 		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "gzip") != NULL) )
-	{
 		compr_type = GZIP;
-	}else{return ;}
+	else{return ;}
 
 	uncompress_in_memory(&(hrp->body), compr_type);
+
+	removeHeader("content-encoding", &(hrp->headers));
+	removeHeader("transfer-encoding", &(hrp->headers));
 }
 
 void deinitHttpResponse(HttpResponse* hr)

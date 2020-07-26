@@ -4,9 +4,10 @@
 #include<openssl/ssl.h>
 #include<openssl/err.h>
 
-#include<config.h>
+#define SSL_SERVER_METHOD TLSv1_2_server_method
+#define SSL_CLIENT_METHOD TLSv1_2_client_method
 
-SSL_CTX* create_gbl_server_ssl_ctx();
+SSL_CTX* create_gbl_server_ssl_ctx(char* pub_cert_priv_key_file);
 void destroy_gbl_server_ssl_ctx(SSL_CTX* server_ssl_ctx);
 
 #endif

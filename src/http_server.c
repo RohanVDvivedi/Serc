@@ -7,7 +7,7 @@ void intHandler(int dummy)
     	server_stop(listen_fd);
 }
 
-void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL)
+void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {0};
@@ -19,8 +19,8 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, int OVER_SSL)
 	connection_group cgp = get_connection_group_tcp_ipv4("127.0.0.1", PORT);
 
 	// for HTTPS server, you also need to create appropriate ssl context
-	if(OVER_SSL)
-		sgp.server_ssl_ctx = create_gbl_server_ssl_ctx();
+	if(SSL_KEYS_CERTS != NULL)
+		sgp.server_ssl_ctx = create_gbl_server_ssl_ctx(SSL_KEYS_CERTS);
 
 	serve(&cgp, &sgp, http_connection_handler, 100, &listen_fd);
 

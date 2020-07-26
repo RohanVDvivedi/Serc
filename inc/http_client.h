@@ -1,15 +1,13 @@
 #ifndef HTTP_CLIENT_H
 #define HTTP_CLIENT_H
 
-#include <netdb.h>
+#include<netdb.h>
 
 #include<connection_group.h>
 #include<transaction_client.h>
 
 #include<http_request.h>
 #include<http_response.h>
-
-#include<config.h>
 
 // creates a new trnsaction client that handles asynchronous http request and response
 // for connection_client = n, you will get a transaction client with n open connections, on n different threads, on 1 thread pool

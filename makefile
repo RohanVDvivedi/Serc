@@ -42,7 +42,7 @@ ${BIN_DIR} :
 	mkdir -p $@
 
 # generic rule to build any object file
-${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h ${CON_DIR}/config.h | ${OBJ_DIR}
+${OBJ_DIR}/%.o : ${SRC_DIR}/%.c ${INC_DIR}/%.h | ${OBJ_DIR}
 	${CC} ${CFLAGS} -c $< -o $@
 
 # generic rule to make a library
@@ -80,4 +80,4 @@ install : all
 
 # builds a self signed ssl key and certificate for your server
 ssl_cert :
-	openssl req -new -x509 -pubkey -newkey rsa:4096 -days 365 -nodes -keyout ${CON_DIR}/server_priv_key.key -out ${CON_DIR}/server_pub_cert.crt
+	openssl req -new -x509 -pubkey -newkey rsa:4096 -days 365 -nodes -keyout ${CON_DIR}/server.key -out ${CON_DIR}/server.crt

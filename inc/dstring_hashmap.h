@@ -7,6 +7,7 @@
 
 // It is a generic hashmap where we can store dstring vs any void*
 // It maintains unique set of dstrings only as keys
+// insert will check and first remove, if you insert using an identical key (not necessarily the same)
 
 typedef struct dmap dmap;
 struct dmap

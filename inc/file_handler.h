@@ -8,8 +8,6 @@
 #include<rwlock.h>
 #include<dstring_hashmap.h>
 
-#include<config.h>
-
 typedef struct file_content_cache file_content_cache;
 struct file_content_cache
 {
