@@ -46,11 +46,6 @@ import strhsh;
 import replace;
 
 
-"""
-#temporary hash to test
-def getHashValue(s):
-	return len(s)
-"""
 
 # read all commandline args
 import sys
@@ -144,7 +139,7 @@ for routing_file in command_line_args:
 
 
 
-
+# below for loop builds the switch case statements for routing the request to specified controller
 
 """
 outer most routing part is switch by HttpMethodType
@@ -247,7 +242,7 @@ case_string							+= "\n\t\t}"
 case_string             			+= "\n\t}\n"
 		
 
-
+# below for loop builds forward declations for all the controllers that you will be using in your application
 declarations = ""
 for function_name in controllers_list :
 	declarations += "\n\tint " + function_name + "(HttpRequest* hrq,HttpResponse* hrp);"
@@ -256,9 +251,11 @@ for function_name in controllers_list :
 
 
 
-replace.replaceLineWithCode("../pyt/distributer_source.temp","../src/distributer.c",{"//@switch_case\n":case_string})
-
-
-replace.replaceLineWithCode("../pyt/controller_header.temp","../inc/controller.h",{"//@controller_definitions\n":declarations})
-
-
+replace.replaceLineWithCode(
+								"../pyt/distributer_source.temp",
+								"../src/distributer.c",
+								{
+									"//@controller_definitions\n":declarations,
+									"//@switch_case\n":case_string
+								}
+							)
