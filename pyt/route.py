@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 
 command is used as below

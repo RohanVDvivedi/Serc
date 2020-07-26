@@ -26,8 +26,8 @@ CFLAGS=-Wall -O3 -I${INC_DIR} -I${CON_DIR}
 LFLAFS=-lconnman -lpthread -lboompar -ljsonpar -lcutlery -lrwlock -lz -lssl -lcrypto
 
 # the routing is constructed by this dependency make statement
-${SRC_DIR}/distributer.c ${INC_DIR}/controller.h : ${CON_DIR}/*.con
-	python3 pyt/route.py $^
+${SRC_DIR}/distributer.c : ${CON_DIR}/*.con
+	pyt/route.py $^
 
 # rule to make the object directory
 ${OBJ_DIR} :
@@ -48,7 +48,7 @@ ${TARGET} : ${OBJECTS} | ${BIN_DIR}
 all : $(TARGET)
 
 # this rule will re build all the routing of your application
-routes : ${SRC_DIR}/distributer.c ${INC_DIR}/controller.h
+routes : ${SRC_DIR}/distributer.c
 
 # you may use the below command to make a executable that starts the server to host a static website
 server :
