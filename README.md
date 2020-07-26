@@ -46,7 +46,12 @@
  * sudo make clean install
  * add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
-#### usage
+#### usage as (static) server
+ * `sudo serc` or `sudo serc .`	=> this will start a http server hosting all files in your `pwd`
+ * `sudo serc ./public`			=> this will start a http server to host all your files in ./public directory
+ * `sudo serc ./public ./con/server`	=> this will start a https server to host all your files in ./public directory, the public key and certificates will be "./con/server.crt" and  private key will be "./con/server.key" 
+
+#### usage as framework
  * route.py <routing_file_1> <routing_file_2> <routing_file_3> ...
  * above step will create distributer.c file in your `pwd`
  * you can you compile your source with this distributer.c
