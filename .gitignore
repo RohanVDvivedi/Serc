@@ -12,3 +12,6 @@
 
 # ignore the created distributor.c files, in any port of the project
 **/distributer.c
+
+# serc server that we build for sample is named serc
+bin/serc
