@@ -81,18 +81,17 @@ def getHashValue(s):
 # else it will copy paste the same line from templateFile to the codeFile
 def replaceLineWithCode(templateFileName,codeFileName,compareCodeHash):
 	global dir_path
-	Templatefile = open(dir_path + "/" + templateFileName,"r");
-	codefile = open(dir_path + "/" + codeFileName,"w");
+	templatefile = open(dir_path + "/" + templateFileName,"r");
+	codefile = open(codeFileName,"w");
 
-	#replace case string for the comment "//@switchcase\n" in c fil
-	for line in Templatefile:
+	for line in templatefile:
 		test = line
 		if test in compareCodeHash:
 			codefile.write(compareCodeHash[line])
 		else:
 			codefile.write(line)
 
-	Templatefile.close();
+	templatefile.close();
 	codefile.close();
 
 # read all commandline args
@@ -100,8 +99,8 @@ command_line_args = sys.argv.copy()[1:]
 
 # below is the list of http methods supported by the serc framework
 supported_methods = ["GET", "POST", "PUT", "DELETE",
-			"HEAD", "PATCH", "OPTIONS",
-			"TRACE", "CONNECT"]
+					"HEAD", "PATCH", "OPTIONS",
+					"TRACE", "CONNECT"]
 
 # all the routing are stored in a global dictionary
 # hence as each routing file is used conflicts are resolved by
@@ -299,8 +298,8 @@ for function_name in controllers_list :
 
 
 replaceLineWithCode(
-						"../pyt/distributer_source.temp",
-						"../src/distributer.c",
+						"distributer_source.temp",
+						"distributer.c",
 						{
 							"//@controller_definitions\n":declarations,
 							"//@switch_case\n":case_string

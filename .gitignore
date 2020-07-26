@@ -9,3 +9,6 @@
 # ignore ssl certificates and pkey files
 *.crt
 *.key
+
+# ignore the created distributor.c files, in any port of the project
+**/distributer.c
