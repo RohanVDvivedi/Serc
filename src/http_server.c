@@ -1,8 +1,11 @@
 #include<http_server.h>
 
+#include<signal.h>
+
 volatile int listen_fd = -1;
-void intHandler(int dummy)
+static void intHandler(int signum)
 {
+	printf("Caught signal %d\n", signum);
 	if(listen_fd != -1)
     	server_stop(listen_fd);
 }
@@ -22,6 +25,7 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 	if(SSL_KEYS_CERTS != NULL)
 		sgp.server_ssl_ctx = create_gbl_server_ssl_ctx(SSL_KEYS_CERTS);
 
+	signal(SIGINT, intHandler);
 	serve(&cgp, &sgp, http_connection_handler, 100, &listen_fd);
 
 	if(sgp.server_ssl_ctx != NULL)

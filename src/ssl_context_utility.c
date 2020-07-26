@@ -19,9 +19,8 @@ void load_certificates(SSL_CTX* server_ssl_ctx, char* SSL_PUBLIC_KEY_AND_CERTIFI
 
 SSL_CTX* create_gbl_server_ssl_ctx(char* pub_cert_priv_key_file)
 {
-	SSL_library_init();
-    OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
+	SSL_library_init();
 
     SSL_CTX* server_ssl_ctx = NULL;
 

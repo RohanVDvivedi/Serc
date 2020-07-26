@@ -64,11 +64,17 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	// if the file is not in cache, check if the file even exists
 	// if the file does not exist, or if it is a folder in the server root, we return with -1
 	if(access(file_path.cstring, R_OK) != 0)
+	{
+		deinit_dstring(&(file_path));
 		return -1;
+	}
 	struct stat file_stat;
 	stat(file_path.cstring, &file_stat);
 	if(S_ISDIR(file_stat.st_mode))
+	{
+		deinit_dstring(&(file_path));
 		return -1;
+	}
 
 	// Now the file exists and so the cache has to be updated
 
