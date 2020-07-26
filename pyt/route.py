@@ -40,15 +40,60 @@ example. :
 
 """
 
+# for parsing the routing.con file
+import json
+# for reading and writing files from disk
+# and also accessing the command line variables passed
+import sys
+# to get path of the current file
+import os
 
-import json;
-import strhsh;
-import replace;
+# gets the directory path where the script is stored
+# the template file distributer_source.temp, must be stored right beside the script file
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
+# same as getHashValue function in c in strhsh (it must be same as the implementation you find in c source code of serc)
+# this has function will also be encountered in c (src/strhsh,h), which helps in routing request by hashing them
+def getHashValue(s):
+	ans = 0;i = 1;last = 0;curr = 0;diff = 0;lastoccur = [0] * 128;iter_i = 0
+	while iter_i < len(s) :
+		curr = ( ord(s[iter_i]) & 0x7f )
+		if( i == 1 ):
+			diff = 1
+		else:
+			diff = abs( last - curr ) + 1
+		delta = curr * i * diff * (i - lastoccur[curr])
+		ans = ans + delta;
+		iter_i+=1
+		last = curr
+		lastoccur[curr] = i
+		i+=1
+		if i%5 == 0 :
+			ans = ans + ((ans%13)*(diff+2)*(diff%3)*(int(diff/7))) + ((ans%29)*last) + ((ans%37)*curr) + (ans%11)
+	return ans
 
+# the below function takes a template filename and code file name to edit
+# it checks for each line in templateFile,
+# if that line is found as key in the compareCodeHash, 
+# them the value corresponding to the key in compareCodeHash, is pasted in the codeFile
+# else it will copy paste the same line from templateFile to the codeFile
+def replaceLineWithCode(templateFileName,codeFileName,compareCodeHash):
+	global dir_path
+	Templatefile = open(dir_path + "/" + templateFileName,"r");
+	codefile = open(dir_path + "/" + codeFileName,"w");
+
+	#replace case string for the comment "//@switchcase\n" in c fil
+	for line in Templatefile:
+		test = line
+		if test in compareCodeHash:
+			codefile.write(compareCodeHash[line])
+		else:
+			codefile.write(line)
+
+	Templatefile.close();
+	codefile.close();
 
 # read all commandline args
-import sys
 command_line_args = sys.argv.copy()[1:]
 
 # below is the list of http methods supported by the serc framework
@@ -251,11 +296,11 @@ for function_name in controllers_list :
 
 
 
-replace.replaceLineWithCode(
-								"../pyt/distributer_source.temp",
-								"../src/distributer.c",
-								{
-									"//@controller_definitions\n":declarations,
-									"//@switch_case\n":case_string
-								}
-							)
+replaceLineWithCode(
+						"../pyt/distributer_source.temp",
+						"../src/distributer.c",
+						{
+							"//@controller_definitions\n":declarations,
+							"//@switch_case\n":case_string
+						}
+					)
