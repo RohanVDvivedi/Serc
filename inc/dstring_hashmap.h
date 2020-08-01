@@ -28,6 +28,8 @@ void insert_in_dmap_cstr(dmap* dmapp, char* key, void* value);
 
 int remove_from_dmap(dmap* dmapp, dstring* key);
 
+int remove_from_dmap_cstr(dmap* dmapp, char* key);
+
 void remove_all_from_dmap(dmap* dmapp);
 
 void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, void* value, const void* additional_params), const void* additional_params);

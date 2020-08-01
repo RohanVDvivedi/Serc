@@ -45,7 +45,10 @@ void insert_in_dmap_cstr(dmap* dmapp, char* key, void* value)
 		return;
 	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = {.cstring = key}}));
 	if(dent != NULL)
+	{
+		dmapp->value_destroyer(dent->value);
 		dent->value = value;
+	}
 	else
 	{
 		rehash_if_necessary(dmapp);
@@ -59,7 +62,10 @@ void insert_in_dmap(dmap* dmapp, dstring* key, void* value)
 		return;
 	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = {.cstring = key->cstring}}));
 	if(dent != NULL)
+	{
+		dmapp->value_destroyer(dent->value);
 		dent->value = value;
+	}
 	else
 	{
 		rehash_if_necessary(dmapp);
@@ -72,6 +78,19 @@ int remove_from_dmap(dmap* dmapp, dstring* key)
 	if(key == NULL)
 		return 0;
 	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = ((dstring){.cstring = key->cstring})}));
+	int removed = 0;
+	if(dent != NULL)
+		removed = remove_from_hashmap(&(dmapp->map), dent);
+	if(removed)
+		delete_dentry(dent, dmapp->value_destroyer);
+	return removed;
+}
+
+int remove_from_dmap_cstr(dmap* dmapp, char* key)
+{
+	if(key == NULL)
+		return 0;
+	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = ((dstring){.cstring = key})}));
 	int removed = 0;
 	if(dent != NULL)
 		removed = remove_from_hashmap(&(dmapp->map), dent);

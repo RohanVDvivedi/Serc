@@ -103,58 +103,30 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 // Methods common to both Request and response
 void addHeader(char* Key, char* Value, dmap* headers)
 {
-	if(Key == NULL || Value == NULL)
-		return;
-
-	dstring* key = get_dstring(Key, 0);
+	dstring key; init_dstring(&key, Key, 0);
 	dstring* value = get_dstring(Value, 0);
-	toLowercase(key);
+	toLowercase(&key);
 	toLowercase(value);
-	insert_in_dmap(headers, key, value);
+	insert_in_dmap(headers, &key, value);
 }
 
 void addParameter(char* Key, char* Value, dmap* parameters)
 {
-	if(Key == NULL || Value == NULL)
-		return;
-
-	dstring* key = get_dstring(Key, 0);
-	dstring* value = get_dstring(Value, 0);
-	insert_in_dmap(parameters, key, value);
+	insert_in_dmap_cstr(parameters, Key, get_dstring(Value, 0));
 }
 
 int removeHeader(char* Key, dmap* headers)
 {
-	if(Key == NULL)
-		return 1;
-
-	dstring key; init_dstring(&key, Key, 0);
-	toLowercase(&key);
-
-	int res = remove_from_dmap(headers, &key);
-
-	deinit_dstring(&key);
-	return res;
+	return remove_from_dmap_cstr(headers, Key);
 }
 
 int removeParameter(char* Key, dmap* parameters)
 {
-	if(Key == NULL)
-		return 1;
-
-	dstring key; init_dstring(&key, Key, 0);
-
-	int res = remove_from_dmap(parameters, &key);
-
-	deinit_dstring(&key);
-	return res;
+	return remove_from_dmap_cstr(parameters, Key);
 }
 
 int hasHeader(char* Key, char* Value, dmap* headers)
 {
-	if(Key == NULL || Value == NULL)
-		return 0;
-
 	dstring key; init_dstring(&key, Key, 0);
 	toLowercase(&key);
 
@@ -177,9 +149,6 @@ int hasHeader(char* Key, char* Value, dmap* headers)
 
 int hasHeaderWithKey(char* Key, dmap* headers)
 {
-	if(Key == NULL)
-		return 0;
-
 	dstring key; init_dstring(&key, Key, 0);
 	toLowercase(&key);
 
@@ -187,17 +156,11 @@ int hasHeaderWithKey(char* Key, dmap* headers)
 
 	deinit_dstring(&key);
 
-	if(value != NULL)
-		return 1;
-	else
-		return 0;
+	return value != NULL;
 }
 
 dstring* getHeaderValueWithKey(char* Key, dmap* headers)
 {
-	if(Key == NULL)
-		return NULL;
-
 	dstring key; init_dstring(&key, Key, 0);
 	toLowercase(&key);
 
