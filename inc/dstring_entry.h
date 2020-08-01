@@ -6,7 +6,7 @@
 typedef struct dentry dentry;
 struct dentry
 {
-	dstring* key;
+	dstring key;
 
 	// cached hashvalue of the key
 	unsigned int key_hash_value;
@@ -14,7 +14,7 @@ struct dentry
 	void* value;
 };
 
-dentry* get_dentry(dstring* key, void* value);
+dentry* get_dentry(char* key, void* value);
 
 int key_compare_dentry(const void* entry1, const void* entry2);
 
