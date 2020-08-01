@@ -22,9 +22,9 @@ void* find_equals_in_dmap(dmap* dmapp, dstring* key);
 
 void* find_equals_in_dmap_cstr(dmap* dmapp, char* key);
 
-int insert_in_dmap(dmap* dmapp, dstring* key, void* value);
+void insert_in_dmap(dmap* dmapp, dstring* key, void* value);
 
-int insert_in_dmap_cstr(dmap* dmapp, char* key, void* value);
+void insert_in_dmap_cstr(dmap* dmapp, char* key, void* value);
 
 int remove_from_dmap(dmap* dmapp, dstring* key);
 
