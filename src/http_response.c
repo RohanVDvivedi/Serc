@@ -134,6 +134,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 					insert_in_dmap(&(hr->headers), key, (*(partialDstring)));
+					free(key);
 					*Rstate = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
