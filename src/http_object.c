@@ -3,21 +3,13 @@
 char charToHex(char c)
 {
 	if( '0' <= c && c <= '9' )
-	{
 		return c - '0';
-	}
 	else if('a' <= c && c <= 'f')
-	{
 		return c - 'a' + 10;
-	}
 	else if('A' <= c && c <= 'F')
-	{
 		return c - 'A' + 10;
-	}
 	else
-	{
 		return 'N';
-	}
 }
 
 void urlToString(char* path_param_str)
@@ -32,9 +24,7 @@ void urlToString(char* path_param_str)
 			ptemp+=2;
 		}
 		else
-		{
 			*update = *ptemp;
-		}
 		update++;
 		ptemp++;
 	}
@@ -45,33 +35,22 @@ char hexToChar(char hex)
 {
 	hex = hex & 0x0f;
 	if( 0 <= hex && hex <= 9 )
-	{
 		return hex + '0';
-	}
-	else
-	{
-		return (hex - 10) + 'a';
-	}
+	return (hex - 10) + 'a';
 }
 
 int characterAllowedInURL(char c)
 {
 	if( ('0'<=c && c<='9') || ('a'<=c && c<='z') || ('A'<=c && c<='Z') )
-	{
 		return 1;
-	}
 	switch(c)
 	{
 		case '$' :	case '-' :	case '_' :	case '.' :
 		case '+' :	case '!' :	case '*' :	case '\'' :
 		case '(' :	case ')' :	case ',' :
-		{
 			return 1;
-		}
 		default :
-		{
 			return 0;
-		}
 	}
 }
 
