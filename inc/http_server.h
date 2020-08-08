@@ -1,6 +1,8 @@
 #ifndef SERVE_H
 #define SERVE_H
 
+#include<signal.h>
+
 #include<server.h>
 
 #include<http_https_connection_handler.h>

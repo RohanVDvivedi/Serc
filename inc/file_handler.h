@@ -5,32 +5,36 @@
 #include<sys/stat.h>
 #include<unistd.h>
 
-#include<rwlock.h>
-#include<dstring_hashmap.h>
+#include<cashed_hashtable.h>
 
-typedef struct file_content_cache file_content_cache;
-struct file_content_cache
+typedef struct file_cache file_cache;
+struct file_cache
 {
+	// this is the root path to the folder that we are serving using this server
 	char* root_path;
-	dmap file_content_cache_hashmap;
-	rwlock file_content_cache_hashmap_rwlock;
+
+	// this is the cashtable where the server will cache the files that it will read from the disk
+	// contents of each file is stored against its relative filepath
+	cashtable file_cache_table;
 };
 
-// this will initialize the file cache
-// you must call this function before using 
-// the file_handlers read_file_in_dstring function
-file_content_cache* get_file_content_cache(char* root_path);
+// this will create the file cache, for your server
+file_cache* get_file_cache(char* root_path);
 
-// this method returns -1, if the file is absent, else 0 if no error
-// we go to the disk, read file, cache it, and return you the contents aswell, so next time we can serve you faster
-int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* relative_file_path);
+// this method returns -1, if the file is absent on th disk, else 0 if no error
+// the file if found in file_cache_table, it will be appended in append_file_contents
+// else we will go to disk and find the file and append it to append_file_contents, 
+// and save it to the cashtable against ite relative path
+int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring* relative_file_path);
 
 // this function can be used to clear all the contents of the cache,
-// this does not destroy the content cache, hence the object can be reused to cache more other files
-void clear_file_content_cache(file_content_cache* fcc_p);
+// this does not destroy the file cache, hence the object can be reused to cache more other files
+void clear_file_cache(file_cache* fc);
 
 // it will clear the cache completely and delete the struct then, hence releasing all the resources
-void delete_file_content_cache(file_content_cache* fcc_p);
+void delete_file_cache(file_cache* fc);
+
+// UTILITY FUNCTION
 
 // extension_result is appended with the extension from the file_path, only a utility function
 void get_extension_from_file_path(dstring* extension_result, dstring* file_path);

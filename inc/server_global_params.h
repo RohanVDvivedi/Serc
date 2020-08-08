@@ -10,9 +10,8 @@ struct server_global_params
 	// if non NULL, this is will be handled as https connection, else an http connection
 	SSL_CTX* server_ssl_ctx;
 
-	// this is the file content cache for the server
-	// this is where the server will cache the files that it will read from the disk, once it serves them for the first time
-	file_content_cache* files_cached;
+	// below parameter helps in serving static files
+	file_cache* server_file_cache;
 };
 
 #endif

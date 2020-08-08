@@ -36,6 +36,7 @@
 * ConnMan
 * ReaderWriterLock
 * JsonParser
+* Cashed
 * zlib		($ sudo apt install zlib1g-dev)
 * openssl	($ sudo apt-get install libssl-dev)
 
@@ -44,7 +45,7 @@
  * git clone https://github.com/RohanVDvivedi/c_template_application.git
  * cd c_template_application
  * sudo make clean install
- * add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
+ * add "-lserc -lcashed -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
 #### usage as (static) server
  * `serc` or `serc --root=.`	=> this will start a http server hosting all files in your `pwd`

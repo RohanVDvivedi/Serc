@@ -9,6 +9,6 @@
 #include<http_request.h>
 #include<http_response.h>
 
-int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_content_cache* fcc_p, int* routing_resolved);
+int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache, int* routing_resolved);
 
 #endif

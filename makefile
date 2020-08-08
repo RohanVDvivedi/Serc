@@ -27,7 +27,7 @@ BINARY:=${BIN_DIR}/serc
 # compiler flags
 CFLAGS=-Wall -O3 -I${INC_DIR} -I${CON_DIR}
 # linker flags, this will used to compile the binary
-LFLAGS=-L${LIB_DIR} -lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto
+LFLAGS=-L${LIB_DIR} -lserc -lcashed -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto
 
 # rule to make the object directory
 ${OBJ_DIR} :
