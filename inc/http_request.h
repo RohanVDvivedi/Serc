@@ -6,7 +6,7 @@
 #include<http_object.h>
 
 #include<http_method.h>
-#include<http_parse_state.h>
+#include<http_parse_context.h>
 
 #include<zlib_compression_wrapper.h>
 
@@ -30,7 +30,7 @@ struct HttpRequest
 void initHttpRequest(HttpRequest* hr);
 
 // parse string to populate HttpRequest
-int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseState* state, dstring** partialDstring);
+int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContext* httpCntxt);
 
 // serialize HttpRequest and append to dstring to send over network or to print
 void serializeRequest(dstring* result, HttpRequest* hr);

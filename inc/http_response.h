@@ -6,7 +6,7 @@
 #include<http_object.h>
 
 #include<http_status.h>
-#include<http_parse_state.h>
+#include<http_parse_context.h>
 
 #include<zlib_compression_wrapper.h>
 
@@ -26,7 +26,7 @@ struct HttpResponse
 void initHttpResponse(HttpResponse* hr);
 
 // parse string to populate HttpResponse
-int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring);
+int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt);
 
 // serialize HttpResponse and append to dstring to send over network or to print
 void serializeResponse(dstring* result, HttpResponse* hr);

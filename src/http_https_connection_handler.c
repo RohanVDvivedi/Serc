@@ -34,8 +34,7 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 		int buffreadlength = -1;
 
 		// this is how we maintain, the state of the HTTP parser
-		HttpParseState Rstate = NOT_STARTED;
-		dstring* partialDstring = NULL;
+		HttpParseContext httpCntxt;	initHttpParseContext(&httpCntxt);
 
 		// create a new HttpRequest Object
 		HttpRequest hrq; initHttpRequest(&hrq);
@@ -62,7 +61,7 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			}
 
 			// parse the RequestString to populate HttpRequest Object
-			error = parseRequest(bufferRequest, buffreadlength, &hrq, &Rstate, &partialDstring);
+			error = parseRequest(bufferRequest, buffreadlength, &hrq, &httpCntxt);
 			if(error == ERROR_OCCURRED_REQUEST_NOT_STANDARD_HTTP)
 			{
 				break;
@@ -73,12 +72,15 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			}
 
 			// if the request object parsing is completed then exit
-			if(Rstate == PARSED_SUCCESSFULLY)
+			if(httpCntxt.state == PARSED_SUCCESSFULLY)
 			{
 				error = REQUEST_PARSED_SUCCESSFULLY;
 				break;
 			}
 		}
+
+		// deinitialize the context that you started for parsing
+		deinitHttpParseContext(&httpCntxt);
 
 		if(error == 0)
 		{

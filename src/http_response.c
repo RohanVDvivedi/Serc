@@ -10,25 +10,25 @@ void initHttpResponse(HttpResponse* hr)
 // returns 0 when completed
 // returns -1 on incomplete
 // returns -2 when error
-int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseState* Rstate, dstring** partialDstring)
+int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt)
 {
 	char* buff_start = buffer;
-	while((buffer < (buff_start + buffer_size)) && *Rstate != PARSED_SUCCESSFULLY)
+	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
 	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
-		#define INIT_PARTIAL_STRING() 				(*(partialDstring)) = get_dstring("", 10);
-		#define CLEAR_PARTIAL_STRING() 				(*(partialDstring)) = NULL;
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((*(partialDstring)), temp, 1);
+		#define INIT_PARTIAL_STRING() 				httpCntxt->partialDstring = get_dstring("", 10);
+		#define CLEAR_PARTIAL_STRING() 				httpCntxt->partialDstring = NULL;
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(httpCntxt->partialDstring, temp, 1);
 		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((dstr), temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
-		switch(*Rstate)
+		switch(httpCntxt->state)
 		{
 			case NOT_STARTED :
 			{
 				if('A' <= CURRENT_CHARACTER() || CURRENT_CHARACTER() <= 'Z')
 				{
-					*Rstate = IN_VERSION;
+					httpCntxt->state = IN_VERSION;
 				}
 				else
 				{
@@ -40,7 +40,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == ' ')
 				{
-					*Rstate = VERSION_COMPLETE;
+					httpCntxt->state = VERSION_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -54,7 +54,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if('0' <= CURRENT_CHARACTER() && CURRENT_CHARACTER() <= '9')
 				{
-					*Rstate = IN_STATUS;
+					httpCntxt->state = IN_STATUS;
 				}
 				else
 				{
@@ -66,7 +66,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == ' ')
 				{
-					*Rstate = STATUS_COMPLETE;
+					httpCntxt->state = STATUS_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else if( '0' <= CURRENT_CHARACTER() && CURRENT_CHARACTER() <= '9' )
@@ -82,14 +82,14 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			}
 			case STATUS_COMPLETE :
 			{
-				*Rstate = IN_STATUS_REASON_STRING;
+				httpCntxt->state = IN_STATUS_REASON_STRING;
 				break;
 			}
 			case IN_STATUS_REASON_STRING :
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
-					*Rstate = STATUS_REASON_STRING_COMPLETE;
+					httpCntxt->state = STATUS_REASON_STRING_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -102,7 +102,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					*Rstate = HEADER_START;
+					httpCntxt->state = HEADER_START;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -115,12 +115,12 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
-					*Rstate = HEADERS_COMPLETE;
+					httpCntxt->state = HEADERS_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
 				{
-					*Rstate = IN_HEADER_KEY;
+					httpCntxt->state = IN_HEADER_KEY;
 					INIT_PARTIAL_STRING()
 				}
 				break;
@@ -129,13 +129,13 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					dstring* key = (*(partialDstring));
+					dstring* key = httpCntxt->partialDstring;
 					toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
-					insert_in_dmap(&(hr->headers), key, (*(partialDstring)));
+					insert_in_dmap(&(hr->headers), key, httpCntxt->partialDstring);
 					free(key);
-					*Rstate = HEADER_KEY_COMPLETE;
+					httpCntxt->state = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -149,7 +149,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == ' ')
 				{
-					*Rstate = IN_HEADER_VALUE;
+					httpCntxt->state = IN_HEADER_VALUE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -163,7 +163,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				if(CURRENT_CHARACTER() == '\r')
 				{
 					CLEAR_PARTIAL_STRING()
-					*Rstate = HEADER_VALUE_COMPLETE;
+					httpCntxt->state = HEADER_VALUE_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -177,7 +177,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					*Rstate = HEADER_START;
+					httpCntxt->state = HEADER_START;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -198,13 +198,13 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					}
 					if(body_length == 0)
 					{
-						*Rstate = PARSED_SUCCESSFULLY;
+						httpCntxt->state = PARSED_SUCCESSFULLY;
 						GOTO_NEXT_CHARACTER()
 						return 0;
 					}
 					else
 					{
-						*Rstate = IN_BODY;
+						httpCntxt->state = IN_BODY;
 						GOTO_NEXT_CHARACTER()
 					}
 				}
@@ -225,7 +225,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 					if(body_length >= 0 && body_length == hr->body.bytes_occupied)
 					{
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
-						*Rstate = BODY_COMPLETE;
+						httpCntxt->state = BODY_COMPLETE;
 					}
 					else
 					{
@@ -235,7 +235,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				}
 				else if(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "chunked") != NULL )
 				{
-					*Rstate = IN_BODY_CHUNK_SIZE;
+					httpCntxt->state = IN_BODY_CHUNK_SIZE;
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 				}
@@ -249,7 +249,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
-					*Rstate = BODY_CHUNK_SIZE_COMPLETE;
+					httpCntxt->state = BODY_CHUNK_SIZE_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
@@ -263,17 +263,14 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					// we here are using the state_level variable, 
-					// of dstring to store the bytes to read for this chunk
-					// we store how many bytes we still have to read, in this variables
-					sscanf((*partialDstring)->cstring, "%x", &((*partialDstring)->state_level));
+					sscanf(httpCntxt->partialDstring->cstring, "%x", &(httpCntxt->bodyBytesToRead));
 
-					*Rstate = IN_BODY_CHUNK_CONTENT;
+					httpCntxt->state = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
 				{
-					delete_dstring(*partialDstring);
+					delete_dstring(httpCntxt->partialDstring);
 					CLEAR_PARTIAL_STRING()
 					return -2;
 				}
@@ -281,15 +278,15 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			}
 			case IN_BODY_CHUNK_CONTENT :
 			{
-				if(CURRENT_CHARACTER() == '\r' && (*partialDstring)->state_level == 0)
+				if(CURRENT_CHARACTER() == '\r' && httpCntxt->bodyBytesToRead == 0)
 				{
-					*Rstate = BODY_CHUNK_CONTENT_COMPLETE;
+					httpCntxt->state = BODY_CHUNK_CONTENT_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
 				{
 					APPEND_CURRENT_CHARACTER_TO(&(hr->body))
-					(*partialDstring)->state_level--;
+					httpCntxt->bodyBytesToRead--;
 					GOTO_NEXT_CHARACTER()
 				}
 				break;
@@ -299,17 +296,17 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				if(CURRENT_CHARACTER() == '\n')
 				{
 					long long int chunk_length = -1;
-					sscanf((*partialDstring)->cstring, "%llx", &chunk_length);
+					sscanf(httpCntxt->partialDstring->cstring, "%llx", &chunk_length);
 					if(chunk_length == 0)
 					{
-						*Rstate = BODY_COMPLETE;
-						delete_dstring(*partialDstring);
+						httpCntxt->state = BODY_COMPLETE;
+						delete_dstring(httpCntxt->partialDstring);
 						CLEAR_PARTIAL_STRING()
 					}
 					else
 					{
-						*Rstate = IN_BODY_CHUNK_SIZE;
-						delete_dstring(*partialDstring);
+						httpCntxt->state = IN_BODY_CHUNK_SIZE;
+						delete_dstring(httpCntxt->partialDstring);
 						CLEAR_PARTIAL_STRING()
 						INIT_PARTIAL_STRING()
 						GOTO_NEXT_CHARACTER()
@@ -317,7 +314,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 				}
 				else
 				{
-					delete_dstring(*partialDstring);
+					delete_dstring(httpCntxt->partialDstring);
 					CLEAR_PARTIAL_STRING()
 					return -2;
 				}
@@ -327,7 +324,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseStat
 			{
 				if(buffer == buff_start + buffer_size - 1)
 				{
-					*Rstate = PARSED_SUCCESSFULLY;
+					httpCntxt->state = PARSED_SUCCESSFULLY;
 					return 0;
 				}
 				else
