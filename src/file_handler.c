@@ -1,37 +1,14 @@
 #include<file_handler.h>
 
-typedef struct file_cache_component file_cache_component;
-struct file_cache_component
+file_cache* get_file_cache(char* root_path)
 {
-	dstring* file_content;
-	rwlock file_content_rwlock;
-};
-
-static file_cache_component* get_file_cache_component()
-{
-	file_cache_component* fcc_component_p = (file_cache_component*)malloc(sizeof(file_cache_component));
-	fcc_component_p->file_content = get_dstring("", 10);
-	initialize_rwlock(&(fcc_component_p->file_content_rwlock));
-	return fcc_component_p;
+	file_cache* fc = malloc(sizeof(file_cache));
+	fc->root_path = root_path;
+	init_cashtable(&(fc->file_cache_table), 30);
+	return fc;
 }
 
-static void delete_file_cache_component(file_cache_component* fcc_component_p)
-{
-	delete_dstring(fcc_component_p->file_content);
-	deinitialize_rwlock(&(fcc_component_p->file_content_rwlock));
-	free(fcc_component_p);
-}
-
-file_content_cache* get_file_content_cache(char* root_path)
-{
-	file_content_cache* fcc_p = (file_content_cache*) malloc(sizeof(file_content_cache));
-	fcc_p->root_path = root_path;
-	initialize_dmap(&(fcc_p->file_content_cache_hashmap), 30, (void(*)(void*))delete_file_cache_component);
-	initialize_rwlock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	return fcc_p;
-}
-
-int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_p, dstring* relative_file_path)
+int read_file_in_dstring(dstring* file_contents_result, file_cache* fc, dstring* relative_file_path)
 {
 	// this is the variable where we will find or make the dstring to store in cache or return
 	file_cache_component* file_content_from_cache = NULL;
@@ -134,18 +111,9 @@ int read_file_in_dstring(dstring* file_contents_result, file_content_cache* fcc_
 	return -1;
 }
 
-void clear_file_content_cache(file_content_cache* fcc_p)
+void delete_file_cache(file_cache* fc)
 {
-	write_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	remove_all_from_dmap(&(fcc_p->file_content_cache_hashmap));
-	write_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
-}
-
-void delete_file_content_cache(file_content_cache* fcc_p)
-{
-	clear_file_content_cache(fcc_p);
-	deinitialize_dmap(&(fcc_p->file_content_cache_hashmap));
-	deinitialize_rwlock(&(fcc_p->file_content_cache_hashmap_rwlock));
+	deinit_cashtable(&(fc->file_cache_table));
 	free(fcc_p);
 }
 
@@ -162,9 +130,7 @@ void get_extension_from_file_path(dstring* extension_result, dstring* path)
 			append_to_dstring(extension_result, temp);
 		}
 		else if((*(path_t)) == '.')
-		{
 			in_extension = 1;
-		}
 		path_t++;
 	}
 }

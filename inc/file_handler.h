@@ -27,10 +27,6 @@ file_cache* get_file_cache(char* root_path);
 // and save it to the cashtable against ite relative path
 int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring* relative_file_path);
 
-// this function can be used to clear all the contents of the cache,
-// this does not destroy the file cache, hence the object can be reused to cache more other files
-void clear_file_cache(file_cache* fc);
-
 // it will clear the cache completely and delete the struct then, hence releasing all the resources
 void delete_file_cache(file_cache* fc);
 
