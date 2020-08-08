@@ -1,1 +1,2 @@
  * dmap to hold dstring value inside of it, ad use it explicitly for headers and parameters only
+ * ssl support for http client
