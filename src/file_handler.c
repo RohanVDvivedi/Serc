@@ -8,34 +8,21 @@ file_cache* get_file_cache(char* root_path)
 	return fc;
 }
 
-int read_file_in_dstring(dstring* file_contents_result, file_cache* fc, dstring* relative_file_path)
+int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring* relative_file_path)
 {
-	// this is the variable where we will find or make the dstring to store in cache or return
-	file_cache_component* file_content_from_cache = NULL;
-
 	// cache hit case ---->>>
 
-	// find the file from the cache, once the file has been requested from the server it gets cached, in page cache
-	read_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	file_content_from_cache = (file_cache_component*)(find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), relative_file_path));
-	// if cache is hit, we read from cache itself
-	if(file_content_from_cache != NULL)
-	{
-		read_lock(&(file_content_from_cache->file_content_rwlock));
-		read_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
-		concatenate_dstring(file_contents_result, file_content_from_cache->file_content);
-		read_unlock(&(file_content_from_cache->file_content_rwlock));
+	int cache_hit = get_cashtable(&(fc->file_cache_table), relative_file_path, append_file_contents);
+
+	if(cache_hit)
 		return 0;
-	}
-	else
-		read_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
 
 	// cache hit case <<<----
 
 	// cache miss case ---->>>
 
 	dstring file_path;
-	init_dstring(&file_path, fcc_p->root_path, 10);
+	init_dstring(&file_path, fc->root_path, relative_file_path->bytes_occupied);
 	concatenate_dstring(&file_path, relative_file_path);
 
 	// if the file is not in cache, check if the file even exists
@@ -53,68 +40,40 @@ int read_file_in_dstring(dstring* file_contents_result, file_cache* fc, dstring*
 		return -1;
 	}
 
-	// Now the file exists and so the cache has to be updated
+    // buffer to read the new file, for which we missed the cache
+    #define FILE_READ_BUFFER_SIZE 1024
+    char file_buffer[FILE_READ_BUFFER_SIZE];
 
-	int file_content_from_cache_is_locked_by_this_thread = 0;
+    // store the actual file contents which were requested in this dstring
+    dstring file_contents;	init_dstring(&file_contents, "", 100);
 
-	// write newly built file cache component to file cache
-	write_lock(&(fcc_p->file_content_cache_hashmap_rwlock));
-	file_content_from_cache = (file_cache_component*)find_equals_in_dmap(&(fcc_p->file_content_cache_hashmap), relative_file_path);
-	if(file_content_from_cache == NULL)
-	{
-		// insert the cache entry, so we do not miss the cache next time
-		file_content_from_cache = get_file_cache_component();
-		write_lock(&(file_content_from_cache->file_content_rwlock));
-		insert_in_dmap_cstr(&(fcc_p->file_content_cache_hashmap), relative_file_path->cstring, file_content_from_cache);
-		file_content_from_cache_is_locked_by_this_thread = 1;
-	}
-	write_unlock(&(fcc_p->file_content_cache_hashmap_rwlock));
-
-	// if we cache miss, we need to go to disk, we go to disk only if we confirm that the file is present
-	if(file_content_from_cache_is_locked_by_this_thread == 1)
-	{	
-    	// open the file
-    	FILE* file = fopen(file_path.cstring, "rb");
-
-    	// buffer to read the new file, for which we missed the cache
-    	#define FILE_READ_BUFFER_SIZE 4000
-    	char file_buffer[FILE_READ_BUFFER_SIZE];
-
-    	// loop- through the file, to put it in cache 
+    // loop through the file, to put it in cache 
+    // open the file
+    FILE* file = fopen(file_path.cstring, "rb");
 		while(!feof(file))
 		{
 			long long int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE, file);
 			if(read_count >= 0)
-			{
-				appendn_to_dstring(file_content_from_cache->file_content, file_buffer, read_count);
-			}
+				appendn_to_dstring(&file_contents, file_buffer, read_count);
 		}
+	fclose(file);
 
-		fclose(file);
+	// concatenate the file result to the append_file_contents
+	// and update the file_cache_tabel
+	set_cashtable(&(fc->file_cache_table), relative_file_path, &file_contents);
+	concatenate_dstring(append_file_contents, &file_contents);
 
-		write_unlock(&(file_content_from_cache->file_content_rwlock));
-	}
-
+	deinit_dstring(&(file_contents));
 	deinit_dstring(&(file_path));
 
-	// if cache has been updated, we read from the cache variable
-	if(file_content_from_cache != NULL)
-	{
-		read_lock(&(file_content_from_cache->file_content_rwlock));
-		concatenate_dstring(file_contents_result, file_content_from_cache->file_content);
-		read_unlock(&(file_content_from_cache->file_content_rwlock));
-		return 0;
-	}
-
+	return 0;
 	// cache miss case <<<----
-
-	return -1;
 }
 
 void delete_file_cache(file_cache* fc)
 {
 	deinit_cashtable(&(fc->file_cache_table));
-	free(fcc_p);
+	free(fc);
 }
 
 void get_extension_from_file_path(dstring* extension_result, dstring* path)
