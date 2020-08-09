@@ -1,20 +1,10 @@
 #include<dstring_entry.h>
 
-dentry* get_dentry(char* key, void* value)
+dentry* get_dentry(char* key, char* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));
 	init_dstring(&(entryp->key), key, 0);
-	entryp->value = value;
-	entryp->key_hash_value = 0;
-	return entryp;
-}
-
-dentry* get_dentry_transferred(dstring* key, void* value)
-{
-	dentry* entryp = malloc(sizeof(dentry));
-	entryp->key = *key;
-	key->cstring = NULL;
-	entryp->value = value;
+	init_dstring(&(entryp->value), value, 0);
 	entryp->key_hash_value = 0;
 	return entryp;
 }
@@ -31,9 +21,9 @@ unsigned int key_hash_dentry(const void* entryp)
 	return ((dentry*)entryp)->key_hash_value;
 }
 
-void delete_dentry(dentry* entryp, void (*value_destroyer)(void* value))
+void delete_dentry(dentry* entryp)
 {
 	deinit_dstring(&(entryp->key));
-	value_destroyer(entryp->value);
+	deinit_dstring(&(entryp->value));
 	free(entryp);
 }
