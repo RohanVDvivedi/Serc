@@ -104,20 +104,24 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 void addHeader(char* Key, char* Value, dmap* headers)
 {
 	dstring key; init_dstring(&key, Key, 0);
-	dstring* value = get_dstring(Value, 0);
+	dstring value; init_dstring(&value, Value, 0);
 	toLowercase(&key);
-	toLowercase(value);
-	insert_in_dmap(headers, &key, value);
+	toLowercase(&value);
+	insert_in_dmap(headers, &key, &value);
 }
 
 void addParameter(char* Key, char* Value, dmap* parameters)
 {
-	insert_in_dmap_cstr(parameters, Key, get_dstring(Value, 0));
+	insert_in_dmap_cstr(parameters, Key, Value);
 }
 
 int removeHeader(char* Key, dmap* headers)
 {
-	return remove_from_dmap_cstr(headers, Key);
+	dstring key; init_dstring(&key, Key, 0);
+	toLowercase(&key);
+	int removed = remove_from_dmap(headers, &key);
+	deinit_dstring(&key);
+	return removed;
 }
 
 int removeParameter(char* Key, dmap* parameters)
@@ -130,17 +134,17 @@ int hasHeader(char* Key, char* Value, dmap* headers)
 	dstring key; init_dstring(&key, Key, 0);
 	toLowercase(&key);
 
-	dstring value; init_dstring(&value, Value, 0);
-	toLowercase(&value);
-
 	dstring* value_test = (dstring*) find_equals_in_dmap(headers, &key);
 
 	deinit_dstring(&key);
 
-	int res = 0;
+	if(value_test == NULL)
+		return 0;
 
-	if(value_test != NULL && compare_dstring(&value, value_test) == 0)
-		res = 1;
+	dstring value; init_dstring(&value, Value, 0);
+	toLowercase(&value);
+
+	int res = (compare_dstring(&value, value_test) == 0);
 
 	deinit_dstring(&value);
 

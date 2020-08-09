@@ -5,8 +5,8 @@ void initHttpRequest(HttpRequest* hr)
 	hr->method = UNIDENTIFIED;
 	init_dstring(&(hr->path), "", 10);
 	init_dstring(&(hr->version), "", 10);
-	initialize_dmap(&(hr->parameters), 3, (void(*)(void*))delete_dstring);
-	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
+	initialize_dmap(&(hr->parameters), 3);
+	initialize_dmap(&(hr->headers), 3);
 	init_dstring(&(hr->body), "", 10);
 }
 
@@ -416,14 +416,14 @@ void serializeRequest(dstring* result, HttpRequest* hr)
 	append_to_dstring(result, " ");
 	serializeUrl(result, hr);
 	append_to_dstring(result, " HTTP/1.1\r\n");
-	for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
+	for_each_in_dmap(&(hr->headers), (void (*)(dstring*, dstring*, const void*))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, &(hr->body));
 }
 
 void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 {
-	char ptemp[3000];
+	char ptemp[13];
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{
@@ -525,9 +525,9 @@ void printRequest(HttpRequest* hr)
 {
 	printf("method : %s\n", serializeHttpMethod(hr->method));
 	printf("path : "); display_dstring(&(hr->path)); printf("\n");
-	printf("parameters : \n"); for_each_in_dmap(&(hr->parameters), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
+	printf("parameters : \n"); for_each_in_dmap(&(hr->parameters), print_entry_wrapper, NULL); printf("\n");
 	printf("version : "); display_dstring(&(hr->version)); printf("\n");
-	printf("headers : \n"); for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
+	printf("headers : \n"); for_each_in_dmap(&(hr->headers), print_entry_wrapper, NULL); printf("\n");
 	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
 }
 
@@ -550,10 +550,10 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 		}
 		append_to_dstring(result, temp);
 	}
-	if(hr->parameters.map.occupancy > 0)
+	if(hr->parameters.occupancy > 0)
 	{
 		append_to_dstring(result, "?");
-		for_each_in_dmap(&(hr->parameters), (void (*)(dstring *, void *, const void *))serialize_parameter_entry, result);
+		for_each_in_dmap(&(hr->parameters), (void (*)(dstring*, dstring*, const void *))serialize_parameter_entry, result);
 		result->bytes_occupied--;
 		result->cstring[result->bytes_occupied-1] = '\0';
 	}

@@ -3,7 +3,7 @@
 void initHttpResponse(HttpResponse* hr)
 {
 	init_dstring(&(hr->version), "", 10);
-	initialize_dmap(&(hr->headers), 3, (void(*)(void*))delete_dstring);
+	initialize_dmap(&(hr->headers), 3);
 	init_dstring(&(hr->body), "", 10);
 }
 
@@ -345,14 +345,14 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
 	append_to_dstring(result, getHttpResponseStatus(hr->status));
-	for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))serialize_header_entry, result);
+	for_each_in_dmap(&(hr->headers), (void (*)(dstring*, dstring*, const void*))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, &(hr->body));
 }
 
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
-	char ptemp[3000];
+	char ptemp[13];
 	sprintf(ptemp, "%u", hrp->body.bytes_occupied-1);
 	addHeader("content-length", ptemp, &(hrp->headers));
 	addHeader("server", "serc0", &(hrp->headers));
@@ -441,7 +441,7 @@ void deinitHttpResponse(HttpResponse* hr)
 void printResponse(HttpResponse* hr)
 {
 	printf("status : %d\n", hr->status);
-	printf("headers : \n"); for_each_in_dmap(&(hr->headers), (void (*)(dstring *, void *, const void *))print_entry_wrapper, NULL); printf("\n");
+	printf("headers : \n"); for_each_in_dmap(&(hr->headers), print_entry_wrapper, NULL); printf("\n");
 	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
 }
 
@@ -449,12 +449,8 @@ void redirectTo(int with_status, char* new_path, HttpResponse* hrp)
 {
 	// we need to make sure that the with_status provided by the user is 3xx
 	if(with_status != -1 && (with_status%100 == 3) )
-	{
 		hrp->status = with_status;
-	}
 	else
-	{
 		hrp->status = 303;
-	}
 	addHeader("Location", new_path, &(hrp->headers));
 }
