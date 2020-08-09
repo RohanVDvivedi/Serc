@@ -3,12 +3,11 @@
 void initHttpParseContext(HttpParseContext* httpCntxt)
 {
 	httpCntxt->state = NOT_STARTED;
-	httpCntxt->partialDstring = NULL;
+	init_dstring(&(httpCntxt->partialDstring), "", 0);
 	httpCntxt->bodyBytesToRead = 0;
 }
 
 void deinitHttpParseContext(HttpParseContext* httpCntxt)
 {
-	if(httpCntxt->partialDstring != NULL)
-		delete_dstring(httpCntxt->partialDstring);
+	deinit_dstring(&(httpCntxt->partialDstring));
 }

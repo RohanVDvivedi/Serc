@@ -38,7 +38,7 @@ typedef struct HttpParseContext HttpParseContext;
 struct HttpParseContext
 {
 	HttpParseState state;
-	dstring* partialDstring;
+	dstring partialDstring;
 	int bodyBytesToRead;
 };
 
