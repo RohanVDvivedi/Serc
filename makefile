@@ -25,7 +25,7 @@ LIBRARY:=${LIB_DIR}/libserc.a
 BINARY:=${BIN_DIR}/serc
 
 # compiler flags
-CFLAGS=-Wall -O3 -I${INC_DIR} -I${CON_DIR}
+CFLAGS=-Wall -O3 -I${INC_DIR}
 # linker flags, this will used to compile the binary
 LFLAGS=-L${LIB_DIR} -lserc -lcashed -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto
 
@@ -56,6 +56,9 @@ ${LIBRARY} : ${OBJECTS} | ${LIB_DIR}
 # generic rule to make a binary using the library that we just created
 ${BINARY} : ./server.c ./distributer.c ${LIBRARY} | ${BIN_DIR}
 	${CC} ${CFLAGS} $< ./distributer.c ${LFLAGS} -o $@
+
+test_client : ./client.c ${LIBRARY}
+	${CC} ${CFLAGS} $< ${LFLAGS} -o $@
 
 # to build the binary along with the library, if your project has a binary aswell
 all : ${BINARY}

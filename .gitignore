@@ -15,3 +15,6 @@
 
 # serc server that we build for sample is named serc
 bin/serc
+
+# this is the test client
+test_client
