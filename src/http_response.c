@@ -17,9 +17,8 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
-		#define INIT_PARTIAL_STRING() 				httpCntxt->partialDstring = get_dstring("", 10);
-		#define CLEAR_PARTIAL_STRING() 				httpCntxt->partialDstring = NULL;
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(httpCntxt->partialDstring, temp, 1);
+		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(httpCntxt->partialDstring));
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(&(httpCntxt->partialDstring), temp, 1);
 		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((dstr), temp, 1);
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(httpCntxt->state)
@@ -121,7 +120,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 				else
 				{
 					httpCntxt->state = IN_HEADER_KEY;
-					INIT_PARTIAL_STRING()
+					RE_INIT_PARTIAL_STRING()
 				}
 				break;
 			}
@@ -129,12 +128,12 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					dstring* key = httpCntxt->partialDstring;
+					/*dstring* key = httpCntxt->partialDstring;
 					toLowercase(key);
 					CLEAR_PARTIAL_STRING()
 					INIT_PARTIAL_STRING()
 					insert_in_dmap(&(hr->headers), key, httpCntxt->partialDstring);
-					free(key);
+					free(key);*/
 					httpCntxt->state = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -162,7 +161,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
-					CLEAR_PARTIAL_STRING()
+					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_VALUE_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -236,8 +235,6 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 				else if(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "chunked") != NULL )
 				{
 					httpCntxt->state = IN_BODY_CHUNK_SIZE;
-					CLEAR_PARTIAL_STRING()
-					INIT_PARTIAL_STRING()
 				}
 				else
 				{
@@ -254,7 +251,8 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 				}
 				else
 				{
-					APPEND_CURRENT_CHARACTER_PARTIAL()
+					httpCntxt->bodyBytesToRead <<= 4;
+					httpCntxt->bodyBytesToRead |= charToHex(*buffer);
 					GOTO_NEXT_CHARACTER()
 				}
 				break;
@@ -263,22 +261,18 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					sscanf(httpCntxt->partialDstring->cstring, "%x", &(httpCntxt->bodyBytesToRead));
-
 					httpCntxt->state = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
 				{
-					delete_dstring(httpCntxt->partialDstring);
-					CLEAR_PARTIAL_STRING()
 					return -2;
 				}
 				break;
 			}
 			case IN_BODY_CHUNK_CONTENT :
 			{
-				if(CURRENT_CHARACTER() == '\r' && httpCntxt->bodyBytesToRead == 0)
+				if(CURRENT_CHARACTER() == '\r')
 				{
 					httpCntxt->state = BODY_CHUNK_CONTENT_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -286,7 +280,6 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 				else
 				{
 					APPEND_CURRENT_CHARACTER_TO(&(hr->body))
-					httpCntxt->bodyBytesToRead--;
 					GOTO_NEXT_CHARACTER()
 				}
 				break;
@@ -295,27 +288,19 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
-					long long int chunk_length = -1;
-					sscanf(httpCntxt->partialDstring->cstring, "%llx", &chunk_length);
-					if(chunk_length == 0)
+					if(httpCntxt->bodyBytesToRead == 0)
 					{
 						httpCntxt->state = BODY_COMPLETE;
-						delete_dstring(httpCntxt->partialDstring);
-						CLEAR_PARTIAL_STRING()
 					}
 					else
 					{
 						httpCntxt->state = IN_BODY_CHUNK_SIZE;
-						delete_dstring(httpCntxt->partialDstring);
-						CLEAR_PARTIAL_STRING()
-						INIT_PARTIAL_STRING()
+						httpCntxt->bodyBytesToRead = 0;
 						GOTO_NEXT_CHARACTER()
 					}
 				}
 				else
 				{
-					delete_dstring(httpCntxt->partialDstring);
-					CLEAR_PARTIAL_STRING()
 					return -2;
 				}
 				break;

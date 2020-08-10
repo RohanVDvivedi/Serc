@@ -34,11 +34,9 @@ void serialize_header_entry(dstring* key, dstring* value, dstring* result);
 // functions common to request and response both
 // add Header in HttpResponse 
 void addHeader(char* Key, char* Value, dmap* headers);
-void addParameter(char* Key, char* Value, dmap* parameters);
 
 // it will remove a header, with Key if present, if a header gets deleted, 1 is returned
 int removeHeader(char* Key, dmap* headers);
-int removeParameter(char* Key, dmap* parameters);
 
 // has header with key:value pair, returns 1 if key:value entry is present
 int hasHeader(char* Key, char* Value, dmap* headers);

@@ -106,13 +106,7 @@ void addHeader(char* Key, char* Value, dmap* headers)
 	dstring key; init_dstring(&key, Key, 0);
 	dstring value; init_dstring(&value, Value, 0);
 	toLowercase(&key);
-	toLowercase(&value);
 	insert_in_dmap(headers, &key, &value);
-}
-
-void addParameter(char* Key, char* Value, dmap* parameters)
-{
-	insert_in_dmap_cstr(parameters, Key, Value);
 }
 
 int removeHeader(char* Key, dmap* headers)
@@ -122,11 +116,6 @@ int removeHeader(char* Key, dmap* headers)
 	int removed = remove_from_dmap(headers, &key);
 	deinit_dstring(&key);
 	return removed;
-}
-
-int removeParameter(char* Key, dmap* parameters)
-{
-	return remove_from_dmap_cstr(parameters, Key);
 }
 
 int hasHeader(char* Key, char* Value, dmap* headers)
@@ -141,14 +130,7 @@ int hasHeader(char* Key, char* Value, dmap* headers)
 	if(value_test == NULL)
 		return 0;
 
-	dstring value; init_dstring(&value, Value, 0);
-	toLowercase(&value);
-
-	int res = (compare_dstring(&value, value_test) == 0);
-
-	deinit_dstring(&value);
-
-	return res;
+	return (strcmp(Value, value_test->cstring) == 0);
 }
 
 int hasHeaderWithKey(char* Key, dmap* headers)
