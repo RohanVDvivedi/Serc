@@ -58,19 +58,7 @@ void insert_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 {
 	if(key == NULL)
 		return;
-	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = {.cstring = key->cstring}}));
-	if(dent != NULL)
-	{
-		if(value == NULL || value->cstring == NULL)
-			make_dstring_empty(&(dent->value));
-		else
-			dent->value = *value;
-	}
-	else
-	{
-		rehash_if_necessary(dmapp);
-		insert_in_hashmap(dmapp, get_dentry_transferred(key, value));
-	}
+	insert_in_dmap_cstr(dmapp, key->cstring, (value == NULL) ? "" : value->cstring);
 }
 
 int remove_from_dmap_cstr(dmap* dmapp, char* key)

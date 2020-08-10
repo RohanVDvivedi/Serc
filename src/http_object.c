@@ -107,6 +107,8 @@ void addHeader(char* Key, char* Value, dmap* headers)
 	dstring value; init_dstring(&value, Value, 0);
 	toLowercase(&key);
 	insert_in_dmap(headers, &key, &value);
+	deinit_dstring(&key);
+	deinit_dstring(&value);
 }
 
 int removeHeader(char* Key, dmap* headers)

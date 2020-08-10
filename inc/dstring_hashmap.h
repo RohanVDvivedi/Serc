@@ -18,7 +18,6 @@ dstring* find_equals_in_dmap(dmap* dmapp, dstring* key);
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key);
 
-// the key and value dstrings are now pointing to NULL
 void insert_in_dmap(dmap* dmapp, dstring* key, dstring* value);
 
 void insert_in_dmap_cstr(dmap* dmapp, char* key, char* value);
