@@ -40,6 +40,7 @@ struct HttpParseContext
 	HttpParseState state;
 	dstring partialDstring;
 	int bodyBytesToRead;
+	int bodyBytesRead;
 };
 
 // you must init HttpParseCntxt every time you start parsing a new request or a new response

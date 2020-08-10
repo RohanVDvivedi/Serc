@@ -328,6 +328,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			{
 				if(CURRENT_CHARACTER() == '\n')
 				{
+					httpCntxt->bodyBytesRead = 0;
 					httpCntxt->state = IN_BODY_CHUNK_CONTENT;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -339,13 +340,14 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			}
 			case IN_BODY_CHUNK_CONTENT :
 			{
-				if(CURRENT_CHARACTER() == '\r')
+				if(CURRENT_CHARACTER() == '\r' && httpCntxt->bodyBytesToRead == httpCntxt->bodyBytesRead)
 				{
 					httpCntxt->state = BODY_CHUNK_CONTENT_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
 				else
 				{
+					httpCntxt->bodyBytesRead++;
 					APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 					GOTO_NEXT_CHARACTER()
 				}
