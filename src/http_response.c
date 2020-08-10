@@ -128,12 +128,9 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					/*dstring* key = httpCntxt->partialDstring;
-					toLowercase(key);
-					CLEAR_PARTIAL_STRING()
-					INIT_PARTIAL_STRING()
-					insert_in_dmap(&(hr->headers), key, httpCntxt->partialDstring);
-					free(key);*/
+					toLowercase(&(httpCntxt->partialDstring));
+					insert_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
+					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
 				}
@@ -161,6 +158,9 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
+					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
+					insert_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
+					remove_from_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_VALUE_COMPLETE;
 					GOTO_NEXT_CHARACTER()

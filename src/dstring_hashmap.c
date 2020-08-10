@@ -67,7 +67,10 @@ int remove_from_dmap_cstr(dmap* dmapp, char* key)
 		return 0;
 	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = ((dstring){.cstring = key})}));
 	if(dent != NULL)
-		return remove_from_hashmap(dmapp, dent);
+	{
+		if(remove_from_hashmap(dmapp, dent))
+			delete_dentry(dent);
+	}
 	return 0;
 }
 
