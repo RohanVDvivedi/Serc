@@ -1,6 +1,6 @@
-# serc
+# Serc
 
-### serc is a http server / c framework for building apis in c
+### Serc is a http server / c framework for building apis in c
 ### It can also be used for serving static webpages
 
 ### Project Directory Description
@@ -14,7 +14,7 @@
  * pyt for .py python helper scripts
  * share for .temp template file ***that python scripts like route.py will use***
 
-### serc enables you to
+### Serc enables you to
  1. Route to your function for a http request for given http path and http method combination, as it is specified in the routing json file (in config directory).
  2. Host static content from SERC_ROOT_PATH, The SERC_ROOT_PATH can be set in config.h header in ./con folder.
 
@@ -27,11 +27,11 @@
 * /pyt/*.temp are the several templates for building the switch case routing logic (source and header files)(controller.h and distributer.c files)
 
 #### Template application
-* Template application as an illustration to use serc framework can be found [here](https://github.com/RohanVDvivedi/serc_template_application)
+* Template application as an illustration to use Serc framework can be found [here](https://github.com/RohanVDvivedi/serc_template_application)
 
 #### Dependencies
-##### Certain libraries must be installed before you can start using serc
-* cutlery
+##### Certain libraries must be installed before you can start using Serc
+* Cutlery
 * BoomPar
 * ConnMan
 * ReaderWriterLock
