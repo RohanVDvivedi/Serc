@@ -6,6 +6,11 @@
 *.DS_store
 *.o
 
+# gitignore anything in any of bin obj or lib folder anywhere
+obj
+lib
+bin
+
 # ignore ssl certificates and pkey files
 *.crt
 *.key
