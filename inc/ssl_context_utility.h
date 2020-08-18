@@ -2,7 +2,6 @@
 #define SSL_GLOBALS_H
 
 #include<openssl/ssl.h>
-#include<openssl/err.h>
 
 #define SSL_SERVER_METHOD TLSv1_2_server_method
 #define SSL_CLIENT_METHOD TLSv1_2_client_method

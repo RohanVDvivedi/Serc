@@ -1,5 +1,7 @@
 #include<http_status.h>
 
+#include<stdio.h>
+
 const char HttpStatusLines[57][50] =
 {
 "HTTP/1.1 100  Continue\r\n",
