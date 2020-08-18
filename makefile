@@ -23,6 +23,8 @@ LIB_DIR:=./lib
 SRC_DIR:=./src
 BIN_DIR:=./bin
 CON_DIR:=./con
+PYT_DIR:=./pyt
+TMP_DIR:=./share
 
 # compiler
 CC:=gcc
