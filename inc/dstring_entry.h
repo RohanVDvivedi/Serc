@@ -1,7 +1,7 @@
 #ifndef DSTRING_ENTRY_H
 #define DSTRING_ENTRY_H
 
-#include<strhsh.h>
+#include<dstring.h>
 
 typedef struct dentry dentry;
 struct dentry
@@ -16,7 +16,8 @@ struct dentry
 
 dentry* get_dentry(char* key, char* value);
 
-int key_compare_dentry(const void* entry1, const void* entry2);
+int key_compare_dentry_CASE_SENSITIVE(const void* entry1, const void* entry2);
+int key_compare_dentry_CASE_INSENSITIVE(const void* entry1, const void* entry2);
 
 unsigned int key_hash_dentry(const void* entryp);
 

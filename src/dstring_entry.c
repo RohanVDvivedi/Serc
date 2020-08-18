@@ -1,5 +1,7 @@
 #include<dstring_entry.h>
 
+#include<strhsh.h>
+
 #include<stdlib.h>
 
 dentry* get_dentry(char* key, char* value)
@@ -11,9 +13,14 @@ dentry* get_dentry(char* key, char* value)
 	return entryp;
 }
 
-int key_compare_dentry(const void* entry1, const void* entry2)
+int key_compare_dentry_CASE_SENSITIVE(const void* entry1, const void* entry2)
 {
 	return compare_dstring(&(((dentry*)entry1)->key), &(((dentry*)entry2)->key));
+}
+
+int key_compare_dentry_CASE_INSENSITIVE(const void* entry1, const void* entry2)
+{
+	return strcasecmp(((dentry*)entry1)->key.cstring, ((dentry*)entry2)->key.cstring);
 }
 
 unsigned int key_hash_dentry(const void* entryp)

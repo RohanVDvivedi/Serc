@@ -1,5 +1,4 @@
 #ifndef DISTRIBUTER_H
-
 #define DISTRIBUTER_H
 
 #include<string.h>

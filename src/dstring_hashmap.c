@@ -1,8 +1,10 @@
 #include<dstring_hashmap.h>
 
+#include<stdlib.h>
+
 void initialize_dmap(dmap* dmapp, unsigned int size)
 {
-	initialize_hashmap(dmapp, ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry, 0);
+	initialize_hashmap(dmapp, ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_SENSITIVE, 0);
 }
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
@@ -28,7 +30,7 @@ static void rehash_if_necessary(dmap* dmapp)
 	if(dmapp->occupancy == dmapp->total_bucket_count)
 	{
 		hashmap new_map;
-		initialize_hashmap(&(new_map), ROBINHOOD_HASHING, dmapp->total_bucket_count * 2, key_hash_dentry, key_compare_dentry, 0);
+		initialize_hashmap(&(new_map), dmapp->hashmap_policy, dmapp->total_bucket_count * 2, dmapp->hash_function, dmapp->compare, 0);
 		for_each_in_hashmap(dmapp, insert_elements_wrapper, &new_map);
 		deinitialize_hashmap(dmapp);
 		(*dmapp) = new_map;
@@ -93,23 +95,16 @@ void remove_all_from_dmap(dmap* dmapp)
 		dmapp->holder[i] = NULL;
 }
 
-static void queue_elements_wrapper(const void* dentry, const void* additional_params)
-{
-	push_queue(((queue*)additional_params), dentry);
-}
-
 void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, dstring* value, const void* additional_params), const void* additional_params)
 {
-	queue elements_to_delete;
-	initialize_queue(&elements_to_delete, dmapp->occupancy);
-	for_each_in_hashmap(dmapp, queue_elements_wrapper, &elements_to_delete);
-	while(!isQueueEmpty(&elements_to_delete))
+	for(unsigned int i = 0; i < dmapp->total_bucket_count;i++)
 	{
-		dentry* dent = (dentry*) get_top_queue(&elements_to_delete);
-		pop_queue(&elements_to_delete);
-		operation(&(dent->key), &(dent->value), additional_params);
+		if(dmapp->holder[i] != NULL)
+		{
+			dentry* dent = dmapp->holder[i];
+			operation(&(dent->key), &(dent->value), additional_params);
+		}
 	}
-	deinitialize_queue(&elements_to_delete);
 }
 
 void deinitialize_dmap(dmap* dmapp)

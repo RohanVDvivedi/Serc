@@ -3,7 +3,6 @@
 
 #include<dstring_entry.h>
 #include<hashmap.h>
-#include<queue.h>
 
 // It is a hashmap in disguise, where we can store dstring vs dstring
 // it is used for storing parameters and headers for http_request and http_response
