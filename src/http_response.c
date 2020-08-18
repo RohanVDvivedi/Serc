@@ -162,8 +162,8 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 				if(CURRENT_CHARACTER() == '\r')
 				{
 					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
-					insert_unique_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
-					remove_from_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
+					insert_duplicate_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
+					make_dstring_empty(partial_key);
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_VALUE_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -190,6 +190,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			}
 			case HEADERS_COMPLETE :
 			{
+				remove_from_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
 				if(CURRENT_CHARACTER() == '\n')
 				{
 					long long int body_length = -1;
