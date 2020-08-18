@@ -1,5 +1,7 @@
 #include<dstring_entry.h>
 
+#include<stdlib.h>
+
 dentry* get_dentry(char* key, char* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));

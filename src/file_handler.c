@@ -1,5 +1,7 @@
 #include<file_handler.h>
 
+#include<stdlib.h>
+
 file_cache* get_file_cache(char* root_path)
 {
 	file_cache* fc = malloc(sizeof(file_cache));
