@@ -431,6 +431,13 @@ void printResponse(HttpResponse* hr)
 	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
 }
 
+void setSetCookie(HttpResponse* hr, dstring* SetCookie)
+{
+	if(SetCookie->cstring == NULL)
+		return;
+	insert_duplicate_in_dmap_cstr(&(hr->headers), "Set-Cookie", SetCookie->cstring);
+}
+
 void redirectTo(int with_status, char* new_path, HttpResponse* hrp)
 {
 	// we need to make sure that the with_status provided by the user is 3xx

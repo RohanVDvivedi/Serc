@@ -54,6 +54,9 @@ void deinitHttpRequest(HttpRequest* hr);
 // show on console a printable HttpRequest
 void printRequest(HttpRequest* hr);
 
+// returns the Cookie header if it is sent by the client
+dstring* getCookie(HttpRequest* hr);
+
 // serialize the url of the HttpRequest
 void serializeUrl(dstring* result, HttpRequest* hr);
 

@@ -516,6 +516,11 @@ void printRequest(HttpRequest* hr)
 	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
 }
 
+dstring* getCookie(HttpRequest* hr)
+{
+	return (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "Cookie");
+}
+
 void serializeUrl(dstring* result, HttpRequest* hr)
 {
 	for(int i=0; i<strlen(hr->path.cstring); i++)

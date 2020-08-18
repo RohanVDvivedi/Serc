@@ -50,6 +50,10 @@ void deinitHttpResponse(HttpResponse* hr);
 // show on console a printable HttpResponse
 void printResponse(HttpResponse* hr);
 
+// sets a SetCookie header on the http response, this should be used to set a cookie on client
+// ehich the client will use while sending with every new request
+void setSetCookie(HttpResponse* hr, dstring* SetCookie);
+
 // to redirect the client, to some other page incase when the page has been moved
 // if with status is -1, a default temporary redirect happens, else we take the status form you
 void redirectTo(int with_status, char* new_path, HttpResponse* hrp);
