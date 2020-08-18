@@ -1,4 +1,4 @@
  * ssl support for http client
  * dmap to allow non unique values => helps in SetCookie and params,
  * setup setCookie function for response and getCookie for requests
- * revamp of makefile, readme and .gitignore
+ * revamp of makefile, readme
