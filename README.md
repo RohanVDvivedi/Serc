@@ -1,7 +1,5 @@
 # Serc
-
-### Serc is a http server / c framework for building apis in c
-### It can also be used for serving static webpages
+ Serc is a http server / c framework for building apis in c. It can also be used for serving static webpages.
 
 ### Project Directory Description
 
@@ -58,6 +56,7 @@
  * `cd Serc`
  * `sudo make uninstall`
 
+## Usage instructions
 #### usage as (static file) server
  * `serc` or `serc --root=.`	=> this will start a http server hosting all files in your `pwd`
  * `serc --root=./public --port=8080` => this will start a http server on port 8080 to host all your files in ./public directory
@@ -78,6 +77,6 @@
  * you can you compile your source with this distributer.c
  * don't forget to add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
-### Third party acknowledgements
+## Third party acknowledgements
  * *gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib) checkout their website [here](https://zlib.net/).*
  * *SSL and TLS encryption for https, internally supported by [openssl](https://github.com/openssl/openssl) checkout their website [here](https://www.openssl.org/).*
