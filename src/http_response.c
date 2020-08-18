@@ -1,5 +1,9 @@
 #include<http_response.h>
 
+#include<http_object.h>
+
+#include<http_status.h>
+
 void initHttpResponse(HttpResponse* hr)
 {
 	init_dstring(&(hr->version), "", 10);

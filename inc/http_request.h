@@ -1,9 +1,9 @@
 #ifndef HTTP_REQUEST_H
 #define HTTP_REQUEST_H
 
-#include<dstring_hashmap.h>
+#include<json_serializer.h>
 
-#include<http_object.h>
+#include<dstring_hashmap.h>
 
 #include<http_method.h>
 #include<http_parse_context.h>

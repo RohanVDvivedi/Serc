@@ -1,5 +1,9 @@
 #include<http_request.h>
 
+#include<http_object.h>
+
+#include<zlib_compression_wrapper.h>
+
 void initHttpRequest(HttpRequest* hr)
 {
 	hr->method = UNIDENTIFIED;

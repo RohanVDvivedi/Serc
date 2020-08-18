@@ -6,6 +6,9 @@
 #include<netinet/in.h>
 #include<netdb.h>
 #include<arpa/inet.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
 // this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
 #define buffersize 1024

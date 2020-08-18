@@ -1,5 +1,7 @@
 #include<file_request_resolution_controller.h>
 
+#include<strhsh.h>
+
 char* get_content_type_from_file_extension(char* extension);
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache, int* routing_resolved)

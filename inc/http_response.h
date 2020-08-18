@@ -1,11 +1,10 @@
 #ifndef HTTP_RESPONSE_H
 #define HTTP_RESPONSE_H
 
+#include<json_serializer.h>
+
 #include<dstring_hashmap.h>
 
-#include<http_object.h>
-
-#include<http_status.h>
 #include<http_parse_context.h>
 
 #include<zlib_compression_wrapper.h>
