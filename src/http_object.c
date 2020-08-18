@@ -100,61 +100,12 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 	printf("]\n");
 }
 
-// Methods common to both Request and response
-void addHeader(char* Key, char* Value, dmap* headers)
-{
-	dstring key; init_dstring(&key, Key, 0);
-	dstring value; init_dstring(&value, Value, 0);
-	toLowercase(&key);
-	insert_in_dmap(headers, &key, &value);
-	deinit_dstring(&key);
-	deinit_dstring(&value);
-}
-
-int removeHeader(char* Key, dmap* headers)
-{
-	dstring key; init_dstring(&key, Key, 0);
-	toLowercase(&key);
-	int removed = remove_from_dmap(headers, &key);
-	deinit_dstring(&key);
-	return removed;
-}
-
 int hasHeader(char* Key, char* Value, dmap* headers)
 {
-	dstring key; init_dstring(&key, Key, 0);
-	toLowercase(&key);
-
-	dstring* value_test = (dstring*) find_equals_in_dmap(headers, &key);
-
-	deinit_dstring(&key);
+	dstring* value_test = (dstring*) find_equals_in_dmap_cstr(headers, &Key);
 
 	if(value_test == NULL)
 		return 0;
 
 	return (strcmp(Value, value_test->cstring) == 0);
-}
-
-int hasHeaderWithKey(char* Key, dmap* headers)
-{
-	dstring key; init_dstring(&key, Key, 0);
-	toLowercase(&key);
-
-	dstring* value = (dstring*) find_equals_in_dmap(headers, &key);
-
-	deinit_dstring(&key);
-
-	return value != NULL;
-}
-
-dstring* getHeaderValueWithKey(char* Key, dmap* headers)
-{
-	dstring key; init_dstring(&key, Key, 0);
-	toLowercase(&key);
-
-	dstring* value = (dstring*) find_equals_in_dmap(headers, &key);
-
-	deinit_dstring(&key);
-
-	return value;
 }

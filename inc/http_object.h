@@ -31,20 +31,8 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar);
 void serialize_parameter_entry(dstring* key, dstring* value, dstring* result);
 void serialize_header_entry(dstring* key, dstring* value, dstring* result);
 
-// functions common to request and response both
-// add Header in HttpResponse 
-void addHeader(char* Key, char* Value, dmap* headers);
-
-// it will remove a header, with Key if present, if a header gets deleted, 1 is returned
-int removeHeader(char* Key, dmap* headers);
-
 // has header with key:value pair, returns 1 if key:value entry is present
+// this method should be only used if you are using insert_unique with that type of keys or with that dmap
 int hasHeader(char* Key, char* Value, dmap* headers);
-
-// has header with given key, returns 1 if an entry with given key is present
-int hasHeaderWithKey(char* Key, dmap* headers);
-
-// returns value of the header, for the given Key
-dstring* getHeaderValueWithKey(char* Key, dmap* headers);
 
 #endif
