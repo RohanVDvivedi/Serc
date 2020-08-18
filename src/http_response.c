@@ -3,7 +3,7 @@
 void initHttpResponse(HttpResponse* hr)
 {
 	init_dstring(&(hr->version), "", 10);
-	initialize_dmap(&(hr->headers), 3);
+	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
 	init_dstring(&(hr->body), "", 10);
 }
 

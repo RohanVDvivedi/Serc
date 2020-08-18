@@ -5,8 +5,8 @@ void initHttpRequest(HttpRequest* hr)
 	hr->method = UNIDENTIFIED;
 	init_dstring(&(hr->path), "", 10);
 	init_dstring(&(hr->version), "", 10);
-	initialize_dmap(&(hr->parameters), 3);
-	initialize_dmap(&(hr->headers), 3);
+	initialize_dmap(&(hr->parameters), CASE_SENSITIVE_KEY_TYPE, 3);
+	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
 	init_dstring(&(hr->body), "", 10);
 }
 

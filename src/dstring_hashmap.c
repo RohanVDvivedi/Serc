@@ -2,9 +2,12 @@
 
 #include<stdlib.h>
 
-void initialize_dmap(dmap* dmapp, unsigned int size)
+void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 {
-	initialize_hashmap(dmapp, ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_SENSITIVE, 0);
+	if(key_type == CASE_SENSITIVE_KEY_TYPE)
+		initialize_hashmap(dmapp, ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_SENSITIVE, 0);
+	else if(key_type == CASE_INSENSITIVE_KEY_TYPE)
+		initialize_hashmap(dmapp, ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_INSENSITIVE, 0);
 }
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key)

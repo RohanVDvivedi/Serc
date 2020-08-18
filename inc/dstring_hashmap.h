@@ -9,9 +9,16 @@
 // It maintains unique set of dstrings as keys
 // insert will check and first remove, if you insert using an identical key (not necessarily the same)
 
+typedef enum dmap_key_type dmap_key_type;
+enum dmap_key_type
+{
+	CASE_SENSITIVE_KEY_TYPE,
+	CASE_INSENSITIVE_KEY_TYPE
+};
+
 typedef hashmap dmap;
 
-void initialize_dmap(dmap* dmapp, unsigned int size);
+void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size);
 
 dstring* find_equals_in_dmap(dmap* dmapp, dstring* key);
 
