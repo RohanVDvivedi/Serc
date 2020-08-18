@@ -40,20 +40,40 @@
 * zlib		($ sudo apt install zlib1g-dev)
 * openssl	($ sudo apt-get install libssl-dev)
 
-#### setup
-### Considering that you have all the dependencies needed
- * git clone https://github.com/RohanVDvivedi/c_template_application.git
- * cd c_template_application
- * sudo make clean install
- * add "-lserc -lcashed -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
+## Setup instructions
+*considering that you have installed all the required dependencies mentioned above*
+**Download source code :**
+ * `git clone https://github.com/RohanVDvivedi/Serc.git`
 
-#### usage as (static) server
+**Build from source :**
+ * `cd Serc`
+ * `make clean all`
+
+**Install from the build :**
+ * `sudo make install` : This will install the library aswell as the static file server.
+ * ***Once you have installed from source, you may discard the build by*** `make clean`
+
+## Instructions for uninstalling library (and the static file server)
+**Uninstall :**
+ * `cd Serc`
+ * `sudo make uninstall`
+
+#### usage as (static file) server
  * `serc` or `serc --root=.`	=> this will start a http server hosting all files in your `pwd`
  * `serc --root=./public --port=8080` => this will start a http server on port 8080 to host all your files in ./public directory
  * `serc --port=6900 --root=./public --ssl_cert_keys=./con/server`	=> this will start a https server on port 6900 to host all your files in ./public directory, the public key and certificates will be "./con/server.crt" and  private key will be "./con/server.key" 
 
 #### usage as framework
- * route.py <routing_file_1> <routing_file_2> <routing_file_3> ...
+ * create appropriate routing.con file (as described in con directory)
+ * and create appropriate controller file functions as mentioned in routing.con file, with strict declaration signature as : 
+   * ```int controller(HttpRequest* hrq, HttpResponse* hrp)```
+ * do not forget to include appropriate public api headers as and when needed. this includes
+   * `#include<http_request.h>`
+   * `#include<http_response.h>`
+   * `#include<http_server.h>`
+   * `#include<http_client.h>`
+ * the routing files need to be compiled to produce a distributer function (*a huge switch case*), which will help the server to know how to route the request to your comroller.
+   * route.py <routing_file_1> <routing_file_2> <routing_file_3> ...
  * above step will create distributer.c file in your `pwd`
  * you can you compile your source with this distributer.c
  * don't forget to add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
