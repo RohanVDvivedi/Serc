@@ -1,5 +1,7 @@
 #include<http_method.h>
 
+#include<strhsh.h>
+
 HttpMethod getHttpMethod(char* verb)
 {
 	// get hash value

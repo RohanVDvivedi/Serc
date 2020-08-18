@@ -1,10 +1,6 @@
 #ifndef HTTP_METHOD_H
 #define HTTP_METHOD_H
 
-#include<string.h>
-
-#include<strhsh.h>
-
 typedef enum HttpMethod HttpMethod;
 enum HttpMethod
 {
