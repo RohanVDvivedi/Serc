@@ -40,7 +40,7 @@ static void rehash_if_necessary(dmap* dmapp)
 	}
 }
 
-void insert_in_dmap_cstr(dmap* dmapp, char* key, char* value)
+void insert_unique_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 {
 	if(key == NULL)
 		return;
@@ -59,11 +59,28 @@ void insert_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 	}
 }
 
-void insert_in_dmap(dmap* dmapp, dstring* key, dstring* value)
+void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 {
 	if(key == NULL)
 		return;
-	insert_in_dmap_cstr(dmapp, key->cstring, (value == NULL) ? "" : value->cstring);
+	insert_unique_in_dmap_cstr(dmapp, key->cstring, (value == NULL) ? "" : value->cstring);
+}
+
+void insert_duplicate_in_dmap_cstr(dmap* dmapp, char* key, char* value)
+{
+	if(key == NULL)
+		return;
+	if(value == NULL)
+		value = "";
+	rehash_if_necessary(dmapp);
+	insert_in_hashmap(dmapp, get_dentry(key, value));
+}
+
+void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
+{
+	if(key == NULL)
+		return;
+	insert_duplicate_in_dmap_cstr(dmapp, key->cstring, (value == NULL) ? "" : value->cstring);
 }
 
 int remove_from_dmap_cstr(dmap* dmapp, char* key)
