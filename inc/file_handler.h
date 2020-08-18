@@ -1,10 +1,6 @@
 #ifndef FILE_HANDLER_H
 #define FILE_HANDLER_H
 
-#include<stdio.h>
-#include<sys/stat.h>
-#include<unistd.h>
-
 #include<cashed_hashtable.h>
 
 typedef struct file_cache file_cache;
