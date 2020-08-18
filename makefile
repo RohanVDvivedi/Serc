@@ -11,7 +11,8 @@ PUBLIC_HEADERS:=http_server.h http_client.h\
 				distributer.h\
 				http_request.h http_response.h zlib_compression_wrapper.h\
 				http_method.h http_status.h http_parse_context.h\
-				dstring_hashmap.h dstring_entry.h
+				dstring_hashmap.h dstring_entry.h\
+				strhsh.h file_request_resolution_controller.h
 # these are the tools that will be used for helping you create your own distributer file
 ROUTING_SCRIPT:=route.py
 ROUTING_TEMPLATE:=distributer_source.temp
