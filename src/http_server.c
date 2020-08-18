@@ -1,5 +1,12 @@
 #include<http_server.h>
 
+#include<server_global_params.h>
+#include<http_https_connection_handler.h>
+
+#include<server.h>
+
+#include<signal.h>
+
 volatile int listen_fd = -1;
 static void intHandler(int signum)
 {

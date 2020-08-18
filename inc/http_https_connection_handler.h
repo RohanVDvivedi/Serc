@@ -1,19 +1,6 @@
 #ifndef HTTP_HTTPS_CONNECTION_HANDLER_H
 #define HTTP_HTTPS_CONNECTION_HANDLER_H
 
-#include<sys/types.h>
-#include<sys/socket.h>
-
-#include<dstring.h>
-
-#include<server.h>
-
-#include<http_request.h>
-#include<http_response.h>
-#include<distributer.h>
-
-#include<server_global_params.h>
-
 typedef enum http_connection_handler_error http_connection_handler_error;
 enum http_connection_handler_error
 {

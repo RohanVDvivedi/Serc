@@ -1,5 +1,15 @@
 #include<http_https_connection_handler.h>
 
+#include<server_global_params.h>
+
+#include<http_request.h>
+#include<http_response.h>
+#include<distributer.h>
+
+#include<dstring.h>
+
+#include<sys/socket.h>
+
 // this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
 #define buffersize 1024
 

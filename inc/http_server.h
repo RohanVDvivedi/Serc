@@ -1,11 +1,7 @@
 #ifndef SERVE_H
 #define SERVE_H
 
-#include<signal.h>
-
-#include<server.h>
-
-#include<http_https_connection_handler.h>
+#include<stdint.h>
 
 // if SSL_KEYS_CERTS != NULL, then your network stacck will be SSL/HTTP/TCP/IP
 // else your network stack will be HTTP/TCP/IP
