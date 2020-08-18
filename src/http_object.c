@@ -102,7 +102,7 @@ void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
 
 int hasHeader(char* Key, char* Value, dmap* headers)
 {
-	dstring* value_test = (dstring*) find_equals_in_dmap_cstr(headers, &Key);
+	dstring* value_test = (dstring*) find_equals_in_dmap_cstr(headers, Key);
 
 	if(value_test == NULL)
 		return 0;

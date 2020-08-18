@@ -24,7 +24,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* ser
 			// add content-type for the requested file
 			// and set tha status to 200
 			if(extension.cstring[0] != '\0')
-    			addHeader("content-type", get_content_type_from_file_extension(extension.cstring), &(hrp->headers));
+    			insert_unique_in_dmap_cstr(&(hrp->headers), "content-type", get_content_type_from_file_extension(extension.cstring));
 
     		hrp->status = 200;
     	}

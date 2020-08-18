@@ -104,7 +104,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				}
 				else if(CURRENT_CHARACTER() == '=')
 				{
-					insert_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
+					insert_unique_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = IN_PARAM_VALUE;
 					GOTO_NEXT_CHARACTER()
@@ -121,7 +121,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				else if(CURRENT_CHARACTER() == '&')
 				{
 					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
-					insert_in_dmap(&(hr->parameters), partial_key, &(httpCntxt->partialDstring));
+					insert_unique_in_dmap(&(hr->parameters), partial_key, &(httpCntxt->partialDstring));
 					remove_from_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = IN_PARAM_KEY;
@@ -130,7 +130,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				else if(CURRENT_CHARACTER() == ' ')
 				{
 					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
-					insert_in_dmap(&(hr->parameters), partial_key, &(httpCntxt->partialDstring));
+					insert_unique_in_dmap(&(hr->parameters), partial_key, &(httpCntxt->partialDstring));
 					remove_from_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = PATH_PARAMS_COMPLETE;
@@ -195,8 +195,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					toLowercase(&(httpCntxt->partialDstring));
-					insert_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
+					insert_unique_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -226,7 +225,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				if(CURRENT_CHARACTER() == '\r')
 				{
 					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
-					insert_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
+					insert_unique_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
 					remove_from_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_VALUE_COMPLETE;
@@ -257,7 +256,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				if(CURRENT_CHARACTER() == '\n')
 				{
 					long long int body_length = -1;
-					dstring* content_length = getHeaderValueWithKey("content-length", &(hr->headers));
+					dstring* content_length = (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "content-length");
 					if(content_length != NULL)
 					{
 						sscanf(content_length->cstring, "%lld", &body_length);
@@ -282,8 +281,8 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			}
 			case IN_BODY :
 			{
-				dstring* content_length = getHeaderValueWithKey("content-length", &(hr->headers));
-				dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", &(hr->headers));
+				dstring* content_length = (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "content-length");
+				dstring* transfer_encoding = (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "transfer-encoding");
 				if(content_length != NULL)
 				{
 					long long int body_length = -1;
@@ -414,14 +413,14 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	if(hrq->method != GET)
 	{
 		sprintf(ptemp, "%u", hrq->body.bytes_occupied-1);
-		addHeader("content-length", ptemp, &(hrq->headers));
+		insert_unique_in_dmap_cstr(&(hrq->headers), "content-length", ptemp);
 	}
-	addHeader("accept-encoding", "gzip, deflate, identity", &(hrq->headers));
+	insert_unique_in_dmap_cstr(&(hrq->headers), "accept-encoding", "gzip, deflate, identity");
 }
 
 void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
 {
-	addHeader("content-type", "application/json", &(hrq->headers));
+	insert_unique_in_dmap_cstr(&(hrq->headers), "content-type", "application/json");
 	serialize_json(&(hrq->body), node_p);
 }
 
@@ -435,12 +434,12 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 	// datalink layer frame size only is around 1500 bytes
 	if(hrq->body.bytes_occupied <= 100)
 	{
-		addHeader("content-encoding", "identity", &(hrq->headers));
+		insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "identity");
 		return;
 	}
 
 	// also do not compress, if it is already compressed (i.e. it has content-encoding header and it is not identity)
-	if(hasHeaderWithKey("content-encoding", &(hrq->headers)) && !hasHeader("content-encoding", "identity", &(hrq->headers)))
+	if((find_equals_in_dmap_cstr(&(hrq->headers),"content-encoding") != NULL) && !hasHeader("content-encoding", "identity", &(hrq->headers)))
 		return;
 
 	// is_compressed == 0, means error, so we do not send any headers about compression
@@ -452,19 +451,19 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 	{
 		case DEFLATE :
 		{
-			addHeader("content-encoding", "deflate", &(hrq->headers));	break;
+			insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "deflate");	break;
 		}
 		case GZIP :
 		{
-			addHeader("content-encoding", "gzip",    &(hrq->headers));	break;
+			insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "gzip"   );	break;
 		}
 		case BROTLI :
 		{
-			addHeader("content-encoding", "br",      &(hrq->headers));	break;
+			insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "br"     );	break;
 		}
 		case IDENTITY :
 		{
-			addHeader("content-encoding", "identity", &(hrq->headers)); break;
+			insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "identity"); break;
 		}
 	}
 }
@@ -476,8 +475,8 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 		return;
 
 	// we try to figure out the compression from inspecting these headers
-	dstring* content_encoding = getHeaderValueWithKey("content-encoding", &(hrq->headers));
-	dstring* transfer_encoding = getHeaderValueWithKey("transfer-encoding", &(hrq->headers));
+	dstring* content_encoding = (dstring*) find_equals_in_dmap_cstr(&(hrq->headers), "content-encoding");
+	dstring* transfer_encoding = (dstring*) find_equals_in_dmap_cstr(&(hrq->headers), "transfer-encoding");
 
 	compression_type compr_type;
 
@@ -494,8 +493,8 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	uncompress_in_memory(&(hrq->body), compr_type);
 
-	removeHeader("content-encoding", &(hrq->headers));
-	removeHeader("transfer-encoding", &(hrq->headers));
+	remove_from_dmap_cstr(&(hrq->headers), "content-encoding");
+	remove_from_dmap_cstr(&(hrq->headers), "transfer-encoding");
 }
 
 void deinitHttpRequest(HttpRequest* hr)

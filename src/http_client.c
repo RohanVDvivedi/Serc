@@ -69,7 +69,7 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char*
 	// set necessary headers to be set before sending the request
 	setServerDefaultHeadersInRequest(hrq);
 	// host is a mandatory header in http 1.1 request
-	addHeader("Host", host, &(hrq->headers));
+	insert_unique_in_dmap_cstr(&(hrq->headers), "Host", host);
 
 	// queue the transaction to get it executed by the underlying transaction client
 	// but remember to pass it a http client transaction handler
