@@ -9,7 +9,7 @@ file_cache* get_file_cache(char* root_path)
 {
 	file_cache* fc = malloc(sizeof(file_cache));
 	fc->root_path = root_path;
-	init_cashtable(&(fc->file_cache_table), 30);
+	fc->file_cache_table = get_cashtable(30);
 	return fc;
 }
 
@@ -17,7 +17,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 {
 	// cache hit case ---->>>
 
-	int cache_hit = get_cashtable(&(fc->file_cache_table), relative_file_path, append_file_contents);
+	int cache_hit = get_value_cashtable(fc->file_cache_table, relative_file_path, append_file_contents);
 
 	if(cache_hit)
 		return 0;
@@ -65,7 +65,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 
 	// concatenate the file result to the append_file_contents
 	// and update the file_cache_tabel
-	set_cashtable(&(fc->file_cache_table), relative_file_path, &file_contents);
+	set_key_value_cashtable(fc->file_cache_table, relative_file_path, &file_contents);
 	concatenate_dstring(append_file_contents, &file_contents);
 
 	deinit_dstring(&(file_contents));
@@ -77,7 +77,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 
 void delete_file_cache(file_cache* fc)
 {
-	deinit_cashtable(&(fc->file_cache_table));
+	delete_cashtable(fc->file_cache_table);
 	free(fc);
 }
 

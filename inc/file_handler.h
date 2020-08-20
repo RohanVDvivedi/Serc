@@ -11,7 +11,7 @@ struct file_cache
 
 	// this is the cashtable where the server will cache the files that it will read from the disk
 	// contents of each file is stored against its relative filepath
-	cashtable file_cache_table;
+	cashtable* file_cache_table;
 };
 
 // this will create the file cache, for your server
