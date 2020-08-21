@@ -75,7 +75,7 @@
    * route.py <routing_file_1> <routing_file_2> <routing_file_3> ...
  * above step will create distributer.c file in your `pwd`
  * you can you compile your source with this distributer.c
- * don't forget to add "-lserc -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
+ * don't forget to add "-lserc -lcashed -lm -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
 ## Third party acknowledgements
  * *gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib) checkout their website [here](https://zlib.net/).*
