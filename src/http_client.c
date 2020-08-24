@@ -113,13 +113,15 @@ enum http_connection_handler_error
 HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq)
 {
 	// this is the buffer, where we would store the serialized form of response, before sending
-	dstring* bufferRequest = get_dstring("", 10);
+	dstring bufferRequest; init_dstring(&bufferRequest, "", 10);
 
 	// serialize the request to be sent
-	serializeRequest(bufferRequest, hrq);
+	serializeRequest(&bufferRequest, hrq);
 
 	// send the request buffer
-	int buffsentlength = send(fd, bufferRequest->cstring, bufferRequest->bytes_occupied - 1, 0);
+	int buffsentlength = send(fd, bufferRequest.cstring, bufferRequest.bytes_occupied - 1, 0);
+
+	delete_dstring(&bufferRequest);
 
 	if(buffsentlength == 0 || buffsentlength == -1)
 	{
