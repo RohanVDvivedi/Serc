@@ -121,7 +121,7 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 	// send the request buffer
 	int buffsentlength = send(fd, bufferRequest.cstring, bufferRequest.bytes_occupied - 1, 0);
 
-	delete_dstring(&bufferRequest);
+	deinit_dstring(&bufferRequest);
 
 	if(buffsentlength == 0 || buffsentlength == -1)
 	{
