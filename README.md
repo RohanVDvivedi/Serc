@@ -13,10 +13,10 @@
  * share for .temp template file ***that python scripts like route.py will use***
 
 ### Serc enables you to
- 1. Route to your function for a http request for given http path and http method combination, as it is specified in the routing json file (in config directory).
- 2. Host static content from SERC_ROOT_PATH, The SERC_ROOT_PATH can be set in config.h header in ./con folder.
+ 1. Route to your function for a http request for given http path and http method combination.
+ 2. Host static content from all the files in the root folder.
 
-### The framework logic is 
+### The framework logic is segregated as
 * /src/*.c are the source files
 * /inc/*.h are their corresponding headers
 * /con/*.h are the configuration header file used by the server
@@ -63,7 +63,7 @@
  * `serc --port=6900 --root=./public --ssl_cert_keys=./con/server`	=> this will start a https server on port 6900 to host all your files in ./public directory, the public key and certificates will be "./con/server.crt" and  private key will be "./con/server.key" 
 
 #### usage as framework
- * create appropriate routing.con file (as described in con directory)
+ * create appropriate routing.con file (as described in the sample file in the con directory).
  * and create appropriate controller file functions as mentioned in routing.con file, with strict declaration signature as : 
    * ```int controller(HttpRequest* hrq, HttpResponse* hrp)```
  * do not forget to include appropriate public api headers as and when needed. this includes
