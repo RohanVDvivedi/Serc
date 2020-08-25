@@ -64,17 +64,23 @@
 
 #### usage as framework
  * create appropriate routing.con file (as described in the sample file in the con directory).
- * and create appropriate controller file functions as mentioned in routing.con file, with strict declaration signature as : 
+ * and create appropriate controller files with functions with strict declaration signature as : 
    * ```int controller(HttpRequest* hrq, HttpResponse* hrp)```
- * do not forget to include appropriate public api headers as and when needed. this includes
+ * Create appropriate json entries, in your routing.con file, to specify routing information.
+ * do not forget to include appropriate public api headers as and when needed by your source, which includes
    * `#include<http_request.h>`
    * `#include<http_response.h>`
    * `#include<http_server.h>`
    * `#include<http_client.h>`
- * the routing files need to be compiled to produce a distributer function (*a huge switch case*), which will help the server to know how to route the request to your comroller.
-   * route.py <routing_file_1> <routing_file_2> <routing_file_3> ...
+ * Now the routing files need to be compiled to produce a distributer function (*a huge switch case*) in a distributer.c file, which will help the server to know how to route the request to your comroller.
+   * route.py <routing_file_1.con> <routing_file_2.con> <routing_file_3.con> ...
  * above step will create distributer.c file in your `pwd`
- * you can you compile your source with this distributer.c
+ * Now, you must compile your source with this distributer.c file, simultaneously linking with serc library.
+ * **More info**
+   * The distribute() function, has a quite similar function signature, to the signature required by the controller functions.
+   * The distribute function is already present, and is called, internally in the source code of the library, but there is only declaration and no definition to that function in the library.
+   * The route.py script reads your routing configuration file and generates a distributer function required to route to your controller functions, using a huge switch case statement.
+   * And so you are required to compile this distributer functions, which linking serc, to produce appropriate binary of your application.
  * don't forget to add "-lserc -lcashed -lm -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
 ## Third party acknowledgements
