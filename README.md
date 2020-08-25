@@ -80,7 +80,7 @@
    * The distribute() function, has a quite similar function signature, to the signature required by the controller functions.
    * The distribute function is already present, and is called, internally in the source code of the library, but there is only declaration and no definition to that function in the library.
    * The route.py script reads your routing configuration file and generates a distributer function required to route to your controller functions, using a huge switch case statement.
-   * And so you are required to compile this distributer functions, which linking serc, to produce appropriate binary of your application.
+   * And so you are required to compile this distributer functions, while linking with serc library, to produce appropriate binary of your application.
  * don't forget to add "-lserc -lcashed -lm -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
 
 ## Third party acknowledgements
