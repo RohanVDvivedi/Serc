@@ -14,6 +14,8 @@ struct file_cache
 	cashtable* file_cache_table;
 };
 
+#define CACHE_EXPIRY_MINS 1
+
 // this will create the file cache, for your server
 file_cache* get_file_cache(char* root_path);
 
