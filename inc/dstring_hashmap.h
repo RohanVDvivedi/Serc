@@ -44,7 +44,7 @@ int remove_from_dmap_cstr(dmap* dmapp, char* key);
 
 void remove_all_from_dmap(dmap* dmapp);
 
-void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, dstring* value, const void* additional_params), const void* additional_params);
+void for_each_in_dmap(dmap* dmapp, void (*operation)(const dstring* key, const dstring* value, const void* additional_params), const void* additional_params);
 
 void deinitialize_dmap(dmap* dmapp);
 

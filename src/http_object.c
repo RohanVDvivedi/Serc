@@ -75,7 +75,7 @@ static void serialize_paramter_helper(dstring* result, const dstring* input)
 	}
 }
 
-void serialize_parameter_entry(dstring* key, dstring* value, dstring* result)
+void serialize_parameter_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	serialize_paramter_helper(result, key);
 	append_to_dstring(result, "=");
@@ -83,7 +83,7 @@ void serialize_parameter_entry(dstring* key, dstring* value, dstring* result)
 	append_to_dstring(result, "&");
 }
 
-void serialize_header_entry(dstring* key, dstring* value, dstring* result)
+void serialize_header_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	concatenate_dstring(result, key);
 	append_to_dstring(result, ": ");
@@ -91,7 +91,7 @@ void serialize_header_entry(dstring* key, dstring* value, dstring* result)
 	append_to_dstring(result, "\r\n");
 }
 
-void print_entry_wrapper(dstring* key, dstring* value, const void* addpar)
+void print_entry_wrapper(const dstring* key, const dstring* value, const void* addpar)
 {
 	printf("\t\t[");
 	display_dstring(key);

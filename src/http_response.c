@@ -337,7 +337,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
 	append_to_dstring(result, getHttpResponseStatus(hr->status));
-	for_each_in_dmap(&(hr->headers), (void (*)(dstring*, dstring*, const void*))serialize_header_entry, result);
+	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, &(hr->body));
 }

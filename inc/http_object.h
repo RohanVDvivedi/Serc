@@ -22,11 +22,11 @@ void urlToString(char* path_param_str);
 
 // functions to handle hashmap (dstring -> dstring) entries
 // this functions can be used on headers, parameters of the reponse and request
-void print_entry_wrapper(dstring* key, dstring* value, const void* addpar);
+void print_entry_wrapper(const dstring* key, const dstring* value, const void* addpar);
 
 // serialization utility functions used by both request and response
-void serialize_parameter_entry(dstring* key, dstring* value, dstring* result);
-void serialize_header_entry(dstring* key, dstring* value, dstring* result);
+void serialize_parameter_entry(const dstring* key, const dstring* value, dstring* result);
+void serialize_header_entry(const dstring* key, const dstring* value, dstring* result);
 
 // has header with key:value pair, returns 1 if key:value entry is present
 // this method should be only used if you are using insert_unique with that type of keys or with that dmap

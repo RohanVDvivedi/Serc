@@ -407,7 +407,7 @@ void serializeRequest(dstring* result, HttpRequest* hr)
 	append_to_dstring(result, " ");
 	serializeUrl(result, hr);
 	append_to_dstring(result, " HTTP/1.1\r\n");
-	for_each_in_dmap(&(hr->headers), (void (*)(dstring*, dstring*, const void*))serialize_header_entry, result);
+	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
 	append_to_dstring(result, "\r\n");
 	concatenate_dstring(result, &(hr->body));
 }
@@ -549,7 +549,7 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 	if(hr->parameters.occupancy > 0)
 	{
 		append_to_dstring(result, "?");
-		for_each_in_dmap(&(hr->parameters), (void (*)(dstring*, dstring*, const void *))serialize_parameter_entry, result);
+		for_each_in_dmap(&(hr->parameters), (void (*)(const dstring*, const dstring*, const void*))serialize_parameter_entry, result);
 		result->bytes_occupied--;
 		result->cstring[result->bytes_occupied-1] = '\0';
 	}

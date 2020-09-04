@@ -30,10 +30,10 @@ static void insert_elements_wrapper(const void* dent, const void* new_map)
 
 static void rehash_if_necessary(dmap* dmapp)
 {
-	if(dmapp->occupancy == dmapp->total_bucket_count)
+	if(dmapp->occupancy == dmapp->hashmap_holder.total_size)
 	{
 		hashmap new_map;
-		initialize_hashmap(&(new_map), dmapp->hashmap_policy, dmapp->total_bucket_count * 2, dmapp->hash_function, dmapp->compare, 0);
+		initialize_hashmap(&(new_map), dmapp->hashmap_policy, dmapp->hashmap_holder.total_size * 2, dmapp->hash_function, dmapp->compare, 0);
 		for_each_in_hashmap(dmapp, insert_elements_wrapper, &new_map);
 		deinitialize_hashmap(dmapp);
 		(*dmapp) = new_map;
@@ -111,17 +111,17 @@ static void delete_dentry_wrapper(const void* dent, const void* additional_param
 void remove_all_from_dmap(dmap* dmapp)
 {
 	for_each_in_hashmap(dmapp, delete_dentry_wrapper, NULL);
-	for(unsigned int i = 0; i < dmapp->total_bucket_count;i++)
-		dmapp->holder[i] = NULL;
+	for(unsigned int i = 0; i < dmapp->hashmap_holder.total_size;i++)
+		set_element(&(dmapp->hashmap_holder), NULL, i);
 }
 
-void for_each_in_dmap(dmap* dmapp, void (*operation)(dstring* key, dstring* value, const void* additional_params), const void* additional_params)
+void for_each_in_dmap(dmap* dmapp, void (*operation)(const dstring* key, const dstring* value, const void* additional_params), const void* additional_params)
 {
-	for(unsigned int i = 0; i < dmapp->total_bucket_count;i++)
+	for(unsigned int i = 0; i < dmapp->hashmap_holder.total_size; i++)
 	{
-		if(dmapp->holder[i] != NULL)
+		if(get_element(&(dmapp->hashmap_holder), i) != NULL)
 		{
-			dentry* dent = dmapp->holder[i];
+			const dentry* dent = get_element(&(dmapp->hashmap_holder), i);
 			operation(&(dent->key), &(dent->value), additional_params);
 		}
 	}
