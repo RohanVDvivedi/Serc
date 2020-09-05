@@ -298,23 +298,24 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				dstring* transfer_encoding = (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "transfer-encoding");
 				if(content_length != NULL)
 				{
-					long long int body_length = -1;
+					int body_length = -1;
 
 					// make content dstring sscanfable
 					expand_dstring(content_length, 1);
 					content_length->cstring[content_length->bytes_occupied] = '\0';
 
-					sscanf(content_length->cstring, "%lld", &body_length);
+					sscanf(content_length->cstring, "%d", &body_length);
 
-					if(body_length >= 0 && body_length == hr->body.bytes_occupied)
-					{
+					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
-						httpCntxt->state = BODY_COMPLETE;
+
+					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
+					{
+						GOTO_NEXT_CHARACTER()
 					}
 					else
 					{
-						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
-						GOTO_NEXT_CHARACTER()
+						httpCntxt->state = BODY_COMPLETE;
 					}
 				}
 				else if(transfer_encoding != NULL && contains_cstring(transfer_encoding, "chunked") != -1 )
