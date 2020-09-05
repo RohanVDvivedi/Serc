@@ -6,9 +6,13 @@
 
 void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
 {
-	const dstring* path_str = &(hrq->path);
-	unsigned int path_len = path_str->bytes_occupied;
-	unsigned long long int PATH = getHashValueDstring(path_str);
+	// below two lines allow us to use all the string.h std library functions on the dstring
+	expand_dstring(&(hrq->path), 1);
+	hrq->path.cstring[hrq->path.bytes_occupied] = '\0';
+
+	const char* path_str = hrq->path.cstring;
+	unsigned int path_len = hrq->path.bytes_occupied;
+	unsigned long long int PATH = getHashValueDstring(&(hrq->path));
 	HttpMethod METHOD = hrq->method;
 
 	int routing_resolved = 0;
