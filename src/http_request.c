@@ -20,7 +20,7 @@ void initHttpRequest(HttpRequest* hr)
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContext* httpCntxt)
 {
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-")};
+	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-"), .bytes_allocated = 0};
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
