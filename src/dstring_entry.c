@@ -20,7 +20,7 @@ int key_compare_dentry_CASE_SENSITIVE(const void* entry1, const void* entry2)
 
 int key_compare_dentry_CASE_INSENSITIVE(const void* entry1, const void* entry2)
 {
-	return strcasecmp(((dentry*)entry1)->key.cstring, ((dentry*)entry2)->key.cstring);
+	return case_compare_dstring(&(((dentry*)entry1)->key), &(((dentry*)entry2)->key));
 }
 
 unsigned int key_hash_dentry(const void* entryp)
