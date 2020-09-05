@@ -307,7 +307,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 						GOTO_NEXT_CHARACTER()
 					}
 				}
-				else if(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "chunked") != NULL )
+				else if(transfer_encoding != NULL && contains_cstring(transfer_encoding, "chunked") > 0 )
 				{
 					httpCntxt->state = IN_BODY_CHUNK_SIZE;
 				}
@@ -489,14 +489,14 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && strstr(content_encoding->cstring, "br") != NULL) ||
-		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "br") != NULL) )
+	if( (content_encoding != NULL && contains_cstring(content_encoding, "br") > 0) ||
+		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "br") > 0) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "deflate") != NULL) ||
-		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "deflate") != NULL) )
+	else if( (content_encoding != NULL && contains_cstring(content_encoding, "deflate") > 0) ||
+		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "deflate") > 0) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && strstr(content_encoding->cstring, "gzip") != NULL) ||
-		(transfer_encoding != NULL && strstr(transfer_encoding->cstring, "gzip") != NULL) )
+	else if( (content_encoding != NULL && contains_cstring(content_encoding, "gzip") > 0) ||
+		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "gzip") > 0) )
 		compr_type = GZIP;
 	else{return ;}
 
