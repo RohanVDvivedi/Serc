@@ -6,14 +6,10 @@ char* get_content_type_from_file_extension(char* extension);
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache, int* routing_resolved)
 {
-	if(server_file_cache == NULL)
-		return 0;
-
-	if(hrq->method == GET && hrq->path.cstring[0] == '/')
+	if(hrq->method == GET && hrq->path.bytes_occupied > 0)
 	{
 		// extract extension dstring from the file path
-		dstring extension;
-		init_dstring(&extension, "", 10);
+		dstring extension; init_dstring_data(&extension, NULL, 0);
 		get_extension_from_file_path(&extension, &(hrq->path));
 
 		// read file contents in the response body dstring
@@ -23,9 +19,9 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* ser
 		// if the routing is resolved
 		if(*routing_resolved == 1)
 		{
-			// add content-type for the requested file
+			// add content-type for the requested file, if there is extension on the file path
 			// and set tha status to 200
-			if(extension.cstring[0] != '\0')
+			if(extension.bytes_occupied > 0)
     			insert_unique_in_dmap_cstr(&(hrp->headers), "content-type", get_content_type_from_file_extension(extension.cstring));
 
     		hrp->status = 200;

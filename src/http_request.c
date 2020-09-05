@@ -7,11 +7,11 @@
 void initHttpRequest(HttpRequest* hr)
 {
 	hr->method = UNIDENTIFIED;
-	init_dstring(&(hr->path), NULL);
-	init_dstring(&(hr->version), NULL);
+	init_dstring_data(&(hr->path), NULL, 0);
+	init_dstring_data(&(hr->version), NULL, 0);
 	initialize_dmap(&(hr->parameters), CASE_SENSITIVE_KEY_TYPE, 3);
 	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
-	init_dstring(&(hr->body), NULL);
+	init_dstring_data(&(hr->body), NULL, 0);
 }
 
 // returns 0 when completed
