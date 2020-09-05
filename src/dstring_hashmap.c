@@ -22,7 +22,18 @@ dstring* find_equals_in_dmap(dmap* dmapp, dstring* key)
 {
 	if(key == NULL)
 		return NULL;
-	dentry* dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
+
+	dentry* dent = NULL;
+
+	if(dmapp->key_type == CASE_SENSITIVE_KEY_TYPE)
+		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
+	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
+	{
+		dstring copy_key; init_dstring_data(&copy_key, key->cstring, key->bytes_occupied); toLowercase(&copy_key);
+		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
+		deinit_dstring(&copy_key);
+	}
+
 	return (dent != NULL) ? (&(dent->value)) : NULL;
 }
 
@@ -30,16 +41,15 @@ static void insert_elements_wrapper(const void* dent, const void* new_map)
 {
 	insert_in_hashmap(((hashmap*)(new_map)), ((dentry*)(dent)));
 }
-
 static void rehash_if_necessary(dmap* dmapp)
 {
-	if(dmapp->occupancy == dmapp->hashmap_holder.total_size)
+	if(dmapp->map.occupancy == dmapp->map.hashmap_holder.total_size)
 	{
 		hashmap new_map;
-		initialize_hashmap(&(new_map), dmapp->hashmap_policy, dmapp->hashmap_holder.total_size * 2, dmapp->hash_function, dmapp->compare, 0);
-		for_each_in_hashmap(dmapp, insert_elements_wrapper, &new_map);
-		deinitialize_hashmap(dmapp);
-		(*dmapp) = new_map;
+		initialize_hashmap(&(new_map), dmapp->map.hashmap_policy, dmapp->map.hashmap_holder.total_size * 2, dmapp->map.hash_function, dmapp->map.compare, 0);
+		for_each_in_hashmap(&(dmapp->map), insert_elements_wrapper, &new_map);
+		deinitialize_hashmap(&(dmapp->map));
+		dmapp->map = new_map;
 	}
 }
 
@@ -54,16 +64,19 @@ void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 {
 	if(key == NULL || value == NULL)
 		return;
-	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = *key}));
-	if(dent != NULL)
+	dstring* val_found = find_equals_in_dmap(dmapp, key);
+	if(val_found != NULL)
 	{
-		deinit_dstring(&(dent->value));
-		init_dstring_data(&(dent->value), value->cstring, value->bytes_occupied);
+		deinit_dstring(val_found);
+		init_dstring_data(val_found, value->cstring, value->bytes_occupied);
 	}
 	else
 	{
 		rehash_if_necessary(dmapp);
-		insert_in_hashmap(dmapp, get_dentry(key, value));
+		dentry* dent = get_dentry(key, value);
+		if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
+			toLowercase(&(dent->key));
+		insert_in_hashmap(&(dmapp->map), dent);
 	}
 }
 
@@ -79,7 +92,10 @@ void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 	if(key == NULL || value == NULL)
 		return;
 	rehash_if_necessary(dmapp);
-	insert_in_hashmap(dmapp, get_dentry(key, value));
+	dentry* dent = get_dentry(key, value);
+	if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
+		toLowercase(&(dent->key));
+	insert_in_hashmap(&(dmapp->map), dent);
 }
 
 int remove_from_dmap_cstr(dmap* dmapp, char* key)
@@ -92,8 +108,19 @@ int remove_from_dmap(dmap* dmapp, dstring* key)
 {
 	if(key == NULL)
 		return 0;
-	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = *key}));
-	if(dent != NULL && remove_from_hashmap(dmapp, dent))
+
+	dentry* dent = NULL;
+
+	if(dmapp->key_type == CASE_SENSITIVE_KEY_TYPE)
+		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
+	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
+	{
+		dstring copy_key; init_dstring_data(&copy_key, key->cstring, key->bytes_occupied); toLowercase(&copy_key);
+		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
+		deinit_dstring(&copy_key);
+	}
+
+	if(dent != NULL && remove_from_hashmap(&(dmapp->map), dent))
 	{
 		delete_dentry(dent);
 		return 1;
@@ -108,18 +135,18 @@ static void delete_dentry_wrapper(const void* dent, const void* additional_param
 
 void remove_all_from_dmap(dmap* dmapp)
 {
-	for_each_in_hashmap(dmapp, delete_dentry_wrapper, NULL);
-	for(unsigned int i = 0; i < dmapp->hashmap_holder.total_size;i++)
-		set_element(&(dmapp->hashmap_holder), NULL, i);
+	for_each_in_hashmap(&(dmapp->map), delete_dentry_wrapper, NULL);
+	for(unsigned int i = 0; i < dmapp->map.hashmap_holder.total_size;i++)
+		set_element(&(dmapp->map.hashmap_holder), NULL, i);
 }
 
 void for_each_in_dmap(dmap* dmapp, void (*operation)(const dstring* key, const dstring* value, const void* additional_params), const void* additional_params)
 {
-	for(unsigned int i = 0; i < dmapp->hashmap_holder.total_size; i++)
+	for(unsigned int i = 0; i < dmapp->map.hashmap_holder.total_size; i++)
 	{
-		if(get_element(&(dmapp->hashmap_holder), i) != NULL)
+		if(get_element(&(dmapp->map.hashmap_holder), i) != NULL)
 		{
-			const dentry* dent = get_element(&(dmapp->hashmap_holder), i);
+			const dentry* dent = get_element(&(dmapp->map.hashmap_holder), i);
 			operation(&(dent->key), &(dent->value), additional_params);
 		}
 	}
@@ -128,5 +155,5 @@ void for_each_in_dmap(dmap* dmapp, void (*operation)(const dstring* key, const d
 void deinitialize_dmap(dmap* dmapp)
 {
 	remove_all_from_dmap(dmapp);
-	deinitialize_hashmap(dmapp);
+	deinitialize_hashmap(&(dmapp->map));
 }

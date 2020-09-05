@@ -559,7 +559,7 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 		}
 		append_to_dstring(result, temp);
 	}
-	if(hr->parameters.occupancy > 0)
+	if(hr->parameters.map.occupancy > 0)
 	{
 		append_to_dstring(result, "?");
 		for_each_in_dmap(&(hr->parameters), (void (*)(const dstring*, const dstring*, const void*))serialize_parameter_entry, result);

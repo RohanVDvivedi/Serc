@@ -18,6 +18,9 @@
 // it will insert in dmap without making any checks, insert duplicate will insert even if an entry
 // with duplicate key exists
 
+// For a CASE_INSENSITIVE_KEY_TYPE all the keys are lower cased before being storesd in the dmap
+// dmap internally uses hashmap from cutlery project
+
 typedef enum dmap_key_type dmap_key_type;
 enum dmap_key_type
 {
