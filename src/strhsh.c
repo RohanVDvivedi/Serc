@@ -39,7 +39,7 @@ unsigned long long int getHashValueByLength(char* s,int length)
 {
     unsigned long long int ans = 0,i = 1,last = 0,curr = 0,diff = 0;
     unsigned long long int lastoccur[128] = {};
-    while((*s)!='\0' && length > (i-1) )
+    while(length > (i-1) && (*s)!='\0')
     {
         curr = ( ( (unsigned long long int)(*s) ) & 0x7f );
         if( i == 1 )
