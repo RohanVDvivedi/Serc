@@ -27,7 +27,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 	// cache miss case ---->>>
 
 	dstring file_path;
-	init_dstring(&file_path, fc->root_path, relative_file_path->bytes_occupied);
+	init_dstring(&file_path, fc->root_path);
 	concatenate_dstring(&file_path, relative_file_path);
 
 	// if the file is not in cache, check if the file even exists
@@ -50,7 +50,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
     char file_buffer[FILE_READ_BUFFER_SIZE];
 
     // store the actual file contents which were requested in this dstring
-    dstring file_contents;	init_dstring(&file_contents, "", 100);
+    dstring file_contents;	init_dstring_data(&file_contents, NULL, 0);
 
     // loop through the file, to put it in cache 
     // open the file
@@ -84,17 +84,14 @@ void delete_file_cache(file_cache* fc)
 void get_extension_from_file_path(dstring* extension_result, dstring* path)
 {
 	char* path_t = path->cstring;
-	int in_extension = 0;
-	while((*(path_t)) != '\0')
+	for(;path_t < path->cstring + path->bytes_occupied; path_t++)
 	{
-		if(in_extension == 1)
-		{
-			char temp[2] = "X";
-			temp[0] = (*(path_t));
-			append_to_dstring(extension_result, temp);
-		}
-		else if((*(path_t)) == '.')
-			in_extension = 1;
+		if((*path_t) == '.')
+			break;
+	}
+	if((*path_t) == '.')
+	{
 		path_t++;
+		appendn_to_dstring(extension_result, path_t, path->cstring + path->bytes_occupied - path_t);
 	}
 }
