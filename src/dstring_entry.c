@@ -7,7 +7,7 @@
 dentry* get_dentry(dstring* key, dstring* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));
-	init_dstring_data(&(entryp->key), key->cstring, value->bytes_occupied);
+	init_dstring_data(&(entryp->key), key->cstring, key->bytes_occupied);
 	init_dstring_data(&(entryp->value), value->cstring, value->bytes_occupied);
 	entryp->key_hash_value = 0;
 	return entryp;
