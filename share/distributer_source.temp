@@ -6,9 +6,9 @@
 
 void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
 {
-	char* path_str = hrq->path.cstring;
-	unsigned long long int path_len = hrq->path.bytes_occupied;
-	unsigned long long int PATH = getHashValue(path_str);
+	const dstring* path_str = &(hrq->path);
+	unsigned int path_len = path_str->bytes_occupied;
+	unsigned long long int PATH = getHashValueDstring(path_str);
 	HttpMethod METHOD = hrq->method;
 
 	int routing_resolved = 0;
