@@ -56,7 +56,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				else if(CURRENT_CHARACTER() == ' ')
 				{
 					httpCntxt->state = METHOD_COMPLETE;
-					hr->method = getHttpMethod(httpCntxt->partialDstring.cstring);
+					hr->method = getHttpMethod(&(httpCntxt->partialDstring));
 					RE_INIT_PARTIAL_STRING()
 					GOTO_NEXT_CHARACTER()
 				}

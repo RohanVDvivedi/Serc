@@ -2,10 +2,10 @@
 
 #include<strhsh.h>
 
-HttpMethod getHttpMethod(char* verb)
+HttpMethod getHttpMethod(dstring* verb)
 {
 	// get hash value
-	unsigned long long int hsh = getHashValue(verb);
+	unsigned long long int hsh = getHashValueDstring(verb);
 
 	// if garbage string is provided (anything except the listed verbs) return UNIDENTIFIED enum
 	char* verbtemp = serializeHttpMethod((HttpMethod)hsh);

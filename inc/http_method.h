@@ -1,6 +1,8 @@
 #ifndef HTTP_METHOD_H
 #define HTTP_METHOD_H
 
+#include<dstring.h>
+
 typedef enum HttpMethod HttpMethod;
 enum HttpMethod
 {
@@ -16,7 +18,7 @@ enum HttpMethod
 	UNIDENTIFIED =    166308
 };
 
-HttpMethod getHttpMethod(char* verb);
+HttpMethod getHttpMethod(dstring* verb);
 
 char* serializeHttpMethod(HttpMethod m);
 
