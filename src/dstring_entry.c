@@ -4,11 +4,20 @@
 
 #include<stdlib.h>
 
-dentry* get_dentry(char* key, char* value)
+dentry* get_dentry(dstring* key, dstring* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));
-	init_dstring_data(&(entryp->key), NULL, 0);
-	init_dstring_data(&(entryp->value), NULL, 0);
+	init_dstring_data(&(entryp->key), key->cstring, value->bytes_occupied);
+	init_dstring_data(&(entryp->value), value->cstring, value->bytes_occupied);
+	entryp->key_hash_value = 0;
+	return entryp;
+}
+
+dentry* get_dentry_cstrings(char* key, char* value)
+{
+	dentry* entryp = malloc(sizeof(dentry));
+	init_dstring_data(&(entryp->key), key, (key == NULL) ? 0 : strlen(key));
+	init_dstring_data(&(entryp->value), value, (value == NULL) ? 0 : strlen(value));
 	entryp->key_hash_value = 0;
 	return entryp;
 }

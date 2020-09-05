@@ -14,7 +14,8 @@ struct dentry
 	dstring value;
 };
 
-dentry* get_dentry(char* key, char* value);
+dentry* get_dentry(dstring* key, dstring* value);
+dentry* get_dentry_cstrings(char* key, char* value);
 
 int key_compare_dentry_CASE_SENSITIVE(const void* entry1, const void* entry2);
 int key_compare_dentry_CASE_INSENSITIVE(const void* entry1, const void* entry2);

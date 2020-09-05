@@ -1,6 +1,7 @@
 #include<dstring_hashmap.h>
 
 #include<stdlib.h>
+#include<string.h>
 
 void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 {
@@ -12,15 +13,16 @@ void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
 {
-	if(key == NULL)
-		return NULL;
-	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = {.cstring = key}}));
-	return (dent != NULL) ? (&(dent->value)) : NULL;
+	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
+	return find_equals_in_dmap(dmapp, &dummy_key);
 }
 
 dstring* find_equals_in_dmap(dmap* dmapp, dstring* key)
 {
-	return find_equals_in_dmap_cstr(dmapp, key->cstring);
+	if(key == NULL)
+		return NULL;
+	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = *key}));
+	return (dent != NULL) ? (&(dent->value)) : NULL;
 }
 
 static void insert_elements_wrapper(const void* dent, const void* new_map)
@@ -42,15 +44,20 @@ static void rehash_if_necessary(dmap* dmapp)
 
 void insert_unique_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 {
-	if(key == NULL)
+	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
+	dstring dummy_val; init_dstring_slize(&dummy_val, value, strlen(value));
+	insert_unique_in_dmap(dmapp, &dummy_key, &dummy_val);
+}
+
+void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
+{
+	if(key == NULL || value == NULL)
 		return;
-	if(value == NULL)
-		value = "";
-	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = {.cstring = key}}));
+	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = *key}));
 	if(dent != NULL)
 	{
 		deinit_dstring(&(dent->value));
-		init_dstring(&(dent->value), value, 0);
+		init_dstring_data(&(dent->value), value->cstring, value->bytes_occupied);
 	}
 	else
 	{
@@ -59,48 +66,38 @@ void insert_unique_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 	}
 }
 
-void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
-{
-	if(key == NULL)
-		return;
-	insert_unique_in_dmap_cstr(dmapp, key->cstring, (value == NULL) ? "" : value->cstring);
-}
-
 void insert_duplicate_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 {
-	if(key == NULL)
-		return;
-	if(value == NULL)
-		value = "";
-	rehash_if_necessary(dmapp);
-	insert_in_hashmap(dmapp, get_dentry(key, value));
+	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
+	dstring dummy_val; init_dstring_slize(&dummy_val, value, strlen(value));
+	insert_duplicate_in_dmap(dmapp, &dummy_key, &dummy_val);
 }
 
 void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 {
-	if(key == NULL)
+	if(key == NULL || value == NULL)
 		return;
-	insert_duplicate_in_dmap_cstr(dmapp, key->cstring, (value == NULL) ? "" : value->cstring);
+	rehash_if_necessary(dmapp);
+	insert_in_hashmap(dmapp, get_dentry(key, value));
 }
 
 int remove_from_dmap_cstr(dmap* dmapp, char* key)
 {
-	if(key == NULL)
-		return 0;
-	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = ((dstring){.cstring = key})}));
-	if(dent != NULL)
-	{
-		if(remove_from_hashmap(dmapp, dent))
-			delete_dentry(dent);
-	}
-	return 0;
+	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
+	return remove_from_dmap(dmapp, &dummy_key);
 }
 
 int remove_from_dmap(dmap* dmapp, dstring* key)
 {
 	if(key == NULL)
 		return 0;
-	return remove_from_dmap_cstr(dmapp, key->cstring);
+	dentry* dent = (dentry*) find_equals_in_hashmap(dmapp, &((dentry){.key = *key}));
+	if(dent != NULL && remove_from_hashmap(dmapp, dent))
+	{
+		delete_dentry(dent);
+		return 1;
+	}
+	return 0;
 }
 
 static void delete_dentry_wrapper(const void* dent, const void* additional_params)
