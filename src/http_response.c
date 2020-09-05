@@ -17,6 +17,9 @@ void initHttpResponse(HttpResponse* hr)
 // returns -2 when error
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt)
 {
+	// this is the key corresponding to which value less patial keys of headers and parameters are stored
+	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-")};
+
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
 	{
@@ -133,7 +136,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					insert_unique_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
+					insert_unique_in_dmap(&(hr->headers), &partial_key_value_slize_key, &(httpCntxt->partialDstring));
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -162,7 +165,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
-					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
+					dstring* partial_key = find_equals_in_dmap(&(hr->headers), &partial_key_value_slize_key);
 					insert_duplicate_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
 					make_dstring_empty(partial_key);
 					RE_INIT_PARTIAL_STRING()
@@ -191,7 +194,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 			}
 			case HEADERS_COMPLETE :
 			{
-				remove_from_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
+				remove_from_dmap(&(hr->headers), &partial_key_value_slize_key);
 				if(CURRENT_CHARACTER() == '\n')
 				{
 					long long int body_length = -1;
@@ -439,9 +442,10 @@ void printResponse(HttpResponse* hr)
 
 void setSetCookie(HttpResponse* hr, dstring* SetCookie)
 {
-	if(SetCookie->cstring == NULL)
-		return;
-	insert_duplicate_in_dmap_cstr(&(hr->headers), "Set-Cookie", SetCookie->cstring);
+	static dstring SetCookieHeaderKey = {.cstring = "Set-Cookie", .bytes_occupied = strlen("Set-Cookie")};
+
+	if(SetCookie != NULL && SetCookie->bytes_occupied > 0)
+		insert_duplicate_in_dmap(&(hr->headers), &SetCookieHeaderKey, SetCookie);
 }
 
 void redirectTo(int with_status, char* new_path, HttpResponse* hrp)

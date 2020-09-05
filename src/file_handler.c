@@ -29,6 +29,8 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 	dstring file_path;
 	init_dstring(&file_path, fc->root_path);
 	concatenate_dstring(&file_path, relative_file_path);
+	expand_dstring(&file_path, file_path.bytes_occupied + 10);
+	file_path.cstring[file_path.bytes_occupied] = '\0';
 
 	// if the file is not in cache, check if the file even exists
 	// if the file does not exist, or if it is a folder in the server root, we return with -1

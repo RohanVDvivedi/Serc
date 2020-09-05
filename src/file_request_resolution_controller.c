@@ -2,7 +2,7 @@
 
 #include<strhsh.h>
 
-char* get_content_type_from_file_extension(char* extension);
+char* get_content_type_from_file_extension(dstring* extension);
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache, int* routing_resolved)
 {
@@ -22,7 +22,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* ser
 			// add content-type for the requested file, if there is extension on the file path
 			// and set tha status to 200
 			if(extension.bytes_occupied > 0)
-    			insert_unique_in_dmap_cstr(&(hrp->headers), "content-type", get_content_type_from_file_extension(extension.cstring));
+    			insert_unique_in_dmap_cstr(&(hrp->headers), "content-type", get_content_type_from_file_extension(&extension));
 
     		hrp->status = 200;
     	}
@@ -33,9 +33,9 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* ser
 	return 0;
 }
 
-char* get_content_type_from_file_extension(char* extension)
+char* get_content_type_from_file_extension(dstring* extension)
 {
-	unsigned int ext_hash = getHashValue(extension);
+	unsigned int ext_hash = getHashValueDstring(extension);
 	switch(ext_hash)
 	{
 		case 20037 :

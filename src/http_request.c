@@ -19,6 +19,9 @@ void initHttpRequest(HttpRequest* hr)
 // returns -2 when error
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContext* httpCntxt)
 {
+	// this is the key corresponding to which value less patial keys of headers and parameters are stored
+	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-")};
+
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
 	{
@@ -108,7 +111,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				}
 				else if(CURRENT_CHARACTER() == '=')
 				{
-					insert_unique_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
+					insert_unique_in_dmap(&(hr->parameters), &partial_key_value_slize_key, &(httpCntxt->partialDstring));
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = IN_PARAM_VALUE;
 					GOTO_NEXT_CHARACTER()
@@ -124,7 +127,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				}
 				else if(CURRENT_CHARACTER() == '&')
 				{
-					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
+					dstring* partial_key = find_equals_in_dmap(&(hr->parameters), &partial_key_value_slize_key);
 					insert_unique_in_dmap(&(hr->parameters), partial_key, &(httpCntxt->partialDstring));
 					make_dstring_empty(partial_key);
 					RE_INIT_PARTIAL_STRING()
@@ -133,7 +136,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 				}
 				else if(CURRENT_CHARACTER() == ' ')
 				{
-					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
+					dstring* partial_key = find_equals_in_dmap(&(hr->parameters), &partial_key_value_slize_key);
 					insert_unique_in_dmap(&(hr->parameters), partial_key, &(httpCntxt->partialDstring));
 					make_dstring_empty(partial_key);
 					RE_INIT_PARTIAL_STRING()
@@ -144,7 +147,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			}
 			case PATH_PARAMS_COMPLETE :
 			{
-				remove_from_dmap_cstr(&(hr->parameters), "-<-PARTIAL_KEY_NO_VALUE->-");
+				remove_from_dmap(&(hr->parameters), &partial_key_value_slize_key);
 				if(CURRENT_CHARACTER() != ' ')
 				{
 					httpCntxt->state = IN_VERSION;
@@ -200,7 +203,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			{
 				if(CURRENT_CHARACTER() == ':')
 				{
-					insert_unique_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-", httpCntxt->partialDstring.cstring);
+					insert_unique_in_dmap(&(hr->headers), &partial_key_value_slize_key, &(httpCntxt->partialDstring));
 					RE_INIT_PARTIAL_STRING()
 					httpCntxt->state = HEADER_KEY_COMPLETE;
 					GOTO_NEXT_CHARACTER()
@@ -229,7 +232,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			{
 				if(CURRENT_CHARACTER() == '\r')
 				{
-					dstring* partial_key = find_equals_in_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
+					dstring* partial_key = find_equals_in_dmap(&(hr->headers), &(partial_key_value_slize_key));
 					insert_duplicate_in_dmap(&(hr->headers), partial_key, &(httpCntxt->partialDstring));
 					make_dstring_empty(partial_key);
 					RE_INIT_PARTIAL_STRING()
@@ -258,7 +261,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 			}
 			case HEADERS_COMPLETE :
 			{
-				remove_from_dmap_cstr(&(hr->headers), "-<-PARTIAL_KEY_NO_VALUE->-");
+				remove_from_dmap(&(hr->headers), &partial_key_value_slize_key);
 				if(CURRENT_CHARACTER() == '\n')
 				{
 					long long int body_length = -1;
@@ -418,7 +421,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{
-		sprintf(ptemp, "%u", hrq->body.bytes_occupied-1);
+		sprintf(ptemp, "%u", hrq->body.bytes_occupied);
 		insert_unique_in_dmap_cstr(&(hrq->headers), "content-length", ptemp);
 	}
 	insert_unique_in_dmap_cstr(&(hrq->headers), "accept-encoding", "gzip, deflate, identity");
@@ -529,7 +532,7 @@ dstring* getCookie(HttpRequest* hr)
 
 void serializeUrl(dstring* result, HttpRequest* hr)
 {
-	for(int i=0; i<strlen(hr->path.cstring); i++)
+	for(int i=0; i<hr->path.bytes_occupied; i++)
 	{
 		char temp[10];
 		if( characterAllowedInURL(hr->path.cstring[i]) || hr->path.cstring[i]=='/')
@@ -550,7 +553,5 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 	{
 		append_to_dstring(result, "?");
 		for_each_in_dmap(&(hr->parameters), (void (*)(const dstring*, const dstring*, const void*))serialize_parameter_entry, result);
-		result->bytes_occupied--;
-		result->cstring[result->bytes_occupied-1] = '\0';
 	}
 }

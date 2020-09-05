@@ -57,7 +57,7 @@ int characterAllowedInURL(char c)
 static void serialize_paramter_helper(dstring* result, const dstring* input)
 {
 	char temp[10];
-	for(int i=0; i<strlen(input->cstring); i++)
+	for(int i=0; i<input->bytes_occupied; i++)
 	{
 		if( characterAllowedInURL(input->cstring[i]) )
 		{
