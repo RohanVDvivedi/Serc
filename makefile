@@ -126,3 +126,7 @@ uninstall :
 # builds a self signed ssl key and certificate for your server
 ssl_cert :
 	openssl req -new -x509 -pubkey -newkey rsa:4096 -days 365 -nodes -keyout ${CON_DIR}/server.key -out ${CON_DIR}/server.crt
+
+# to test client side code
+test_client : ./client.c ${LIB_DIR}/${LIBRARY}
+	${CC} ${CFLAGS} ./client.c ${LFLAGS} -o $@

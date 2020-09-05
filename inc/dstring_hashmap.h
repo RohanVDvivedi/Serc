@@ -25,7 +25,12 @@ enum dmap_key_type
 	CASE_INSENSITIVE_KEY_TYPE
 };
 
-typedef hashmap dmap;
+typedef struct dmap dmap;
+struct dmap
+{
+	dmap_key_type key_type;
+	hashmap map;
+};
 
 void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size);
 

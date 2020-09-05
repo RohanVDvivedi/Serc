@@ -3,6 +3,7 @@
 #include<strhsh.h>
 
 #include<stdlib.h>
+#include<stdio.h>
 
 dentry* get_dentry(dstring* key, dstring* value)
 {
