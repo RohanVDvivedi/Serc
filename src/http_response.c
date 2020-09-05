@@ -16,13 +16,13 @@ void initHttpResponse(HttpResponse* hr)
 // returns -1 on incomplete
 // returns -2 when error
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt)
-{printResponse(hr);
+{
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
 	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-"), .bytes_allocated = 0};
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
-	{printf("%c => %d\n", *buffer, httpCntxt->state);
+	{
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(httpCntxt->partialDstring));
