@@ -202,7 +202,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 					if(content_length != NULL)
 					{
 						// make content dstring sscanfable
-						expand_dstring(content_length, content_length->bytes_occupied + 1);
+						expand_dstring(content_length, 1);
 						content_length->cstring[content_length->bytes_occupied] = '\0';
 
 						sscanf(content_length->cstring, "%lld", &body_length);
@@ -234,7 +234,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 					long long int body_length = -1;
 
 					// make content dstring sscanfable
-					expand_dstring(content_length, content_length->bytes_occupied + 1);
+					expand_dstring(content_length, 1);
 					content_length->cstring[content_length->bytes_occupied] = '\0';
 
 					sscanf(content_length->cstring, "%lld", &body_length);
