@@ -201,6 +201,10 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 					dstring* content_length = (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "content-length");
 					if(content_length != NULL)
 					{
+						// make content dstring sscanfable
+						expand_dstring(content_length, content_length->bytes_occupied + 1);
+						content_length->cstring[content_length->bytes_occupied] = '\0';
+
 						sscanf(content_length->cstring, "%lld", &body_length);
 					}
 					if(body_length == 0)
@@ -228,7 +232,13 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 				if(content_length != NULL)
 				{
 					long long int body_length = -1;
+
+					// make content dstring sscanfable
+					expand_dstring(content_length, content_length->bytes_occupied + 1);
+					content_length->cstring[content_length->bytes_occupied] = '\0';
+
 					sscanf(content_length->cstring, "%lld", &body_length);
+
 					if(body_length >= 0 && body_length == hr->body.bytes_occupied)
 					{
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
