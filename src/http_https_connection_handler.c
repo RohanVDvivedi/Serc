@@ -55,9 +55,9 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 		{
 			// read request byte array, we must read blockingly
 			if(is_secured_http)
-				buffreadlength = SSL_read(ssl, bufferRequest, buffersize-1);	// read ssl encrypted request
+				buffreadlength = SSL_read(ssl, bufferRequest, buffersize);	// read ssl encrypted request
 			else
-				buffreadlength = recv(conn_fd, bufferRequest, buffersize-1, 0);
+				buffreadlength = recv(conn_fd, bufferRequest, buffersize, 0);
 
 			// if no characters read than exit
 			if(buffreadlength == -1)
@@ -105,16 +105,16 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			// printResponse(&hrp);
 
 			// serialize HttpResponse to send it
-			dstring bufferResponse; init_dstring(&bufferResponse, "", 10);
+			dstring bufferResponse; init_dstring(&bufferResponse, NULL);
 
 			// sertialize the response object in tot the string
 			serializeResponse(&bufferResponse, &hrp);
 
 			// send the data
 			if(is_secured_http)
-				SSL_write(ssl, bufferResponse.cstring, bufferResponse.bytes_occupied - 1);
+				SSL_write(ssl, bufferResponse.cstring, bufferResponse.bytes_occupied);
 			else
-				send(conn_fd, bufferResponse.cstring, bufferResponse.bytes_occupied - 1, 0);
+				send(conn_fd, bufferResponse.cstring, bufferResponse.bytes_occupied, 0);
 
 			// once data sent delete bufferResponse
 			deinit_dstring(&bufferResponse);

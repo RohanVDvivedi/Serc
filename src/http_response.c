@@ -7,9 +7,9 @@
 void initHttpResponse(HttpResponse* hr)
 {
 	hr->status = 0;
-	init_dstring(&(hr->version), "", 10);
+	init_dstring(&(hr->version), NULL);
 	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
-	init_dstring(&(hr->body), "", 10);
+	init_dstring(&(hr->body), NULL);
 }
 
 // returns 0 when completed
@@ -345,7 +345,7 @@ void serializeResponse(dstring* result, HttpResponse* hr)
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[13];
-	sprintf(ptemp, "%u", hrp->body.bytes_occupied-1);
+	sprintf(ptemp, "%u", hrp->body.bytes_occupied);
 	insert_unique_in_dmap_cstr(&(hrp->headers), "content-length", ptemp);
 	insert_unique_in_dmap_cstr(&(hrp->headers), "server", "serc0");
 }

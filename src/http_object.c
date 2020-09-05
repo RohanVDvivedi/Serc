@@ -107,5 +107,5 @@ int hasHeader(char* Key, char* Value, dmap* headers)
 	if(value_test == NULL)
 		return 0;
 
-	return (strcmp(Value, value_test->cstring) == 0);
+	return (compare_dstring_cstring(value_test, Value) == 0);
 }

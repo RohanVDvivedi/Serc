@@ -68,236 +68,120 @@ char* getHttpResponseStatus(int status)
 	switch(status)
 	{
 		case 100 :
-		{
 			return (char*) HttpStatusLines[0];
-		}
 		case 101 :
-		{
 			return (char*) HttpStatusLines[1];
-		}
 		case 102 :
-		{
 			return (char*) HttpStatusLines[2];
-		}
 		case 200 :
-		{
 			return (char*) HttpStatusLines[3];
-		}
 		case 201 :
-		{
 			return (char*) HttpStatusLines[4];
-		}
 		case 202 :
-		{
 			return (char*) HttpStatusLines[5];
-		}
 		case 203 :
-		{
 			return (char*) HttpStatusLines[6];
-		}
 		case 204 :
-		{
 			return (char*) HttpStatusLines[7];
-		}
 		case 205 :
-		{
 			return (char*) HttpStatusLines[8];
-		}
 		case 206 :
-		{
 			return (char*) HttpStatusLines[9];
-		}
 		case 207 :
-		{
 			return (char*) HttpStatusLines[10];
-		}
 		case 300 :
-		{
 			return (char*) HttpStatusLines[11];
-		}
 		case 301 :
-		{
 			return (char*) HttpStatusLines[12];
-		}
 		case 302 :
-		{
 			return (char*) HttpStatusLines[13];
-		}
 		case 303 :
-		{
 			return (char*) HttpStatusLines[14];
-		}
 		case 304 :
-		{
 			return (char*) HttpStatusLines[15];
-		}
 		case 305 :
-		{
 			return (char*) HttpStatusLines[16];
-		}
 		case 307 :
-		{
 			return (char*) HttpStatusLines[17];
-		}
 		case 308 :
-		{
 			return (char*) HttpStatusLines[18];
-		}
 		case 400 :
-		{
 			return (char*) HttpStatusLines[19];
-		}
 		case 401 :
-		{
 			return (char*) HttpStatusLines[20];
-		}
 		case 402 :
-		{
 			return (char*) HttpStatusLines[21];
-		}
 		case 403 :
-		{
 			return (char*) HttpStatusLines[22];
-		}
 		case 404 :
-		{
 			return (char*) HttpStatusLines[23];
-		}
 		case 405 :
-		{
 			return (char*) HttpStatusLines[24];
-		}
 		case 406 :
-		{
 			return (char*) HttpStatusLines[25];
-		}
 		case 407 :
-		{
 			return (char*) HttpStatusLines[26];
-		}
 		case 408 :
-		{
 			return (char*) HttpStatusLines[27];
-		}
 		case 409 :
-		{
 			return (char*) HttpStatusLines[28];
-		}
 		case 410 :
-		{
 			return (char*) HttpStatusLines[29];
-		}
 		case 411 :
-		{
 			return (char*) HttpStatusLines[30];
-		}
 		case 412 :
-		{
 			return (char*) HttpStatusLines[31];
-		}
 		case 413 :
-		{
 			return (char*) HttpStatusLines[32];
-		}
 		case 414 :
-		{
 			return (char*) HttpStatusLines[33];
-		}
 		case 415 :
-		{
 			return (char*) HttpStatusLines[34];
-		}
 		case 416 :
-		{
 			return (char*) HttpStatusLines[35];
-		}
 		case 417 :
-		{
 			return (char*) HttpStatusLines[36];
-		}
 		case 421 :
-		{
 			return (char*) HttpStatusLines[37];
-		}
 		case 422 :
-		{
 			return (char*) HttpStatusLines[38];
-		}
 		case 423 :
-		{
 			return (char*) HttpStatusLines[39];
-		}
 		case 424 :
-		{
 			return (char*) HttpStatusLines[40];
-		}
 		case 425 :
-		{
 			return (char*) HttpStatusLines[41];
-		}
 		case 426 :
-		{
 			return (char*) HttpStatusLines[42];
-		}
 		case 428 :
-		{
 			return (char*) HttpStatusLines[43];
-		}
 		case 429 :
-		{
 			return (char*) HttpStatusLines[44];
-		}
 		case 431 :
-		{
 			return (char*) HttpStatusLines[45];
-		}
 		case 451 :
-		{
 			return (char*) HttpStatusLines[46];
-		}
 		case 500 :
-		{
 			return (char*) HttpStatusLines[47];
-		}
 		case 502 :
-		{
 			return (char*) HttpStatusLines[48];
-		}
 		case 503 :
-		{
 			return (char*) HttpStatusLines[49];
-		}
 		case 504 :
-		{
 			return (char*) HttpStatusLines[50];
-		}
 		case 505 :
-		{
 			return (char*) HttpStatusLines[51];
-		}
 		case 506 :
-		{
 			return (char*) HttpStatusLines[52];
-		}
 		case 507 :
-		{
 			return (char*) HttpStatusLines[53];
-		}
 		case 508 :
-		{
 			return (char*) HttpStatusLines[54];
-		}
 		case 510 :
-		{
 			return (char*) HttpStatusLines[55];
-		}
 		case 511 :
-		{
 			return (char*) HttpStatusLines[56];
-		}
 		default :
-		{
 			return NULL;
-		}
 	}
 }

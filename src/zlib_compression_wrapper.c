@@ -41,11 +41,12 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 
 	// from dstring internals
 	strm.next_in = (Bytef*)(uncompressedData->cstring);
-	strm.avail_in = uncompressedData->bytes_occupied - 1;
+	strm.avail_in = uncompressedData->bytes_occupied;
 
 	// make buffer dstring for compressed data ready
-	dstring* compressedData = get_dstring("", uncompressedData->bytes_occupied);
-	strm.avail_out = compressedData->bytes_allocated - 1;
+	dstring* compressedData = get_dstring_data(NULL, 0);
+    expand_dstring(compressedData, uncompressedData->bytes_occupied);
+	strm.avail_out = compressedData->bytes_allocated;
 	strm.next_out = (Bytef *)(compressedData->cstring);
 
 	// compress
@@ -58,8 +59,7 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     }
 
 	// bring the compressedData to appropriate dstring format
-	compressedData->bytes_occupied = strm.total_out + 1;
-	compressedData->cstring[compressedData->bytes_occupied - 1] = '\0';
+	compressedData->bytes_occupied = strm.total_out;
 
 	// release resources from zlib
     deflateEnd(&strm);
@@ -112,38 +112,36 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
         return 0;
     }
 
-    // make buffer dstring for uncompressed data ready
-    dstring* uncompressedData = get_dstring("", compressedData->bytes_occupied);
+    // make buffer dstring for uncompressed data ready, and expand it to hold atleast as much data as compressedData size
+    dstring* uncompressedData = get_dstring_data(NULL, 0);
+    expand_dstring(uncompressedData, compressedData->bytes_occupied);
 
     // from dstring internals
     strm.next_in = (Bytef*)(compressedData->cstring);
-    strm.avail_in = compressedData->bytes_occupied - 1;
+    strm.avail_in = compressedData->bytes_occupied;
 
     // make buffer dstring for uncompressed data ready
-    strm.avail_out = uncompressedData->bytes_allocated - 1;
+    strm.avail_out = uncompressedData->bytes_allocated;
     strm.next_out = (Bytef *)(uncompressedData->cstring);
 
-    while(strm.total_in < compressedData->bytes_occupied - 1 && (err == Z_OK || err == Z_BUF_ERROR) && (err != Z_STREAM_END))
+    while(strm.total_in < compressedData->bytes_occupied && (err == Z_OK || err == Z_BUF_ERROR) && (err != Z_STREAM_END))
     {
         // compress
         err = inflate(&strm, Z_FINISH);
 
         // bring the uncompressedData to appropriate dstring format
-        uncompressedData->bytes_occupied = strm.total_out + 1;
-        uncompressedData->cstring[uncompressedData->bytes_occupied - 1] = '\0';
+        uncompressedData->bytes_occupied = strm.total_out;
 
         // from dstring internals
         strm.next_in = (Bytef*)(compressedData->cstring + strm.total_in);
-        strm.avail_in = compressedData->bytes_occupied - 1 - strm.total_in;
+        strm.avail_in = compressedData->bytes_occupied - strm.total_in;
 
-        if(uncompressedData->bytes_occupied - strm.total_out - 1 <= 10)
-        {
+        if(uncompressedData->bytes_allocated <= uncompressedData->bytes_occupied)
             expand_dstring(uncompressedData, uncompressedData->bytes_allocated);
-        }
 
         // make buffer dstring for uncompressed data ready
-        strm.avail_out = uncompressedData->bytes_allocated - 1 - strm.total_out;
-        strm.next_out = (Bytef *)(uncompressedData->cstring + strm.total_out);
+        strm.avail_out = uncompressedData->bytes_allocated - uncompressedData->bytes_occupied;
+        strm.next_out = (Bytef *)(uncompressedData->cstring + uncompressedData->bytes_occupied);
     }
 
     if(err != Z_OK && err != Z_STREAM_END)
@@ -154,8 +152,7 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
     }
 
     // bring the uncompressedData to appropriate dstring format
-    uncompressedData->bytes_occupied = strm.total_out + 1;
-    uncompressedData->cstring[uncompressedData->bytes_occupied - 1] = '\0';
+    uncompressedData->bytes_occupied = strm.total_out;
 
     // release resources from zlib
     inflateEnd(&strm);
