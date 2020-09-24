@@ -61,7 +61,7 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
 // Http Client transaction handler funcrtion (it is given at the last)
 HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq);
 
-job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char* host)
+promise* send_request_async(transaction_client* http_client, HttpRequest* hrq, char* host)
 {
 	if(hrq == NULL)
 	{
@@ -76,14 +76,14 @@ job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char*
 
 	// queue the transaction to get it executed by the underlying transaction client
 	// but remember to pass it a http client transaction handler
-	job* promise = queue_transaction(http_client, (void* (*)(int, int*, void*))http_transaction_handler, hrq);
+	promise* response_promise = queue_transaction(http_client, (void* (*)(int, int*, void*))http_transaction_handler, hrq);
 
-	return promise;
+	return response_promise;
 }
 
-HttpResponse* wait_or_get_response(job* promise, HttpRequest** hrq_p)
+HttpResponse* wait_or_get_response(promise* response_promise)
 {
-	return (HttpResponse*) get_result_for_transaction(promise, (void**)hrq_p);
+	return (HttpResponse*) get_result_for_transaction(response_promise);
 }
 
 void shutdown_and_delete_http_client(transaction_client* http_client)

@@ -45,17 +45,10 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
 
 // it will queue it as a transaction on the transaction_client to serialize the HttpRequest and 
 // then perform io on one of the other thread of the thread pool of the given transaction_client
-job* send_request_async(transaction_client* http_client, HttpRequest* hrq, char* host);
+promise* send_request_async(transaction_client* http_client, HttpRequest* hrq, char* host);
 
-// this function will wait for the promise, to complete, 
-// i.e. it will make the current thread wait for the request to complete, 
-// and get parsed and returned to you
-// if the request is already sent and response is already received,
-// the response is received to you instantly, the response may be NULL if there was a connection error
-//
-// *the hrq_p should be the the place where the function must return to you, the request for which the response is received, on the given promise
-// you can pass in NULL here, if you do not wish to retrieve the HttpRequest* in case you already have it
-HttpResponse* wait_or_get_response(job* promise, HttpRequest** hrq_p);
+// this function will wait for the promise, to complete, for the given response promise
+HttpResponse* wait_or_get_response(promise* response_promise);
 
 // this will shutdown the http_client, that you started using get_http_client, and delete all of its resources
 void shutdown_and_delete_http_client(transaction_client* http_client);
