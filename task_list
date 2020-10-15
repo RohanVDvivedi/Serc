@@ -1,1 +1,2 @@
  * ssl support for http client (* future feature)
+ * use a per thread memory allocator for the server (* future)
