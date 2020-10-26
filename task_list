@@ -1,6 +1,7 @@
- * ssl support for http client (* future feature)
+ * ssl support for http client (* future)
  * use a per connection memory allocator for the server (* future)
- * advanced thread management
+ * use conatins_dstring KMP based substring analyzer for pattern matching based routing logic
+ * advanced thread management (* future)
    * current system
      * 1 thread per connection
    * updated system
