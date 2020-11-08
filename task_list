@@ -12,3 +12,5 @@
    * advanced system
      * convert the 2 thread model to async io
    (the updated and advanced threading model will provide continuous request processing to generate responses)
+ * need to increase efficieny of the http parser, lesser copy/concatenate calls, do lesser copy of characters from servers dstring to build the parse tree, instead use a single copy of the dstring and make dummy dstring to point to it, essentially making less copy operation to build the parse tree (i.e. no need to replicate all the data, this will also result into lesser memory allocation calls)
+ * stronger adherence to HTTP standard headers and make server to act accordingly, instead of relying on the user/application developer to do it correctly
