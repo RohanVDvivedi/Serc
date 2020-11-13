@@ -96,7 +96,7 @@ void print_entry_wrapper(const dstring* key, const dstring* value, const void* a
 	printf("\t\t[");
 	printf_dstring(key);
 	printf("]->[");
-	printf_dstring((dstring*)value);
+	printf_dstring(value);
 	printf("]\n");
 }
 
