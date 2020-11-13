@@ -7,7 +7,7 @@ typedef struct file_cache file_cache;
 struct file_cache
 {
 	// this is the root path to the folder that we are serving using this server
-	char* root_path;
+	dstring root_path;
 
 	// this is the cashtable where the server will cache the files that it will read from the disk
 	// contents of each file is stored against its relative filepath
@@ -17,7 +17,7 @@ struct file_cache
 #define CACHE_EXPIRY_MINS 1
 
 // this will create the file cache, for your server
-file_cache* get_file_cache(char* root_path);
+file_cache* get_file_cache(const char* root_path);
 
 // this method returns -1, if the file is absent on th disk, else 0 if no error
 // the file if found in file_cache_table, it will be appended in append_file_contents

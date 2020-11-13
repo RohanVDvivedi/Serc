@@ -71,32 +71,32 @@ static void serialize_paramter_helper(dstring* result, const dstring* input)
 			temp[2] = hexToChar(input->cstring[i] & 0x0f);
 			temp[3] = '\0';
 		}
-		append_to_dstring(result, temp);
+		concatenate_dstring(result, dsring_DUMMY_CSTRING(temp));
 	}
 }
 
 void serialize_parameter_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	serialize_paramter_helper(result, key);
-	append_to_dstring(result, "=");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING("="));
 	serialize_paramter_helper(result, value);
-	append_to_dstring(result, "&");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING("&"));
 }
 
 void serialize_header_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	concatenate_dstring(result, key);
-	append_to_dstring(result, ": ");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING(": "));
 	concatenate_dstring(result, value);
-	append_to_dstring(result, "\r\n");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING("\r\n"));
 }
 
 void print_entry_wrapper(const dstring* key, const dstring* value, const void* addpar)
 {
 	printf("\t\t[");
-	display_dstring(key);
+	printf_dstring(key);
 	printf("]->[");
-	display_dstring((dstring*)value);
+	printf_dstring((dstring*)value);
 	printf("]\n");
 }
 

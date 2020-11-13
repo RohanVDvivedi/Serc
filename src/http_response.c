@@ -7,9 +7,9 @@
 void initHttpResponse(HttpResponse* hr)
 {
 	hr->status = 0;
-	init_dstring_data(&(hr->version), NULL, 0);
+	init_dstring(&(hr->version), NULL, 0);
 	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
-	init_dstring_data(&(hr->body), NULL, 0);
+	init_dstring(&(hr->body), NULL, 0);
 }
 
 // returns 0 when completed
@@ -26,8 +26,8 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(httpCntxt->partialDstring));
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring(&(httpCntxt->partialDstring), temp, 1);
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	temp[0]=(*buffer);temp[1]='\0';appendn_to_dstring((dstr), temp, 1);
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_dstring(&(httpCntxt->partialDstring), dstring_DUMMY_DATA(buffer, 1));
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	concatenate_dstring((dstr), dstring_DUMMY_DATA(buffer, 1));
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(httpCntxt->state)
 		{
@@ -448,7 +448,7 @@ void printResponse(HttpResponse* hr)
 {
 	printf("status : %d\n", hr->status);
 	printf("headers : \n"); for_each_in_dmap(&(hr->headers), print_entry_wrapper, NULL); printf("\n");
-	printf("body : "); display_dstring(&(hr->body)); printf("\n\n");
+	printf("body : "); printf_dstring(&(hr->body)); printf("\n\n");
 }
 
 void setSetCookie(HttpResponse* hr, dstring* SetCookie)

@@ -5,10 +5,10 @@
 #include<sys/stat.h>
 #include<unistd.h>
 
-file_cache* get_file_cache(char* root_path)
+file_cache* get_file_cache(const char* root_path)
 {
 	file_cache* fc = malloc(sizeof(file_cache));
-	fc->root_path = root_path;
+	init_dstring(&(fc->root_path), root_path, strlen(root_path));
 	fc->file_cache_table = get_cashtable(30);
 	return fc;
 }
@@ -27,7 +27,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 	// cache miss case ---->>>
 
 	dstring file_path;
-	init_dstring(&file_path, fc->root_path, strlen(fc->root_path));
+	concatenate_dstring(&file_path, &(fc->root_path));
 	concatenate_dstring(&file_path, relative_file_path);
 	expand_dstring(&file_path, file_path.bytes_occupied + 10);
 	file_path.cstring[file_path.bytes_occupied] = '\0';
@@ -52,7 +52,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
     char file_buffer[FILE_READ_BUFFER_SIZE];
 
     // store the actual file contents which were requested in this dstring
-    dstring file_contents;	init_dstring_data(&file_contents, NULL, 0);
+    dstring file_contents;	init_dstring(&file_contents, NULL, 0);
 
     // loop through the file, to put it in cache 
     // open the file
@@ -61,7 +61,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 		{
 			long long int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE, file);
 			if(read_count >= 0)
-				appendn_to_dstring(&file_contents, file_buffer, read_count);
+				concatenate_dstring(&file_contents, dstring_DUMMY_DATA(file_buffer, read_count));
 		}
 	fclose(file);
 
@@ -79,6 +79,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 
 void delete_file_cache(file_cache* fc)
 {
+	deinit_dstring(&(fc->root_path));
 	delete_cashtable(fc->file_cache_table);
 	free(fc);
 }
@@ -94,6 +95,6 @@ void get_extension_from_file_path(dstring* extension_result, dstring* path)
 	if((*path_t) == '.')
 	{
 		path_t++;
-		appendn_to_dstring(extension_result, path_t, path->cstring + path->bytes_occupied - path_t);
+		concatenate_dstring(extension_result, dstring_DUMMY_DATA(path_t, path->cstring + path->bytes_occupied - path_t));
 	}
 }
