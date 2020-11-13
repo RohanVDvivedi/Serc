@@ -104,10 +104,10 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			// printRequest(&hrq);
 			// printResponse(&hrp);
 
-			// serialize HttpResponse to send it
-			dstring bufferResponse; init_dstring(&bufferResponse, NULL);
+			// this is the buffer, where we would store the serialized form of response, before sending
+			dstring bufferResponse; init_dstring(&bufferResponse, NULL, 0);
 
-			// sertialize the response object in tot the string
+			// serialize the response to be sent
 			serializeResponse(&bufferResponse, &hrp);
 
 			// send the data
