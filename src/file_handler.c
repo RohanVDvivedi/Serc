@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include<sys/stat.h>
 #include<unistd.h>
+#include<string.h>
 
 file_cache* get_file_cache(const char* root_path)
 {
