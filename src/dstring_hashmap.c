@@ -12,12 +12,12 @@ void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 		initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_INSENSITIVE, 0);
 }
 
-dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
+dstring* find_equals_in_dmap_cstr(dmap* dmapp, const char* key)
 {
 	return find_equals_in_dmap(dmapp, dstring_DUMMY_CSTRING(key));
 }
 
-dstring* find_equals_in_dmap(dmap* dmapp, dstring* key)
+dstring* find_equals_in_dmap(dmap* dmapp, const dstring* key)
 {
 	if(key == NULL)
 		return NULL;
@@ -28,7 +28,7 @@ dstring* find_equals_in_dmap(dmap* dmapp, dstring* key)
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
 	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 	{
-		dstring copy_key; init_dstring_data(&copy_key, key->cstring, key->bytes_occupied); toLowercase(&copy_key);
+		dstring copy_key; init_dstring(&copy_key, key->cstring, key->bytes_occupied); toLowercase(&copy_key);
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
 		deinit_dstring(&copy_key);
 	}
@@ -52,12 +52,12 @@ static void rehash_if_necessary(dmap* dmapp)
 	}
 }
 
-void insert_unique_in_dmap_cstr(dmap* dmapp, char* key, char* value)
+void insert_unique_in_dmap_cstr(dmap* dmapp, const char* key, const char* value)
 {
 	insert_unique_in_dmap(dmapp, dstring_DUMMY_CSTRING(key), dstring_DUMMY_CSTRING(value));
 }
 
-void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
+void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value)
 {
 	if(key == NULL || value == NULL)
 		return;
@@ -65,7 +65,7 @@ void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 	if(val_found != NULL)
 	{
 		deinit_dstring(val_found);
-		init_dstring_data(val_found, value->cstring, value->bytes_occupied);
+		init_dstring(val_found, value->cstring, value->bytes_occupied);
 	}
 	else
 	{
@@ -77,12 +77,12 @@ void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 	}
 }
 
-void insert_duplicate_in_dmap_cstr(dmap* dmapp, char* key, char* value)
+void insert_duplicate_in_dmap_cstr(dmap* dmapp, const char* key, const char* value)
 {
 	insert_duplicate_in_dmap(dmapp, dstring_DUMMY_CSTRING(key), dstring_DUMMY_CSTRING(value));
 }
 
-void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
+void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* value)
 {
 	if(key == NULL || value == NULL)
 		return;
@@ -93,12 +93,12 @@ void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 	insert_in_hashmap(&(dmapp->map), dent);
 }
 
-int remove_from_dmap_cstr(dmap* dmapp, char* key)
+int remove_from_dmap_cstr(dmap* dmapp, const char* key)
 {
 	return remove_from_dmap(dmapp, dstring_DUMMY_CSTRING(key));
 }
 
-int remove_from_dmap(dmap* dmapp, dstring* key)
+int remove_from_dmap(dmap* dmapp, const dstring* key)
 {
 	if(key == NULL)
 		return 0;
@@ -109,7 +109,7 @@ int remove_from_dmap(dmap* dmapp, dstring* key)
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
 	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 	{
-		dstring copy_key; init_dstring_data(&copy_key, key->cstring, key->bytes_occupied); toLowercase(&copy_key);
+		dstring copy_key; init_dstring(&copy_key, key->cstring, key->bytes_occupied); toLowercase(&copy_key);
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
 		deinit_dstring(&copy_key);
 	}

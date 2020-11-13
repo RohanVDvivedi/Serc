@@ -71,7 +71,7 @@ static void serialize_paramter_helper(dstring* result, const dstring* input)
 			temp[2] = hexToChar(input->cstring[i] & 0x0f);
 			temp[3] = '\0';
 		}
-		concatenate_dstring(result, dsring_DUMMY_CSTRING(temp));
+		concatenate_dstring(result, dstring_DUMMY_CSTRING(temp));
 	}
 }
 

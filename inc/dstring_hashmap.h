@@ -37,18 +37,18 @@ struct dmap
 
 void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size);
 
-dstring* find_equals_in_dmap(dmap* dmapp, dstring* key);
-dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key);
+dstring* find_equals_in_dmap(dmap* dmapp, const dstring* key);
+dstring* find_equals_in_dmap_cstr(dmap* dmapp, const char* key);
 
 // inserts will fail with 0, if the key already exists in dmap 
-void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value);
-void insert_unique_in_dmap_cstr(dmap* dmapp, char* key, char* value);
+void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value);
+void insert_unique_in_dmap_cstr(dmap* dmapp, const char* key, const char* value);
 
-void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value);
-void insert_duplicate_in_dmap_cstr(dmap* dmapp, char* key, char* value);
+void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* value);
+void insert_duplicate_in_dmap_cstr(dmap* dmapp, const char* key, const char* value);
 
-int remove_from_dmap(dmap* dmapp, dstring* key);
-int remove_from_dmap_cstr(dmap* dmapp, char* key);
+int remove_from_dmap(dmap* dmapp, const dstring* key);
+int remove_from_dmap_cstr(dmap* dmapp, const char* key);
 
 void remove_all_from_dmap(dmap* dmapp);
 
