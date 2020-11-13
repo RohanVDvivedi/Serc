@@ -14,8 +14,7 @@ void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, char* key)
 {
-	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
-	return find_equals_in_dmap(dmapp, &dummy_key);
+	return find_equals_in_dmap(dmapp, dstring_DUMMY_CSTRING(key));
 }
 
 dstring* find_equals_in_dmap(dmap* dmapp, dstring* key)
@@ -55,9 +54,7 @@ static void rehash_if_necessary(dmap* dmapp)
 
 void insert_unique_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 {
-	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
-	dstring dummy_val; init_dstring_slize(&dummy_val, value, strlen(value));
-	insert_unique_in_dmap(dmapp, &dummy_key, &dummy_val);
+	insert_unique_in_dmap(dmapp, dstring_DUMMY_CSTRING(key), dstring_DUMMY_CSTRING(value));
 }
 
 void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
@@ -82,9 +79,7 @@ void insert_unique_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 
 void insert_duplicate_in_dmap_cstr(dmap* dmapp, char* key, char* value)
 {
-	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
-	dstring dummy_val; init_dstring_slize(&dummy_val, value, strlen(value));
-	insert_duplicate_in_dmap(dmapp, &dummy_key, &dummy_val);
+	insert_duplicate_in_dmap(dmapp, dstring_DUMMY_CSTRING(key), dstring_DUMMY_CSTRING(value));
 }
 
 void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
@@ -100,8 +95,7 @@ void insert_duplicate_in_dmap(dmap* dmapp, dstring* key, dstring* value)
 
 int remove_from_dmap_cstr(dmap* dmapp, char* key)
 {
-	dstring dummy_key; init_dstring_slize(&dummy_key, key, strlen(key));
-	return remove_from_dmap(dmapp, &dummy_key);
+	return remove_from_dmap(dmapp, dstring_DUMMY_CSTRING(key));
 }
 
 int remove_from_dmap(dmap* dmapp, dstring* key)

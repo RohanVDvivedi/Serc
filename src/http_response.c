@@ -23,7 +23,6 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
 	{
-		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(httpCntxt->partialDstring));
 		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_dstring(&(httpCntxt->partialDstring), dstring_DUMMY_DATA(buffer, 1));
@@ -251,7 +250,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 						httpCntxt->state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_cstring(transfer_encoding, "chunked") != -1 )
+				else if(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("chunked"), NULL) != -1 )
 				{
 					httpCntxt->state = IN_BODY_CHUNK_SIZE;
 				}
@@ -350,9 +349,9 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseCont
 
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
-	append_to_dstring(result, getHttpResponseStatus(hr->status));
+	concatenate_dstring(result, dstring_DUMMY_CSTRING(getHttpResponseStatus(hr->status)));
 	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
-	append_to_dstring(result, "\r\n");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING("\r\n"));
 	concatenate_dstring(result, &(hr->body));
 }
 
@@ -420,14 +419,14 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_cstring(content_encoding, "br") != -1) ||
-		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "br") != -1) )
+	if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("br"), NULL) != -1) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("br"), NULL) != -1) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_cstring(content_encoding, "deflate") != -1) ||
-		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "deflate") != -1) )
+	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != -1) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != -1) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_cstring(content_encoding, "gzip") != -1) ||
-		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "gzip") != -1) )
+	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != -1) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != -1) )
 		compr_type = GZIP;
 	else{return ;}
 

@@ -25,7 +25,6 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && httpCntxt->state != PARSED_SUCCESSFULLY)
 	{
-		char temp[2] = "X";
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(httpCntxt->partialDstring));
 		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_dstring(&(httpCntxt->partialDstring), dstring_DUMMY_DATA(buffer, 1));
@@ -318,7 +317,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 						httpCntxt->state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_cstring(transfer_encoding, "chunked") != -1 )
+				else if(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("chunked"), NULL) != -1 )
 				{
 					httpCntxt->state = IN_BODY_CHUNK_SIZE;
 				}
@@ -417,12 +416,12 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 
 void serializeRequest(dstring* result, HttpRequest* hr)
 {
-	append_to_dstring(result, serializeHttpMethod(hr->method));
-	append_to_dstring(result, " ");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING(serializeHttpMethod(hr->method)));
+	concatenate_dstring(result, dstring_DUMMY_CSTRING(" "));
 	serializeUrl(result, hr);
-	append_to_dstring(result, " HTTP/1.1\r\n");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING(" HTTP/1.1\r\n"));
 	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
-	append_to_dstring(result, "\r\n");
+	concatenate_dstring(result, dstring_DUMMY_CSTRING("\r\n"));
 	concatenate_dstring(result, &(hr->body));
 }
 
@@ -500,14 +499,14 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_cstring(content_encoding, "br") != -1) ||
-		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "br") != -1) )
+	if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("br"), NULL) != -1) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("br"), NULL) != -1) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_cstring(content_encoding, "deflate") != -1) ||
-		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "deflate") != -1) )
+	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != -1) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != -1) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_cstring(content_encoding, "gzip") != -1) ||
-		(transfer_encoding != NULL && contains_cstring(transfer_encoding, "gzip") != -1) )
+	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != -1) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != -1) )
 		compr_type = GZIP;
 	else{return ;}
 
@@ -558,11 +557,11 @@ void serializeUrl(dstring* result, HttpRequest* hr)
 			temp[2] = hexToChar(hr->path.cstring[i] & 0x0f);
 			temp[3] = '\0';
 		}
-		append_to_dstring(result, temp);
+		concatenate_dstring(result, dstring_DUMMY_CSTRING(temp));
 	}
 	if(hr->parameters.map.occupancy > 0)
 	{
-		append_to_dstring(result, "?");
+		concatenate_dstring(result, dstring_DUMMY_CSTRING("?"));
 		for_each_in_dmap(&(hr->parameters), (void (*)(const dstring*, const dstring*, const void*))serialize_parameter_entry, result);
 	}
 }
