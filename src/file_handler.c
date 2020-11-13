@@ -27,6 +27,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 	// cache miss case ---->>>
 
 	dstring file_path;
+	init_dstring(&file_path, NULL, 0);
 	concatenate_dstring(&file_path, &(fc->root_path));
 	concatenate_dstring(&file_path, relative_file_path);
 	expand_dstring(&file_path, file_path.bytes_occupied + 10);
