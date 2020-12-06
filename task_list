@@ -1,16 +1,5 @@
  * ssl support for http client (* future)
  * use a per connection memory allocator for the server (* future)
  * use conatins_dstring KMP based substring analyzer for pattern matching based routing logic
- * advanced thread management (* future)
-   * current system
-     * 1 thread per connection
-   * updated system
-     * 2 threads per connection for io
-       * 1 for reading requests from network and pushing to the processing fixed thread pool
-       * 1 for writing generated responses (by processing requests) to the network
-     * A completely separate fixed thread count, thread pool for processing the requestsm and push the generated reponse to the respective queue to be sent to the network
-   * advanced system
-     * convert the 2 thread model to async io
-   (the updated and advanced threading model will provide continuous request processing to generate responses)
  * need to increase efficieny of the http parser, lesser copy/concatenate calls, do lesser copy of characters from servers dstring to build the parse tree, instead use a single copy of the dstring and make dummy dstring to point to it, essentially making less copy operation to build the parse tree (i.e. no need to replicate all the data, this will also result into lesser memory allocation calls)
  * stronger adherence to HTTP standard headers and make server to act accordingly, instead of relying on the user/application developer to do it correctly
