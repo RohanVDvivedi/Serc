@@ -27,19 +27,17 @@
 #### Template application
 * Template application as an illustration to use Serc framework can be found [here](https://github.com/RohanVDvivedi/serc_template_application)
 
-#### Dependencies
-##### Certain libraries must be installed before you can start using Serc
-* Cutlery
-* BoomPar
-* ConnMan
-* ReaderWriterLock
-* JsonParser
-* Cashed
-* zlib		($ sudo apt install zlib1g-dev)
-* openssl	($ sudo apt-get install libssl-dev)
-
 ## Setup instructions
-*considering that you have installed all the required dependencies mentioned above*
+**Install dependencies :**
+ * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
+ * [BoomPar](https://github.com/RohanVDvivedi/BoomPar.git)
+ * [ConnMan](https://github.com/RohanVDvivedi/ConnMan)
+ * [ReaderWriterLock](https://github.com/RohanVDvivedi/ReaderWriterLock)
+ * [JSONParser](https://github.com/RohanVDvivedi/JSONparser)
+ * [Cashed](https://github.com/RohanVDvivedi/Cashed)
+ * [zlib](https://github.com/madler/zlib)		  ($ sudo apt install zlib1g-dev)
+ * [openssl](https://github.com/openssl/openssl)	($ sudo apt install libssl-dev)
+
 **Download source code :**
  * `git clone https://github.com/RohanVDvivedi/Serc.git`
 
