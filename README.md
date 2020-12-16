@@ -30,7 +30,7 @@
 ## Setup instructions
 **Install dependencies :**
  * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
- * [BoomPar](https://github.com/RohanVDvivedi/BoomPar.git)
+ * [BoomPar](https://github.com/RohanVDvivedi/BoomPar)
  * [ConnMan](https://github.com/RohanVDvivedi/ConnMan)
  * [ReaderWriterLock](https://github.com/RohanVDvivedi/ReaderWriterLock)
  * [JSONParser](https://github.com/RohanVDvivedi/JSONparser)
