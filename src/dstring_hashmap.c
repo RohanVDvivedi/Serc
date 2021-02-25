@@ -42,7 +42,7 @@ static void insert_elements_wrapper(const void* dent, const void* new_map)
 }
 static void rehash_if_necessary(dmap* dmapp)
 {
-	if(dmapp->map.occupancy == dmapp->map.hashmap_holder.total_size)
+	if(dmapp->map.element_count == dmapp->map.hashmap_holder.total_size)
 	{
 		hashmap new_map;
 		initialize_hashmap(&(new_map), dmapp->map.hashmap_policy, dmapp->map.hashmap_holder.total_size * 2, dmapp->map.hash_function, dmapp->map.compare, 0);
