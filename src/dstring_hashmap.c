@@ -36,20 +36,10 @@ dstring* find_equals_in_dmap(dmap* dmapp, const dstring* key)
 	return (dent != NULL) ? (&(dent->value)) : NULL;
 }
 
-static void insert_elements_wrapper(const void* dent, const void* new_map)
+static void rehash_and_expand_hashmap_if_necessary(dmap* dmapp)
 {
-	insert_in_hashmap(((hashmap*)(new_map)), ((dentry*)(dent)));
-}
-static void rehash_if_necessary(dmap* dmapp)
-{
-	if(dmapp->map.element_count == dmapp->map.hashmap_holder.total_size)
-	{
-		hashmap new_map;
-		initialize_hashmap(&(new_map), dmapp->map.hashmap_policy, dmapp->map.hashmap_holder.total_size * 2, dmapp->map.hash_function, dmapp->map.compare, 0);
-		for_each_in_hashmap(&(dmapp->map), insert_elements_wrapper, &new_map);
-		deinitialize_hashmap(&(dmapp->map));
-		dmapp->map = new_map;
-	}
+	if(get_bucket_count_hashmap(&(dmapp->map)) < (1.5 * get_element_count_hashmap(&(dmapp->map))))
+		expand_hashmap(&(dmapp->map), 1.5);
 }
 
 void insert_unique_in_dmap_cstr(dmap* dmapp, const char* key, const char* value)
@@ -69,7 +59,7 @@ void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value
 	}
 	else
 	{
-		rehash_if_necessary(dmapp);
+		rehash_and_expand_hashmap_if_necessary(dmapp);
 		dentry* dent = get_dentry(key, value);
 		if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 			toLowercase(&(dent->key));
@@ -86,7 +76,7 @@ void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* va
 {
 	if(key == NULL || value == NULL)
 		return;
-	rehash_if_necessary(dmapp);
+	rehash_and_expand_hashmap_if_necessary(dmapp);
 	dentry* dent = get_dentry(key, value);
 	if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 		toLowercase(&(dent->key));
