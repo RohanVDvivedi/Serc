@@ -24,7 +24,7 @@ SSL_CTX* create_gbl_server_ssl_ctx(char* pub_cert_priv_key_file)
 
 	SSL_CTX* server_ssl_ctx = NULL;
 
-	if(!(server_ssl_ctx = SSL_CTX_new(SSL_SERVER_METHOD())))
+	if(!(server_ssl_ctx = SSL_CTX_new(SSL_METHOD())))
 		exit(-1);
 
 	SSL_CTX_set_options(server_ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
