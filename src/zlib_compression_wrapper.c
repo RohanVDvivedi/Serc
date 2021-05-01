@@ -7,8 +7,8 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
         return 0;
 
 	// initialize zstream, databuffer
-	z_stream strm;
-	strm.zalloc = Z_NULL;
+    z_stream strm;
+    strm.zalloc = Z_NULL;
     strm.zfree = Z_NULL;
     strm.opaque = Z_NULL;
 
