@@ -317,7 +317,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr, HttpParseContex
 						httpCntxt->state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("chunked"), NULL) != -1 )
+				else if(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("chunked"), NULL) != NULL )
 				{
 					httpCntxt->state = IN_BODY_CHUNK_SIZE;
 				}
@@ -499,14 +499,14 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("br"), NULL) != -1) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("br"), NULL) != -1) )
+	if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("br"), NULL) != NULL) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("br"), NULL) != NULL) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != -1) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != -1) )
+	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != NULL) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != NULL) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != -1) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != -1) )
+	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != NULL) ||
+		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != NULL) )
 		compr_type = GZIP;
 	else{return ;}
 
