@@ -3,6 +3,17 @@
 // forward declrations of all your controller functions
 //@controller_definitions
 
+const dstring empty_dstring = {};
+dstring reach_after_substring(const dstring* str_p, const char* sub_str)
+{
+	dstring result = {};
+	if((result.cstring = contains_dstring(str_p, dstring_DUMMY_CSTRING(sub_str), NULL)) != NULL)
+	{
+		result.cstring += strlen(sub_str);
+		result.bytes_occupied = str_p->bytes_occupied - (result.cstring - str_p->cstring);
+	}
+	return result;
+}
 
 void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
 {
