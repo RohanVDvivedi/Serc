@@ -209,7 +209,7 @@ for method in mydict:
 		case_string     			+= "\n\t\t\t\t{"
 		for path in mydict[method][hashval]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(path_dstr, dstring_DUMMY_CSTRING(\"" + path + "\")) )"
+			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(&(hrq->path), dstring_DUMMY_CSTRING(\"" + path + "\")) )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
@@ -231,7 +231,7 @@ for method in mydict:
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\tdstring wild_card_from = {.cstring = path_dstr->cstring, .bytes_occupied = path_dstr->bytes_occupied};"
+		case_string					+= "\n\t\t\t\t\tdstring wild_card_from = {.cstring = hrq->path->cstring, .bytes_occupied = hrq->path->bytes_occupied};"
 		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
@@ -241,7 +241,7 @@ for method in mydict:
 				first_wild_card = False
 			else :
 				case_string 		+= "\n\t\t\t\t\telse "
-			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= path_dstr->bytes_occupied)"
+			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= hrq->path->bytes_occupied)"
 			previous_path_part = None
 			path_part_iter = 0
 			for path_part in path_parts :
