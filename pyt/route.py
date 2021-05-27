@@ -194,12 +194,12 @@ but note that any 2 strings can and may have same hash value
 so for this we compare all the strings having the same hash value
 """
 # create whole of case statement in case_string
-case_string              			 = "\tswitch(METHOD)"
+case_string              			 = "\tswitch(hrq->method)"
 case_string             			+= "\n\t{"
 for method in mydict:
 	case_string         			+= "\n\t\tcase " + method + " :"
 	case_string         			+= "\n\t\t{"
-	case_string         			+= "\n\t\t\tswitch(PATH)"
+	case_string         			+= "\n\t\t\tswitch(PATH_HASH)"
 	case_string         			+= "\n\t\t\t{"
 	for hashval in mydict[method]:
 		# wild card paths will be handled by the default case
@@ -241,7 +241,7 @@ for method in mydict:
 				first_wild_card = False
 			else :
 				case_string 		+= "\n\t\t\t\t\telse "
-			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= path_len)"
+			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= path_dstr->bytes_occupied)"
 			previous_path_part = None
 			path_part_iter = 0
 			for path_part in path_parts :
@@ -249,7 +249,7 @@ for method in mydict:
 					if previous_path_part is not None :
 						case_string	+= " && (wild_card_offset = wild_card_offset + " + str(len(previous_path_part)) + ")"
 					if path_part_iter == 0 :
-						offset = "path_str"
+						offset = "hrq->path.cstring"
 					else :
 						offset = "wild_card_offset"
 					case_string		+= " && (NULL != (wild_card_offset = strstr(" + offset + ", \"" + path_part + "\")))"
