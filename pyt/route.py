@@ -231,7 +231,7 @@ for method in mydict:
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\tdstring wild_card_from = {.cstring = hrq->path->cstring, .bytes_occupied = hrq->path->bytes_occupied};"
+		case_string					+= "\n\t\t\t\t\tdstring wild_card_from = {.cstring = hrq->path.cstring, .bytes_occupied = hrq->path.bytes_occupied};"
 		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
@@ -241,7 +241,7 @@ for method in mydict:
 				first_wild_card = False
 			else :
 				case_string 		+= "\n\t\t\t\t\telse "
-			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= hrq->path->bytes_occupied)"
+			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= hrq->path.bytes_occupied)"
 			previous_path_part = None
 			path_part_iter = 0
 			for path_part in path_parts :
