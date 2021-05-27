@@ -42,7 +42,7 @@ void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cac
 	}
 
 	// response for a HEAD request must not contain body
-	if(METHOD == HEAD)
+	if(hrq->method == HEAD)
 		make_dstring_empty(&(hrp->body));
 
 	compressHttpResponseBody(hrp, DEFAULT_COMPRESSION);
