@@ -231,7 +231,7 @@ for method in mydict:
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\tchar* wild_card_offset = NULL;"
+		case_string					+= "\n\t\t\t\t\tdstring wild_card_from = {.cstring = path_dstr->cstring, .bytes_occupied = path_dstr->bytes_occupied};"
 		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
@@ -246,13 +246,11 @@ for method in mydict:
 			path_part_iter = 0
 			for path_part in path_parts :
 				if path_part != "" :
-					if previous_path_part is not None :
-						case_string	+= " && (wild_card_offset = wild_card_offset + " + str(len(previous_path_part)) + ")"
 					if path_part_iter == 0 :
-						offset = "hrq->path.cstring"
+						from_str = "&(hrq->path)"
 					else :
-						offset = "wild_card_offset"
-					case_string		+= " && (NULL != (wild_card_offset = strstr(" + offset + ", \"" + path_part + "\")))"
+						from_str = "&wild_card_from"
+					case_string		+= " && ((wild_card_from = reach_after_substring(" + from_str + " , \"" + path_part + "\")).cstring != NULL)"
 					path_part_iter += 1
 					previous_path_part = path_part
 			case_string				+= " )"

@@ -5,7 +5,6 @@
 
 
 
-const dstring empty_dstring = {};
 dstring reach_after_substring(const dstring* str_p, const char* sub_str)
 {
 	dstring result = {};
