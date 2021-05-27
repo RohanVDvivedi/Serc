@@ -72,8 +72,8 @@ ${BIN_DIR} :
 	${MK} $@
 
 # the routing is constructed by this dependency make statement
-./distributer.c : ${CON_DIR}/*.con
-	pyt/route.py $^
+./distributer.c : ${CON_DIR}/*.con ${PYT_DIR}/${ROUTING_SCRIPT} ${TMP_DIR}/${ROUTING_TEMPLATE}
+	${PYT_DIR}/${ROUTING_SCRIPT} $^
 
 # generic rule to make a binary using the library that we just created
 ${BIN_DIR}/${BINARY} : ./server.c ./distributer.c ${LIB_DIR}/${LIBRARY} | ${BIN_DIR}
