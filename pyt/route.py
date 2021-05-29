@@ -170,6 +170,19 @@ for routing_file in command_line_args:
 					if not (controller in controllers_list) :
 						controllers_list += [controller]
 
+				# controller like methods that get called before and after the controller
+				if 'before' in route :
+					if isinstance(route['before'], str) :
+						path_route_hash['before'] = [route['before']]
+					elif isinstance(route['before'], list) :
+						path_route_hash['before'] = route['before']
+
+				if 'after' in route :
+					if isinstance(route['after'], str) :
+						path_route_hash['after'] = [route['after']]
+					elif isinstance(route['after'], list) :
+						path_route_hash['after'] = route['after']
+
 				# this is the redirection that will be used if, 
 				# the METHOD and PATH satisfy the condition, and they match in the request
 				if 'redirect_to' in route :
@@ -218,7 +231,13 @@ for method in mydict:
 			if ('controller' in mydict[method][hashval][path]) and mydict[method][hashval][path]['controller'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
+				if (mydict[method][hashval][path]['before'] != None) :
+					for before in mydict[method][hashval][path]['before'] :
+						case_string += "\n\t\t\t\t\t\tclose_connection = " + before + "(hrq, hrp);"
 				case_string 		+= "\n\t\t\t\t\t\tclose_connection = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
+				if (mydict[method][hashval][path]['after'] != None) :
+					for after in mydict[method][hashval][path]['after'] :
+						case_string += "\n\t\t\t\t\t\tclose_connection = " + after + "(hrq, hrp);"
 			if ('redirect_to' in mydict[method][hashval][path]) and mydict[method][hashval][path]['redirect_to'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				status = -1
