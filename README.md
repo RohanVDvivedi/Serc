@@ -64,6 +64,7 @@
  * create appropriate routing.con file (as described in the sample file in the con directory).
  * and create appropriate controller files with functions with strict declaration signature as : 
    * ```int controller(HttpRequest* hrq, HttpResponse* hrp)```
+   * controller returns a 1 value to close the current connection (i.e. for a parse error or read timeout).
  * Create appropriate json entries, in your routing.con file, to specify routing information.
  * do not forget to include appropriate public api headers as and when needed by your source, which includes
    * `#include<http_request.h>`

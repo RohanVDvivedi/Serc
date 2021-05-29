@@ -98,7 +98,7 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			// create a HttpResponse Object here
 			HttpResponse hrp; initHttpResponse(&hrp);
 
-			distribute(&hrq, &hrp, sgpp->server_file_cache);
+			close_connection = distribute(&hrq, &hrp, sgpp->server_file_cache);
 
 			// Uncomment to Debug
 			// printRequest(&hrq);
@@ -126,12 +126,6 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 		{
 			// any error in reading the request, 
 			// leads to closing of the connection
-			close_connection = 1;
-		}
-
-		// close the connection, after his request, if connection:close header is provided
-		if(hasHeader("connection", "close", &(hrq.headers)))
-		{
 			close_connection = 1;
 		}
 

@@ -10,6 +10,8 @@
 
 #include<file_request_resolution_controller.h>
 
-void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache);
+// return 0, if same connection is usable
+// return 1, to close the connection
+int distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache);
 
 #endif

@@ -1,5 +1,7 @@
 #include<distributer.h>
 
+#include<http_object.h>
+
 // forward declrations of all your controller functions
 //@controller_definitions
 
@@ -15,7 +17,7 @@ dstring reach_after_substring(const dstring* str_p, const char* sub_str)
 	return result;
 }
 
-void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
+int distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
 {
 	// below two lines allow us to use all the string.h std library functions on the dstring
 	expand_dstring(&(hrq->path), 1);
@@ -24,7 +26,7 @@ void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cac
 	unsigned long long int PATH_HASH = getHashValueDstring(&(hrq->path));
 
 	int routing_resolved = 0;
-	int error = 0;
+	int close_connection = 0;
 
 	uncompressHttpRequestBody(hrq);
 
@@ -33,7 +35,7 @@ void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cac
 	if(routing_resolved == 0)
 	{
 		// check if we can serve the request with some file, on the server's root
-		error = file_request_controller(hrq, hrp, server_file_cache, &routing_resolved);
+		close_connection = file_request_controller(hrq, hrp, server_file_cache, &routing_resolved);
 		if(routing_resolved == 0)
 			hrp->status = 404;
 	}
@@ -45,4 +47,10 @@ void distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cac
 	compressHttpResponseBody(hrp, DEFAULT_COMPRESSION);
 
 	setServerDefaultHeadersInResponse(hrp);
+
+	// close the connection, after his request, if connection:close header is provided
+	if(close_connection == 0 && hasHeader("connection", "close", &(hrq->headers)))
+		close_connection = 1;
+
+	return close_connection;
 }
