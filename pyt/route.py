@@ -108,7 +108,7 @@ supported_methods = ["GET", "POST", "PUT", "DELETE",
 mydict = {}
 
 # this is the array containting the names of all the controller functions in the system
-controllers_list = []
+functions_declarations = set()
 
 # loop throught all the routing files and collect all paths
 for routing_file in command_line_args:
@@ -127,7 +127,7 @@ for routing_file in command_line_args:
 
 	# use a dictionery to store the routes in format as required for making switch case
 	# format is mydict[method][hashvalue_of_path][path_in_string] = controller
-	# the below given loop builds up structure mydict for distributer.c and controllers_list for controller.h
+	# the below given loop builds up structure mydict for distributer.c and functions_declarations for controller.h
 	for route in routes :
 
 		# if routing methods is a string, and it is "*", it means the context is all the methods
@@ -166,22 +166,25 @@ for routing_file in command_line_args:
 				if 'controller' in route :
 					controller = route['controller']
 					path_route_hash['controller'] = controller
-					# add the controller to the list of the controllers
-					if not (controller in controllers_list) :
-						controllers_list += [controller]
+					# add the controller to the functions_declarations set
+					functions_declarations.add(controller)
 
 				# controller like methods that get called before and after the controller
 				if 'before' in route :
 					if isinstance(route['before'], str) :
 						path_route_hash['before'] = [route['before']]
+						functions_declarations.add(route['before'])
 					elif isinstance(route['before'], list) :
 						path_route_hash['before'] = route['before']
+						functions_declarations.union(set(path_route_hash['before']))
 
 				if 'after' in route :
 					if isinstance(route['after'], str) :
 						path_route_hash['after'] = [route['after']]
+						functions_declarations.add(route['after'])
 					elif isinstance(route['after'], list) :
 						path_route_hash['after'] = route['after']
+						functions_declarations.union(set(path_route_hash['after']))
 
 				# this is the redirection that will be used if, 
 				# the METHOD and PATH satisfy the condition, and they match in the request
@@ -313,7 +316,7 @@ case_string             			+= "\n\t}\n"
 
 # below for loop builds forward declations for all the controllers that you will be using in your application
 declarations = ""
-for function_name in controllers_list :
+for function_name in functions_declarations :
 	declarations += "\nint " + function_name + "(HttpRequest* hrq,HttpResponse* hrp);"
 
 
