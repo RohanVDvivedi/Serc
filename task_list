@@ -1,7 +1,5 @@
- * use distributed/controller return statement to continue or exit the connection handler loop
  * request and response objects encapsulate the parse states within them, and they get dispatched as soon as headers are read completely -> this enables us to further provide support for web sockets and streaming responses
  * add support for AOP by providing list of before and after function lists in the json file
- * store the complete http header string and make path, parameter and headers dstrings to point to this dstring
  * stronger adherence to HTTP standard headers and make server to act accordingly, instead of relying on the user/application developer to do it correctly
     * range query
     * web sockets
