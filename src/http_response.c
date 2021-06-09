@@ -4,8 +4,12 @@
 
 #include<http_status.h>
 
-void initHttpResponse(HttpResponse* hr)
+void initHttpResponse(HttpResponse* hr, int conn_fd)
 {
+	hr->conn_fd = conn_fd;
+
+	initHttpParseContext(&(hr->parseContext));
+
 	hr->status = 0;
 	init_dstring(&(hr->version), NULL, 0);
 	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
@@ -438,6 +442,8 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 void deinitHttpResponse(HttpResponse* hr)
 {
+	deinitHttpParseContext(&(hr->parseContext));
+
 	deinit_dstring(&(hr->version));
 	deinitialize_dmap(&(hr->headers));
 	deinit_dstring(&(hr->body));

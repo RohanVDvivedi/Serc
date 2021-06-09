@@ -12,17 +12,22 @@
 typedef struct HttpResponse HttpResponse;
 struct HttpResponse
 {
+	// connection to read/write from
+	int conn_fd;
+
+	// if this response is being read and parsed
+	// then this is the context for it
+	HttpParseContext parseContext;
+
+	// the parsed contents of the response
 	dstring version;
-
 	int status;
-
 	dmap headers;
-
 	dstring body;
 };
 
 // to init/create HttpResponse Object, by initializing and allocating memory for all its attributes
-void initHttpResponse(HttpResponse* hr);
+void initHttpResponse(HttpResponse* hr, int conn_fd);
 
 // parse string to populate HttpResponse
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt);

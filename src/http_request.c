@@ -4,8 +4,12 @@
 
 #include<zlib_compression_wrapper.h>
 
-void initHttpRequest(HttpRequest* hr)
+void initHttpRequest(HttpRequest* hr, int conn_fd)
 {
+	hr->conn_fd = conn_fd;
+
+	initHttpParseContext(&(hr->parseContext));
+
 	hr->method = UNIDENTIFIED;
 	init_dstring(&(hr->path), NULL, 0);
 	init_dstring(&(hr->version), NULL, 0);
@@ -518,6 +522,8 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 void deinitHttpRequest(HttpRequest* hr)
 {
+	deinitHttpParseContext(&(hr->parseContext));
+
 	deinit_dstring(&(hr->path));
 	deinit_dstring(&(hr->version));
 	deinitialize_dmap(&(hr->parameters));
