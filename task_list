@@ -1,5 +1,5 @@
- * request and response objects encapsulate the parse states within them, and they get dispatched as soon as headers are read completely -> this enables us to further provide support for web sockets and streaming responses
-* stronger adherence to HTTP standard headers and make server to act accordingly, instead of relying on the user/application developer to do it correctly
+ * request get dispatched to distributer as soon as headers are read completely -> this enables us to further provide support for web sockets and streaming responses
+ * stronger adherence to HTTP standard headers and make server to act accordingly, instead of relying on the user/application developer to do it correctly
     * range query
     * web sockets
  * support file browsing
