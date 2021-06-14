@@ -1,8 +1,6 @@
 #ifndef HTTP_REQUEST_H
 #define HTTP_REQUEST_H
 
-#include<json_serializer.h>
-
 #include<dstring_hashmap.h>
 
 #include<http_method.h>
@@ -37,9 +35,6 @@ void serializeRequest(dstring* result, HttpRequest* hr);
 
 // set Default Header in Request like size , type , date , updated at , server type email etc
 void setServerDefaultHeadersInRequest(HttpRequest* hrq);
-
-// set json in body 
-void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p);
 
 // this will allow you to compress http response body, if it is not already compressed
 // this will also add appropriate content-type header to your http response

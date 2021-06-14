@@ -437,12 +437,6 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	insert_unique_in_dmap_cstr(&(hrq->headers), "accept-encoding", "gzip, deflate, identity");
 }
 
-void setJsonInRequestBody(HttpRequest* hrq, json_node* node_p)
-{
-	insert_unique_in_dmap_cstr(&(hrq->headers), "content-type", "application/json");
-	serialize_json(&(hrq->body), node_p);
-}
-
 void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 {
 	// no compression/decompression for a GET request

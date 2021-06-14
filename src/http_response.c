@@ -363,12 +363,6 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 	insert_unique_in_dmap_cstr(&(hrp->headers), "server", "serc0");
 }
 
-void setJsonInResponseBody(HttpResponse* hrp, json_node* node_p)
-{
-	insert_unique_in_dmap_cstr(&(hrp->headers), "content-type", "application/json");
-	serialize_json(&(hrp->body), node_p);
-}
-
 void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 {
 	// what will you do with compression of the response further more, 

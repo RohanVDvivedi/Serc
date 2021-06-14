@@ -36,7 +36,7 @@ CC:=gcc
 # compiler flags
 CFLAGS:=-Wall -O3 -I${INC_DIR}
 # linker flags, this will used to compile the binary
-LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME} -lcashed -lm -lconnman -lrwlock -lboompar -lpthread -ljsonpar -lcutlery -lz -lssl -lcrypto
+LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME} -lcashed -lm -lconnman -lrwlock -lboompar -lpthread -lcutlery -lz -lssl -lcrypto
 # Archiver
 AR:=ar rcs
 
