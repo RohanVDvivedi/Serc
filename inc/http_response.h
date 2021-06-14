@@ -30,7 +30,7 @@ struct HttpResponse
 void initHttpResponse(HttpResponse* hr, int conn_fd);
 
 // parse string to populate HttpResponse
-int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt);
+int parseResponse(char* buffer, int buffer_size, HttpResponse* hr);
 
 // serialize HttpResponse and append to dstring to send over network or to print
 void serializeResponse(dstring* result, HttpResponse* hr);

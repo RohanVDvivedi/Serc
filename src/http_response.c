@@ -19,7 +19,7 @@ void initHttpResponse(HttpResponse* hr, int conn_fd)
 // returns 0 when completed
 // returns -1 on incomplete
 // returns -2 when error
-int parseResponse(char* buffer, int buffer_size, HttpResponse* hr, HttpParseContext* httpCntxt)
+int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 {
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
 	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-"), .bytes_allocated = 0};

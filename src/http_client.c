@@ -135,11 +135,8 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 
 	// this is the response object, where the parsed response will bw stored in
 	HttpResponse* hrp = malloc(sizeof(HttpResponse));
-	initHttpResponse(hrp);
+	initHttpResponse(hrp, fd);
 	http_connection_handler_error error = 0;
-
-	// this is how we maintain, the state of the HTTP parser
-	HttpParseContext httpCntxt;	initHttpParseContext(&httpCntxt);
 
 	while(1)
 	{
@@ -159,7 +156,7 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 		}
 
 		// parse the ResponseString to populate HttpResponse Object
-		error = parseResponse(bufferResponse, buffreadlength, hrp, &httpCntxt);
+		error = parseResponse(bufferResponse, buffreadlength, hrp);
 		if(error == ERROR_OCCURRED_RESPONSE_NOT_STANDARD_HTTP)
 		{
 			break;
@@ -170,15 +167,12 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 		}
 
 		// if the request object parsing is completed then exit
-		if(httpCntxt.state == PARSED_SUCCESSFULLY)
+		if(hrp->parseContext.state == PARSED_SUCCESSFULLY)
 		{
 			error = RESPONSE_PARSED_SUCCESSFULLY;
 			break;
 		}
 	}
-
-	// deinitialize the context that you started for parsing
-	deinitHttpParseContext(&httpCntxt);
 
 	// uncompress response body
 	uncompressHttpResponseBody(hrp);
