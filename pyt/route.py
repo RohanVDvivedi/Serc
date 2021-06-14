@@ -233,14 +233,14 @@ for method in mydict:
 					case_string 	+= "\n\t\t\t\t\t\tinsert_unique_in_dmap_cstr(&(hrp->headers),\"" + header_key + "\", \"" + header_value + "\");"
 			if ('before' in mydict[method][hashval][path]) and mydict[method][hashval][path]['before'] is not None :
 				for before in mydict[method][hashval][path]['before'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection = " + before + "(hrq, hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + before + "(hrq, hrp);"
 			if ('controller' in mydict[method][hashval][path]) and mydict[method][hashval][path]['controller'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection = " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection |= " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
 			if ('after' in mydict[method][hashval][path]) and mydict[method][hashval][path]['after'] is not None :
 				for after in mydict[method][hashval][path]['after'] :
-					case_string += "\n\t\t\t\t\t\tclose_connection = " + after + "(hrq, hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + after + "(hrq, hrp);"
 			if ('redirect_to' in mydict[method][hashval][path]) and mydict[method][hashval][path]['redirect_to'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				status = -1
@@ -283,14 +283,14 @@ for method in mydict:
 					case_string 	+= "\n\t\t\t\t\t\tinsert_unique_in_dmap_cstr(&(hrp->headers),\"" + header_key + "\", \"" + header_value + "\");"
 			if ('before' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['before'] is not None :
 				for before in mydict[method]["wild_card_paths"][path]['before'] :
-					case_string += "\n\t\t\t\t\t\tclose_connection = " + before + "(hrq, hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + before + "(hrq, hrp);"
 			if ('controller' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['controller'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection = " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, hrp);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection |= " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, hrp);"
 			if ('after' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['after'] is not None :
 				for after in mydict[method]["wild_card_paths"][path]['after'] :
-					case_string += "\n\t\t\t\t\t\tclose_connection = " + after + "(hrq, hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + after + "(hrq, hrp);"
 			if ('redirect_to' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['redirect_to'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 				status = -1

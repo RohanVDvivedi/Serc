@@ -44,11 +44,8 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 		char bufferRequest[buffersize];
 		int buffreadlength = -1;
 
-		// this is how we maintain, the state of the HTTP parser
-		HttpParseContext httpCntxt;	initHttpParseContext(&httpCntxt);
-
 		// create a new HttpRequest Object
-		HttpRequest hrq; initHttpRequest(&hrq);
+		HttpRequest hrq; initHttpRequest(&hrq, conn_fd);
 		http_connection_handler_error error = 0;
 
 		while(1)
@@ -72,7 +69,7 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			}
 
 			// parse the RequestString to populate HttpRequest Object
-			error = parseRequest(bufferRequest, buffreadlength, &hrq, &httpCntxt);
+			error = parseRequest(bufferRequest, buffreadlength, &hrq);
 			if(error == ERROR_OCCURRED_REQUEST_NOT_STANDARD_HTTP)
 			{
 				break;
@@ -83,20 +80,17 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 			}
 
 			// if the request object parsing is completed then exit
-			if(httpCntxt.state == PARSED_SUCCESSFULLY)
+			if(hrq.parseContext.state == PARSED_SUCCESSFULLY)
 			{
 				error = REQUEST_PARSED_SUCCESSFULLY;
 				break;
 			}
 		}
 
-		// deinitialize the context that you started for parsing
-		deinitHttpParseContext(&httpCntxt);
-
 		if(error == 0)
 		{
 			// create a HttpResponse Object here
-			HttpResponse hrp; initHttpResponse(&hrp);
+			HttpResponse hrp; initHttpResponse(&hrp, conn_fd);
 
 			close_connection = distribute(&hrq, &hrp, sgpp->server_file_cache);
 
