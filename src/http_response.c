@@ -22,7 +22,7 @@ void initHttpResponse(HttpResponse* hr, int conn_fd)
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 {
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-"), .bytes_allocated = 0};
+	static dstring partial_key_value_slize_key = get_literal_cstring("-<-PARTIAL_KEY_NO_VALUE->-");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
@@ -353,9 +353,9 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
-	concatenate_dstring(result, dstring_DUMMY_CSTRING(getHttpResponseStatus(hr->status)));
+	concatenate_dstring(result, &get_literal_cstring(getHttpResponseStatus(hr->status)));
 	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING("\r\n"));
+	concatenate_dstring(result, &get_literal_cstring("\r\n"));
 	concatenate_dstring(result, &(hr->body));
 }
 
@@ -452,7 +452,7 @@ void printResponse(HttpResponse* hr)
 
 void setSetCookie(HttpResponse* hr, dstring* SetCookie)
 {
-	static dstring SetCookieHeaderKey = {.cstring = "Set-Cookie", .bytes_occupied = strlen("Set-Cookie")};
+	static dstring SetCookieHeaderKey = get_literal_cstring("Set-Cookie");
 
 	if(SetCookie != NULL && SetCookie->bytes_occupied > 0)
 		insert_duplicate_in_dmap(&(hr->headers), &SetCookieHeaderKey, SetCookie);

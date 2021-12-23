@@ -7,10 +7,8 @@
 dentry* get_dentry(const dstring* key, const dstring* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));
-	init_empty_dstring(&(entryp->key), get_char_count_dstring(key));
-	concatenate_dstring(&(entryp->key), key);
-	init_empty_dstring(&(entryp->value), get_char_count_dstring(value));
-	concatenate_dstring(&(entryp->key), value);
+	init_copy_dstring(&(entryp->key), key);
+	init_copy_dstring(&(entryp->value), value);
 	entryp->key_hash_value = 0;
 	return entryp;
 }
