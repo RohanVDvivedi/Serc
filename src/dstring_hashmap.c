@@ -14,7 +14,7 @@ void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, const char* key)
 {
-	return find_equals_in_dmap(dmapp, &get_literal_cstring(key));
+	return find_equals_in_dmap(dmapp, ((key) ? (&get_literal_cstring(key)) : NULL));
 }
 
 dstring* find_equals_in_dmap(dmap* dmapp, const dstring* key)
@@ -44,7 +44,7 @@ static void rehash_and_expand_hashmap_if_necessary(dmap* dmapp)
 
 void insert_unique_in_dmap_cstr(dmap* dmapp, const char* key, const char* value)
 {
-	insert_unique_in_dmap(dmapp, &get_literal_cstring(key), &get_literal_cstring(value));
+	insert_unique_in_dmap(dmapp, ((key) ? (&get_literal_cstring(key)) : NULL), ((value) ? (&get_literal_cstring(value)) : NULL));
 }
 
 void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value)
@@ -69,7 +69,7 @@ void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value
 
 void insert_duplicate_in_dmap_cstr(dmap* dmapp, const char* key, const char* value)
 {
-	insert_duplicate_in_dmap(dmapp, &get_literal_cstring(key), &get_literal_cstring(value));
+	insert_duplicate_in_dmap(dmapp, ((key) ? (&get_literal_cstring(key)) : NULL), ((value) ? (&get_literal_cstring(value)) : NULL));
 }
 
 void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* value)
@@ -85,7 +85,7 @@ void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* va
 
 int remove_from_dmap_cstr(dmap* dmapp, const char* key)
 {
-	return remove_from_dmap(dmapp, &get_literal_cstring(key));
+	return remove_from_dmap(dmapp, ((key) ? (&get_literal_cstring(key)) : NULL));
 }
 
 int remove_from_dmap(dmap* dmapp, const dstring* key)
