@@ -119,7 +119,7 @@ HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, 
 	serializeRequest(&bufferRequest, hrq);
 
 	// send the request buffer
-	int buffsentlength = send(fd, bufferRequest.cstring, bufferRequest.bytes_occupied, 0);
+	int buffsentlength = send(fd, get_byte_array_dstring(&bufferRequest), get_char_count_dstring(&bufferRequest), 0);
 
 	deinit_dstring(&bufferRequest);
 
