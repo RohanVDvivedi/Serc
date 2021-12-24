@@ -3,7 +3,7 @@
 int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 {
     // empty and null check
-    if(uncompressedData == NULL || uncompressedData->cstring == NULL || uncompressedData->bytes_occupied == 0)
+    if(uncompressedData == NULL || is_empty_dstring(uncompressedData))
         return 0;
 
 	// initialize zstream, databuffer
@@ -44,14 +44,14 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     }
 
 	// from dstring internals
-	strm.next_in = (Bytef*)(uncompressedData->cstring);
-	strm.avail_in = uncompressedData->bytes_occupied;
+	strm.next_in = (Bytef*)(get_byte_array_dstring(uncompressedData));
+	strm.avail_in = get_char_count_dstring(uncompressedData);
 
 	// make buffer dstring for compressed data ready
-	dstring compressedData;    init_dstring(&compressedData, NULL, 0);
-    expand_dstring(&compressedData, uncompressedData->bytes_occupied);
-	strm.avail_out = compressedData.bytes_allocated;
-	strm.next_out = (Bytef *)(compressedData.cstring);
+	dstring compressedData;
+    init_empty_dstring(&compressedData, get_char_count_dstring(uncompressedData));
+	strm.avail_out = get_capacity_dstring(&compressedData);
+	strm.next_out = (Bytef *)(get_byte_array_dstring(&compressedData));
 
 	// compress
 	err = deflate(&strm, Z_FINISH);
@@ -63,7 +63,7 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
     }
 
 	// bring the compressedData to appropriate dstring format
-	compressedData.bytes_occupied = strm.total_out;
+	increment_char_count_dstring(&compressedData, strm.total_out);
 
 	// release resources from zlib
     deflateEnd(&strm);
@@ -79,7 +79,7 @@ int compress_in_memory(dstring* uncompressedData, compression_type compr_type)
 int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
 {
     // empty and null check
-    if(compressedData == NULL || compressedData->cstring == NULL || compressedData->bytes_occupied == 0)
+    if(compressedData == NULL || is_empty_dstring(compressedData))
         return 0;
 
     // initialize zstream, databuffer
@@ -120,35 +120,35 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
     }
 
     // make buffer dstring for uncompressed data ready, and expand it to hold atleast as much data as compressedData size
-    dstring uncompressedData;   init_dstring(&uncompressedData, NULL, 0);
-    expand_dstring(&uncompressedData, compressedData->bytes_occupied);
+    dstring uncompressedData;
+    init_empty_dstring(&uncompressedData, get_char_count_dstring(compressedData));
 
     // from dstring internals
-    strm.next_in = (Bytef*)(compressedData->cstring);
-    strm.avail_in = compressedData->bytes_occupied;
+    strm.next_in = (Bytef*)(get_byte_array_dstring(compressedData));
+    strm.avail_in = get_char_count_dstring(compressedData);
 
     // make buffer dstring for uncompressed data ready
-    strm.avail_out = uncompressedData.bytes_allocated;
-    strm.next_out = (Bytef *)(uncompressedData.cstring);
+    strm.avail_out = get_capacity_dstring(&uncompressedData);
+    strm.next_out = (Bytef *)(get_byte_array_dstring(&uncompressedData));
 
-    while(strm.total_in < compressedData->bytes_occupied && (err == Z_OK || err == Z_BUF_ERROR) && (err != Z_STREAM_END))
+    while(strm.total_in < get_char_count_dstring(compressedData) && (err == Z_OK || err == Z_BUF_ERROR) && (err != Z_STREAM_END))
     {
         // compress
         err = inflate(&strm, Z_FINISH);
 
         // bring the uncompressedData to appropriate dstring format
-        uncompressedData.bytes_occupied = strm.total_out;
+        increment_char_count_dstring(&uncompressedData, strm.total_out);
 
         // from dstring internals
-        strm.next_in = (Bytef*)(compressedData->cstring + strm.total_in);
-        strm.avail_in = compressedData->bytes_occupied - strm.total_in;
+        strm.next_in = (Bytef*)(get_byte_array_dstring(compressedData) + strm.total_in);
+        strm.avail_in = get_char_count_dstring(compressedData) - strm.total_in;
 
-        if(uncompressedData.bytes_allocated <= uncompressedData.bytes_occupied)
-            expand_dstring(&uncompressedData, uncompressedData.bytes_allocated);
+        if(get_capacity_dstring(&uncompressedData) <= get_char_count_dstring(&uncompressedData))
+            expand_dstring(&uncompressedData, get_capacity_dstring(&uncompressedData));
 
         // make buffer dstring for uncompressed data ready
-        strm.avail_out = uncompressedData.bytes_allocated - uncompressedData.bytes_occupied;
-        strm.next_out = (Bytef *)(uncompressedData.cstring + uncompressedData.bytes_occupied);
+        strm.avail_out = get_unused_capacity_dstring(&uncompressedData);
+        strm.next_out = (Bytef *)(get_byte_array_dstring(&uncompressedData) + get_char_count_dstring(&uncompressedData));
     }
 
     if(err != Z_OK && err != Z_STREAM_END)
