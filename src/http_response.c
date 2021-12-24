@@ -24,7 +24,7 @@ void initHttpResponse(HttpResponse* hr, int conn_fd)
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 {
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE->-");
+	static const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
