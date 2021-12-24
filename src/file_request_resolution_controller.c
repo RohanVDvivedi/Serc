@@ -21,7 +21,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* ser
 		{
 			// add content-type for the requested file, if there is extension on the file path
 			// and set tha status to 200
-			if(extension.bytes_occupied > 0)
+			if(!is_empty_dstring(&extension))
     			insert_unique_in_dmap_cstr(&(hrp->headers), "content-type", get_content_type_from_file_extension(&extension));
 
     		hrp->status = 200;
