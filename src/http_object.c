@@ -56,39 +56,31 @@ int characterAllowedInURL(char c)
 
 static void serialize_paramter_helper(dstring* result, const dstring* input)
 {
-	char temp[10];
-	for(int i=0; i<input->bytes_occupied; i++)
+	const char* input_data = get_byte_array_dstring(input);
+	unsigned int input_size = get_char_count_dstring(input);
+	for(unsigned int i = 0; i < input_size; i++)
 	{
-		if( characterAllowedInURL(input->cstring[i]) )
-		{
-			temp[0] = input->cstring[i];
-			temp[1] = '\0';
-		}
+		if( characterAllowedInURL(input_data[i]) )
+			sprint_chars(result, input_data[i], 1);
 		else
-		{
-			temp[0] = '%';
-			temp[1] = hexToChar((input->cstring[i] >> 4) & 0x0f);
-			temp[2] = hexToChar(input->cstring[i] & 0x0f);
-			temp[3] = '\0';
-		}
-		concatenate_dstring(result, dstring_DUMMY_CSTRING(temp));
+			snprintf_dstring(result, "%%%c%c", hexToChar((input_data[i] >> 4) & 0x0f), hexToChar(input_data[i] & 0x0f));
 	}
 }
 
 void serialize_parameter_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	serialize_paramter_helper(result, key);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING("="));
+	sprint_chars(result, '=', 1);
 	serialize_paramter_helper(result, value);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING("&"));
+	sprint_chars(result, '&', 1);
 }
 
 void serialize_header_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	concatenate_dstring(result, key);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING(": "));
+	concatenate_dstring(result, &get_literal_cstring(": "));
 	concatenate_dstring(result, value);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING("\r\n"));
+	concatenate_dstring(result, &get_literal_cstring("\r\n"));
 }
 
 void print_entry_wrapper(const dstring* key, const dstring* value, const void* addpar)
@@ -102,10 +94,10 @@ void print_entry_wrapper(const dstring* key, const dstring* value, const void* a
 
 int hasHeader(char* Key, char* Value, dmap* headers)
 {
-	dstring* value_test = (dstring*) find_equals_in_dmap_cstr(headers, Key);
+	const dstring* value_test = find_equals_in_dmap_cstr(headers, Key);
 
 	if(value_test == NULL)
 		return 0;
 
-	return (compare_dstring(value_test, dstring_DUMMY_CSTRING(Value)) == 0);
+	return (compare_dstring(value_test, &get_literal_cstring(Value)) == 0);
 }
