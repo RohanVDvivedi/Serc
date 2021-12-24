@@ -90,8 +90,8 @@ void delete_file_cache(file_cache* fc)
 
 void get_extension_from_file_path(dstring* extension_result, dstring* path)
 {
-	char* path_t = get_byte_array_dstring(path);
-	for(;path_t < get_byte_array_dstring(path) + get_char_count_dstring(path); path_t++)
+	char* path_t = get_byte_array_dstring(path) + get_char_count_dstring(path) - 1;
+	for(;path_t >= get_byte_array_dstring(path) + get_char_count_dstring(path); path_t--)
 	{
 		if((*path_t) == '.')
 			break;

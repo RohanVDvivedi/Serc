@@ -81,5 +81,5 @@ char* get_content_type_from_file_extension(dstring* extension)
 		case 16835 :
 			return "image/svg+xml";
 	}
-	return "";
+	return NULL;
 }
