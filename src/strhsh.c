@@ -32,7 +32,7 @@ unsigned long long int getHashValue(const char* s)
 
 unsigned long long int getHashValueDstring(const dstring* dstr)
 {
-    return getHashValueByLength(dstr->cstring, dstr->bytes_occupied);
+    return getHashValueByLength(get_byte_array_dstring(dstr), get_char_count_dstring(dstr));
 }
 
 unsigned long long int getHashValueByLength(const char* s,int length)
