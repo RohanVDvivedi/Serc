@@ -70,9 +70,9 @@ static void serialize_paramter_helper(dstring* result, const dstring* input)
 void serialize_parameter_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	serialize_paramter_helper(result, key);
-	sprint_chars(result, '=', 1);
+	concatenate_char(result, '=');
 	serialize_paramter_helper(result, value);
-	sprint_chars(result, '&', 1);
+	concatenate_char(result, '&');
 }
 
 void serialize_header_entry(const dstring* key, const dstring* value, dstring* result)
@@ -94,7 +94,7 @@ void print_entry_wrapper(const dstring* key, const dstring* value, const void* a
 
 int hasHeader(char* Key, char* Value, dmap* headers)
 {
-	const dstring* value_test = find_equals_in_dmap_cstr(headers, Key);
+	dstring* value_test = find_equals_in_dmap_cstr(headers, Key);
 
 	if(value_test == NULL)
 		return 0;

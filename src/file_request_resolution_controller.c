@@ -9,7 +9,7 @@ int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* ser
 	if(hrq->method == GET && hrq->path.bytes_occupied > 0)
 	{
 		// extract extension dstring from the file path
-		dstring extension; init_dstring(&extension, NULL, 0);
+		dstring extension; init_empty_dstring(&extension, 0);
 		get_extension_from_file_path(&extension, &(hrq->path));
 
 		// read file contents in the response body dstring

@@ -113,7 +113,7 @@ enum http_connection_handler_error
 HttpResponse* http_transaction_handler(int fd, int* close_connection_requested, HttpRequest* hrq)
 {
 	// this is the buffer, where we would store the serialized form of request, before sending
-	dstring bufferRequest; init_dstring(&bufferRequest, NULL, 0);
+	dstring bufferRequest; init_empty_dstring(&bufferRequest, 0);
 
 	// serialize the request to be sent
 	serializeRequest(&bufferRequest, hrq);

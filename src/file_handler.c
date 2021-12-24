@@ -31,7 +31,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 	init_empty_dstring(&file_path, 0);
 	concatenate_dstring(&file_path, &(fc->root_path));
 	concatenate_dstring(&file_path, relative_file_path);
-	sprint_chars(&file_path, '\0', 1);
+	concatenate_char(&file_path, '\0');
 
 	// upon appending \0 file path is equivalent to a c string
 	const char* file_path_cstring = get_byte_array_dstring(&file_path);
@@ -91,7 +91,7 @@ void delete_file_cache(file_cache* fc)
 void get_extension_from_file_path(dstring* extension_result, dstring* path)
 {
 	char* path_t = get_byte_array_dstring(path) + get_char_count_dstring(path) - 1;
-	for(;path_t >= get_byte_array_dstring(path) + get_char_count_dstring(path); path_t--)
+	for(;path_t >= get_byte_array_dstring(path); path_t--)
 	{
 		if((*path_t) == '.')
 			break;
