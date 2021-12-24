@@ -4,6 +4,8 @@
 
 #include<zlib_compression_wrapper.h>
 
+#include<cutlery_stds.h>
+
 void initHttpRequest(HttpRequest* hr, int conn_fd)
 {
 	hr->conn_fd = conn_fd;
@@ -273,9 +275,9 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 					{
 						// make content dstring sscanfable
 						expand_dstring(content_length, 1);
-						content_length->cstring[content_length->bytes_occupied] = '\0';
+						get_byte_array_dstring(content_length)[get_char_count_dstring(content_length)] = '\0';
 
-						sscanf(content_length->cstring, "%lld", &body_length);
+						sscanf(get_byte_array_dstring(content_length), "%lld", &body_length);
 					}
 					if(hr->method == GET || body_length == 0)
 					{
@@ -305,9 +307,9 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 
 					// make content dstring sscanfable
 					expand_dstring(content_length, 1);
-					content_length->cstring[content_length->bytes_occupied] = '\0';
+					get_byte_array_dstring(content_length)[get_char_count_dstring(content_length)] = '\0';
 
-					sscanf(content_length->cstring, "%d", &body_length);
+					sscanf(get_byte_array_dstring(content_length), "%d", &body_length);
 
 					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
@@ -321,7 +323,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 						hr->parseContext.state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("chunked"), NULL) != NULL )
+				else if(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("chunked")) != INVALID_INDEX )
 				{
 					hr->parseContext.state = IN_BODY_CHUNK_SIZE;
 				}
@@ -420,12 +422,12 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 
 void serializeRequest(dstring* result, HttpRequest* hr)
 {
-	concatenate_dstring(result, dstring_DUMMY_CSTRING(serializeHttpMethod(hr->method)));
-	concatenate_dstring(result, dstring_DUMMY_CSTRING(" "));
+	concatenate_c_string(result, serializeHttpMethod(hr->method));
+	concatenate_char(result, ' ');
 	serializeUrl(result, hr);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING(" HTTP/1.1\r\n"));
+	concatenate_c_string(result, " HTTP/1.1\r\n");
 	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
-	concatenate_dstring(result, dstring_DUMMY_CSTRING("\r\n"));
+	concatenate_c_string(result, "\r\n");
 	concatenate_dstring(result, &(hr->body));
 }
 
@@ -497,14 +499,14 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("br"), NULL) != NULL) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("br"), NULL) != NULL) )
+	if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("br")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("br")) != INVALID_INDEX) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != NULL) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != NULL) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != NULL) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != NULL) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) )
 		compr_type = GZIP;
 	else{return ;}
 
@@ -542,26 +544,18 @@ dstring* getCookie(HttpRequest* hr)
 
 void serializeUrl(dstring* result, HttpRequest* hr)
 {
-	for(int i=0; i<hr->path.bytes_occupied; i++)
+	const char* path_data = get_byte_array_dstring(&(hr->path));
+	unsigned int path_size = get_char_count_dstring(&(hr->path));
+	for(unsigned int i = 0; i < path_size; i++)
 	{
-		char temp[10];
-		if( characterAllowedInURL(hr->path.cstring[i]) || hr->path.cstring[i]=='/')
-		{
-			temp[0] = hr->path.cstring[i];
-			temp[1] = '\0';
-		}
+		if( characterAllowedInURL(path_data[i]) || path_data[i] == '/')
+			concatenate_char(result, path_data[i]);
 		else
-		{
-			temp[0] = '%';
-			temp[1] = hexToChar((hr->path.cstring[i] >> 4) & 0x0f);
-			temp[2] = hexToChar(hr->path.cstring[i] & 0x0f);
-			temp[3] = '\0';
-		}
-		concatenate_dstring(result, dstring_DUMMY_CSTRING(temp));
+			snprintf_dstring(result, "%%%c%c", hexToChar((path_data[i] >> 4) & 0x0f), hexToChar(path_data[i] & 0x0f));
 	}
 	if(hr->parameters.map.element_count > 0)
 	{
-		concatenate_dstring(result, dstring_DUMMY_CSTRING("?"));
+		concatenate_char(result, '?');
 		for_each_in_dmap(&(hr->parameters), (void (*)(const dstring*, const dstring*, const void*))serialize_parameter_entry, result);
 	}
 }
