@@ -6,23 +6,8 @@
 //@controller_definitions
 
 
-dstring reach_after_substring(const dstring* str_p, const char* sub_str)
-{
-	dstring result = {};
-	if((result.cstring = contains_dstring(str_p, dstring_DUMMY_CSTRING(sub_str), NULL)) != NULL)
-	{
-		result.cstring += strlen(sub_str);
-		result.bytes_occupied = str_p->bytes_occupied - (result.cstring - str_p->cstring);
-	}
-	return result;
-}
-
 int distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
 {
-	// below two lines allow us to use all the string.h std library functions on the dstring
-	expand_dstring(&(hrq->path), 1);
-	hrq->path.cstring[hrq->path.bytes_occupied] = '\0';
-
 	unsigned long long int PATH_HASH = getHashValueDstring(&(hrq->path));
 
 	int routing_resolved = 0;
