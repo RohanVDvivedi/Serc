@@ -11,11 +11,11 @@ void initHttpRequest(HttpRequest* hr, int conn_fd)
 	initHttpParseContext(&(hr->parseContext));
 
 	hr->method = UNIDENTIFIED;
-	init_dstring(&(hr->path), NULL, 0);
-	init_dstring(&(hr->version), NULL, 0);
+	init_empty_dstring(&(hr->path), 0);
+	init_empty_dstring(&(hr->version), 0);
 	initialize_dmap(&(hr->parameters), CASE_SENSITIVE_KEY_TYPE, 3);
 	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
-	init_dstring(&(hr->body), NULL, 0);
+	init_empty_dstring(&(hr->body), 0);
 }
 
 // returns 0 when completed
@@ -24,15 +24,15 @@ void initHttpRequest(HttpRequest* hr, int conn_fd)
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 {
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static dstring partial_key_value_slize_key = {.cstring = "-<-PARTIAL_KEY_NO_VALUE->-", .bytes_occupied = strlen("-<-PARTIAL_KEY_NO_VALUE->-"), .bytes_allocated = 0};
+	static dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE->-");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
 	{
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(hr->parseContext.partialDstring));
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_dstring(&(hr->parseContext.partialDstring), dstring_DUMMY_DATA(buffer, 1));
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	concatenate_dstring((dstr), dstring_DUMMY_DATA(buffer, 1));
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_char(&(hr->parseContext.partialDstring), (*buffer));
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	concatenate_char((dstr), (*buffer));
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(hr->parseContext.state)
 		{

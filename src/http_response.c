@@ -4,6 +4,8 @@
 
 #include<http_status.h>
 
+#include<cutlery_stds.h>
+
 void initHttpResponse(HttpResponse* hr, int conn_fd)
 {
 	hr->conn_fd = conn_fd;
@@ -11,9 +13,9 @@ void initHttpResponse(HttpResponse* hr, int conn_fd)
 	initHttpParseContext(&(hr->parseContext));
 
 	hr->status = 0;
-	init_dstring(&(hr->version), NULL, 0);
+	init_empty_dstring(&(hr->version), 0);
 	initialize_dmap(&(hr->headers), CASE_INSENSITIVE_KEY_TYPE, 3);
-	init_dstring(&(hr->body), NULL, 0);
+	init_empty_dstring(&(hr->body), 0);
 }
 
 // returns 0 when completed
@@ -22,15 +24,15 @@ void initHttpResponse(HttpResponse* hr, int conn_fd)
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 {
 	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static dstring partial_key_value_slize_key = get_literal_cstring("-<-PARTIAL_KEY_NO_VALUE->-");
+	static dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE->-");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
 	{
 		#define CURRENT_CHARACTER() 				(*buffer)
 		#define RE_INIT_PARTIAL_STRING() 			make_dstring_empty(&(hr->parseContext.partialDstring));
-		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_dstring(&(hr->parseContext.partialDstring), dstring_DUMMY_DATA(buffer, 1));
-		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	concatenate_dstring((dstr), dstring_DUMMY_DATA(buffer, 1));
+		#define APPEND_CURRENT_CHARACTER_PARTIAL() 	concatenate_char(&(hr->parseContext.partialDstring), (*buffer));
+		#define APPEND_CURRENT_CHARACTER_TO(dstr) 	concatenate_char((dstr), (*buffer));
 		#define GOTO_NEXT_CHARACTER()        		buffer++;
 		switch(hr->parseContext.state)
 		{
@@ -204,11 +206,11 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 					dstring* content_length = (dstring*) find_equals_in_dmap_cstr(&(hr->headers), "content-length");
 					if(content_length != NULL)
 					{
-						// make content dstring sscanfable
+						// make content dstring sscanf-able
 						expand_dstring(content_length, 1);
-						content_length->cstring[content_length->bytes_occupied] = '\0';
+						get_byte_array_dstring(content_length)[get_char_count_dstring(content_length)] = '\0';
 
-						sscanf(content_length->cstring, "%lld", &body_length);
+						sscanf(get_byte_array_dstring(content_length), "%lld", &body_length);
 					}
 					if(body_length == 0)
 					{
@@ -238,11 +240,11 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 
 					// make content dstring sscanfable
 					expand_dstring(content_length, 1);
-					content_length->cstring[content_length->bytes_occupied] = '\0';
+					get_byte_array_dstring(content_length)[get_char_count_dstring(content_length)] = '\0';
 
-					sscanf(content_length->cstring, "%d", &body_length);
+					sscanf(get_byte_array_dstring(content_length), "%d", &body_length);
 
-					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
+					if(body_length >= 0 && get_char_count_dstring(&(hr->body)) < body_length)
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 
 					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
@@ -254,7 +256,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 						hr->parseContext.state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("chunked"), NULL) != NULL )
+				else if(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("chunked")) != INVALID_INDEX )
 				{
 					hr->parseContext.state = IN_BODY_CHUNK_SIZE;
 				}
@@ -362,7 +364,7 @@ void serializeResponse(dstring* result, HttpResponse* hr)
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
 	char ptemp[13];
-	sprintf(ptemp, "%u", hrp->body.bytes_occupied);
+	sprintf(ptemp, "%u", get_char_count_dstring(&(hrp->body)));
 	insert_unique_in_dmap_cstr(&(hrp->headers), "content-length", ptemp);
 	insert_unique_in_dmap_cstr(&(hrp->headers), "server", "serc0");
 }
@@ -417,14 +419,14 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("br"), NULL) != NULL) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("br"), NULL) != NULL) )
+	if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("br")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("br")) != INVALID_INDEX) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != NULL) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("deflate"), NULL) != NULL) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_dstring(content_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != NULL) ||
-		(transfer_encoding != NULL && contains_dstring(transfer_encoding, dstring_DUMMY_CSTRING("gzip"), NULL) != NULL) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) )
 		compr_type = GZIP;
 	else{return ;}
 
