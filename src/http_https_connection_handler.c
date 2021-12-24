@@ -106,9 +106,9 @@ void http_connection_handler(int conn_fd, void* server_specific_params)
 
 			// send the data
 			if(is_secured_http)
-				SSL_write(ssl, bufferResponse.cstring, bufferResponse.bytes_occupied);
+				SSL_write(ssl, get_byte_array_dstring(&bufferResponse), get_char_count_dstring(&bufferResponse));
 			else
-				send(conn_fd, bufferResponse.cstring, bufferResponse.bytes_occupied, 0);
+				send(conn_fd, get_byte_array_dstring(&bufferResponse), get_char_count_dstring(&bufferResponse), 0);
 
 			// once data sent delete bufferResponse
 			deinit_dstring(&bufferResponse);
