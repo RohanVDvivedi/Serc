@@ -18,7 +18,7 @@ enum HttpMethod
 	UNIDENTIFIED =    166308
 };
 
-HttpMethod getHttpMethod(dstring* verb);
+HttpMethod getHttpMethod(const dstring* verb);
 
 char* serializeHttpMethod(HttpMethod m);
 

@@ -2,7 +2,7 @@
 
 #include<strhsh.h>
 
-HttpMethod getHttpMethod(dstring* verb)
+HttpMethod getHttpMethod(const dstring* verb)
 {
 	// get hash value
 	unsigned long long int hsh = getHashValueDstring(verb);
