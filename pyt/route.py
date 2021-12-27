@@ -253,7 +253,7 @@ for method in mydict:
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\tdstring wild_card_from = {.cstring = hrq->path.cstring, .bytes_occupied = hrq->path.bytes_occupied};"
+		case_string					+= "\n\t\t\t\t\tunsigned int last_wild_card_at = 0;"
 		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
@@ -271,8 +271,8 @@ for method in mydict:
 					if path_part_iter == 0 :
 						from_str = "&(hrq->path)"
 					else :
-						from_str = "&wild_card_from"
-					case_string		+= " && ((wild_card_from = reach_after_substring(" + from_str + " , \"" + path_part + "\")).cstring != NULL)"
+						from_str = "&get_literal_dstring(get_byte_array(&(hrq->path)) + last_wild_card_at + " + len(previous_path_part) + ", get_char_count_dstring(&(hrq->path)) - last_wild_card_at - " + len(previous_path_part) + " )"
+					case_string		+= " && ((last_wild_card_at = contains_substring_RK(" + from_str + " , &get_literal_cstring(\"" + path_part + "\"))) != INVALID_INDEX)"
 					path_part_iter += 1
 					previous_path_part = path_part
 			case_string				+= " )"
