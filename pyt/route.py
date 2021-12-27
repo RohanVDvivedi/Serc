@@ -225,7 +225,7 @@ for method in mydict:
 		case_string     			+= "\n\t\t\t\t{"
 		for path in mydict[method][hashval]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(&(hrq->path), dstring_DUMMY_CSTRING(\"" + path + "\")) )"
+			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(&(hrq->path), get_literal_cstring(\"" + path + "\")) )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
 				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
