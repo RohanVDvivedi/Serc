@@ -272,6 +272,7 @@ for method in mydict:
 						from_str = "&(hrq->path)"
 					else :
 						from_str = "&get_literal_dstring(get_byte_array_dstring(&(hrq->path)) + last_wild_card_at + " + str(len(previous_path_part)) + ", get_char_count_dstring(&(hrq->path)) - last_wild_card_at - " + str(len(previous_path_part)) + " )"
+						case_string += " && (last_wild_card_at + " + str(len(previous_path_part)) + "< get_char_count_dstring(&(hrq->path)))"
 					case_string		+= " && ((last_wild_card_at = contains_dstring_RK(" + from_str + " , &get_literal_cstring(\"" + path_part + "\"))) != INVALID_INDEX)"
 					path_part_iter += 1
 					previous_path_part = path_part
