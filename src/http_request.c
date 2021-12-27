@@ -437,7 +437,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{
-		sprintf(ptemp, "%u", get_char_count_dstring(&(hr->body)));
+		sprintf(ptemp, "%u", get_char_count_dstring(&(hrq->body)));
 		insert_unique_in_dmap_cstr(&(hrq->headers), "content-length", ptemp);
 	}
 	insert_unique_in_dmap_cstr(&(hrq->headers), "accept-encoding", "gzip, deflate, identity");
@@ -451,7 +451,7 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 
 	// what will you do with compression of the request further more, 
 	// datalink layer frame size only is around 1500 bytes
-	if(get_char_count_dstring(&(hrp->body)) <= 100)
+	if(get_char_count_dstring(&(hrq->body)) <= 100)
 	{
 		insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "identity");
 		return;
