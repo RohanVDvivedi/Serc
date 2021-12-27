@@ -31,7 +31,8 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 	init_empty_dstring(&file_path, 0);
 	concatenate_dstring(&file_path, &(fc->root_path));
 	concatenate_dstring(&file_path, relative_file_path);
-	concatenate_char(&file_path, '\0');
+	expand_dstring(&file_path, 1);
+	get_byte_array_dstring(&file_path)[get_char_count_dstring(&file_path)] = '\0';
 
 	// upon appending \0 file path is equivalent to a c string
 	const char* file_path_cstring = get_byte_array_dstring(&file_path);
