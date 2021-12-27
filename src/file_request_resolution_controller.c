@@ -6,7 +6,7 @@ char* get_content_type_from_file_extension(dstring* extension);
 
 int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache, int* routing_resolved)
 {
-	if(hrq->method == GET && hrq->path.bytes_occupied > 0)
+	if(hrq->method == GET && !is_empty_dstring(&(hrq->path)))
 	{
 		// extract extension dstring from the file path
 		dstring extension; init_empty_dstring(&extension, 0);

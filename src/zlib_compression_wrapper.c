@@ -158,9 +158,6 @@ int uncompress_in_memory(dstring* compressedData, compression_type compr_type)
         return 0;
     }
 
-    // bring the uncompressedData to appropriate dstring format
-    uncompressedData.bytes_occupied = strm.total_out;
-
     // release resources from zlib
     inflateEnd(&strm);
 

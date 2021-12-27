@@ -247,7 +247,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 					if(body_length >= 0 && get_char_count_dstring(&(hr->body)) < body_length)
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 
-					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
+					if(body_length >= 0 && get_char_count_dstring(&(hr->body)) < body_length)
 					{
 						GOTO_NEXT_CHARACTER()
 					}
@@ -373,7 +373,7 @@ void compressHttpResponseBody(HttpResponse* hrp, compression_type compr_type)
 {
 	// what will you do with compression of the response further more, 
 	// datalink layer frame size only is around 1500 bytes
-	if(hrp->body.bytes_occupied <= 100)
+	if(get_char_count_dstring(&(hrp->body)) <= 100)
 	{
 		insert_unique_in_dmap_cstr(&(hrp->headers), "content-encoding", "identity");
 		return;
@@ -456,7 +456,7 @@ void setSetCookie(HttpResponse* hr, dstring* SetCookie)
 {
 	static dstring SetCookieHeaderKey = get_literal_cstring("Set-Cookie");
 
-	if(SetCookie != NULL && SetCookie->bytes_occupied > 0)
+	if(SetCookie != NULL && !is_empty_dstring(SetCookie))
 		insert_duplicate_in_dmap(&(hr->headers), &SetCookieHeaderKey, SetCookie);
 }
 

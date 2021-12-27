@@ -311,10 +311,10 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 
 					sscanf(get_byte_array_dstring(content_length), "%d", &body_length);
 
-					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
+					if(body_length >= 0 && get_char_count_dstring(&(hr->body)) < body_length)
 						APPEND_CURRENT_CHARACTER_TO(&(hr->body))
 
-					if(body_length >= 0 && hr->body.bytes_occupied < body_length)
+					if(body_length >= 0 && get_char_count_dstring(&(hr->body)) < body_length)
 					{
 						GOTO_NEXT_CHARACTER()
 					}
@@ -437,7 +437,7 @@ void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{
-		sprintf(ptemp, "%u", hrq->body.bytes_occupied);
+		sprintf(ptemp, "%u", get_char_count_dstring(&(hr->body)));
 		insert_unique_in_dmap_cstr(&(hrq->headers), "content-length", ptemp);
 	}
 	insert_unique_in_dmap_cstr(&(hrq->headers), "accept-encoding", "gzip, deflate, identity");
@@ -451,7 +451,7 @@ void compressHttpRequestBody(HttpRequest* hrq, compression_type compr_type)
 
 	// what will you do with compression of the request further more, 
 	// datalink layer frame size only is around 1500 bytes
-	if(hrq->body.bytes_occupied <= 100)
+	if(get_char_count_dstring(&(hrp->body)) <= 100)
 	{
 		insert_unique_in_dmap_cstr(&(hrq->headers), "content-encoding", "identity");
 		return;
