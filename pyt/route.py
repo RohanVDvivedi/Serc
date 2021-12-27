@@ -263,7 +263,7 @@ for method in mydict:
 				first_wild_card = False
 			else :
 				case_string 		+= "\n\t\t\t\t\telse "
-			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= hrq->path.bytes_occupied)"
+			case_string				+= "if( (" + str(len("".join(path_parts))) + " <= get_char_count_dstring(&(hrq->path)))"
 			previous_path_part = None
 			path_part_iter = 0
 			for path_part in path_parts :
