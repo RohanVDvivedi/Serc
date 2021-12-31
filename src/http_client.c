@@ -13,7 +13,7 @@
 // this is the buffer size that will be used to hold the data from IP/TCP or IP/TCP/SSL streams
 #define buffersize 1024
 
-transaction_client* get_http_client(char* url_string, char* port_string, unsigned int connection_count)
+transaction_client* new_http_client(char* url_string, char* port_string, unsigned int connection_count)
 {
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(hints));
@@ -40,7 +40,7 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
     struct sockaddr_in* first = (struct sockaddr_in*)(results->ai_addr);
 
     // get a connection group, for which you want to open a http transaction client
-	connection_group conn_group = get_connection_group_tcp_ipv4(inet_ntoa(first->sin_addr), ntohs(first->sin_port));
+	connection_group conn_group = new_connection_group_tcp_ipv4(inet_ntoa(first->sin_addr), ntohs(first->sin_port));
 
 	freeaddrinfo(results);
 
@@ -54,7 +54,7 @@ transaction_client* get_http_client(char* url_string, char* port_string, unsigne
 	close(fd);
 
 	// open the transaction client using the connection group you built
-	transaction_client* http_client = get_transaction_client(conn_group, connection_count);
+	transaction_client* http_client = new_transaction_client(conn_group, connection_count);
 	return http_client;
 }
 

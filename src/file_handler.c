@@ -6,11 +6,11 @@
 #include<unistd.h>
 #include<string.h>
 
-file_cache* get_file_cache(const char* root_path)
+file_cache* new_file_cache(const char* root_path)
 {
 	file_cache* fc = malloc(sizeof(file_cache));
 	init_dstring(&(fc->root_path), root_path, strlen(root_path));
-	fc->file_cache_table = get_cashtable(30);
+	fc->file_cache_table = new_cashtable(30);
 	return fc;
 }
 

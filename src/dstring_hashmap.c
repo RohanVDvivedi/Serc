@@ -28,7 +28,7 @@ dstring* find_equals_in_dmap(dmap* dmapp, const dstring* key)
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
 	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 	{
-		dstring copy_key = get_copy_dstring(key); toLowercase(&copy_key);
+		dstring copy_key = new_copy_dstring(key); toLowercase(&copy_key);
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
 		deinit_dstring(&copy_key);
 	}
@@ -60,7 +60,7 @@ void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value
 	else
 	{
 		rehash_and_expand_hashmap_if_necessary(dmapp);
-		dentry* dent = get_dentry(key, value);
+		dentry* dent = new_dentry(key, value);
 		if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 			toLowercase(&(dent->key));
 		insert_in_hashmap(&(dmapp->map), dent);
@@ -77,7 +77,7 @@ void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* va
 	if(key == NULL || value == NULL)
 		return;
 	rehash_and_expand_hashmap_if_necessary(dmapp);
-	dentry* dent = get_dentry(key, value);
+	dentry* dent = new_dentry(key, value);
 	if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 		toLowercase(&(dent->key));
 	insert_in_hashmap(&(dmapp->map), dent);
@@ -99,7 +99,7 @@ int remove_from_dmap(dmap* dmapp, const dstring* key)
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
 	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 	{
-		dstring copy_key = get_copy_dstring(key); toLowercase(&copy_key);
+		dstring copy_key = new_copy_dstring(key); toLowercase(&copy_key);
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
 		deinit_dstring(&copy_key);
 	}
@@ -121,16 +121,16 @@ void remove_all_from_dmap(dmap* dmapp)
 {
 	for_each_in_hashmap(&(dmapp->map), delete_dentry_wrapper, NULL);
 	for(unsigned int i = 0; i < get_bucket_count_hashmap(&(dmapp->map));i++)
-		set_element(&(dmapp->map.hashmap_holder), NULL, i);
+		set_in_array(&(dmapp->map.hashmap_holder), NULL, i);
 }
 
 void for_each_in_dmap(dmap* dmapp, void (*operation)(const dstring* key, const dstring* value, const void* additional_params), const void* additional_params)
 {
 	for(unsigned int i = 0; i < get_bucket_count_hashmap(&(dmapp->map)); i++)
 	{
-		if(get_element(&(dmapp->map.hashmap_holder), i) != NULL)
+		if(get_from_array(&(dmapp->map.hashmap_holder), i) != NULL)
 		{
-			const dentry* dent = get_element(&(dmapp->map.hashmap_holder), i);
+			const dentry* dent = get_from_array(&(dmapp->map.hashmap_holder), i);
 			operation(&(dent->key), &(dent->value), additional_params);
 		}
 	}

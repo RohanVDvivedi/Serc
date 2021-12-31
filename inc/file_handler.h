@@ -17,7 +17,7 @@ struct file_cache
 #define CACHE_EXPIRY_MINS 1
 
 // this will create the file cache, for your server
-file_cache* get_file_cache(const char* root_path);
+file_cache* new_file_cache(const char* root_path);
 
 // this method returns -1, if the file is absent on th disk, else 0 if no error
 // the file if found in file_cache_table, it will be appended in append_file_contents

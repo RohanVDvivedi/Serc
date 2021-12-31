@@ -4,7 +4,7 @@
 
 #include<stdlib.h>
 
-dentry* get_dentry(const dstring* key, const dstring* value)
+dentry* new_dentry(const dstring* key, const dstring* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));
 	init_copy_dstring(&(entryp->key), key);
@@ -13,7 +13,7 @@ dentry* get_dentry(const dstring* key, const dstring* value)
 	return entryp;
 }
 
-dentry* get_dentry_cstrings(const char* key, const char* value)
+dentry* new_dentry_from_cstrings(const char* key, const char* value)
 {
 	dentry* entryp = malloc(sizeof(dentry));
 	init_dstring(&(entryp->key), key, (key == NULL) ? 0 : strlen(key));

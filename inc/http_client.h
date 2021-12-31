@@ -8,7 +8,7 @@
 
 // creates a new trnsaction client that handles asynchronous http request and response
 // for connection_client = n, you will get a transaction client with n open connections, on n different threads, on 1 thread pool
-transaction_client* get_http_client(char* url_string, char* port_string, unsigned int connection_count);
+transaction_client* new_http_client(char* url_string, char* port_string, unsigned int connection_count);
 
 /* *************************************************
 	There are 2 steps involved in sending a http request and then receiving the response

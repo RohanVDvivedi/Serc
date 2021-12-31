@@ -21,10 +21,10 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 	server_global_params sgp = {0};
 
 	// initialize the content cache for serving the files
-	sgp.server_file_cache = ((ROOT_PATH != NULL) ? get_file_cache(ROOT_PATH) : NULL);
+	sgp.server_file_cache = ((ROOT_PATH != NULL) ? new_file_cache(ROOT_PATH) : NULL);
 
 	// start the server using https connection handler
-	connection_group cgp = get_connection_group_tcp_ipv4("127.0.0.1", PORT);
+	connection_group cgp = new_connection_group_tcp_ipv4("127.0.0.1", PORT);
 
 	// for HTTPS server, you also need to create appropriate ssl context
 	if(SSL_KEYS_CERTS != NULL)
