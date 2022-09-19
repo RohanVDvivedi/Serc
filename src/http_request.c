@@ -25,8 +25,8 @@ void initHttpRequest(HttpRequest* hr, int conn_fd)
 // returns -2 when error
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 {
-	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
+	// this is the key corresponding to which valueless partial keys of headers and parameters are stored
+	const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)

@@ -23,8 +23,8 @@ void initHttpResponse(HttpResponse* hr, int conn_fd)
 // returns -2 when error
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 {
-	// this is the key corresponding to which value less patial keys of headers and parameters are stored
-	static const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
+	// this is the key corresponding to which valueless partial keys of headers and parameters are stored
+	const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
@@ -454,7 +454,7 @@ void printResponse(HttpResponse* hr)
 
 void setSetCookie(HttpResponse* hr, dstring* SetCookie)
 {
-	static dstring SetCookieHeaderKey = get_literal_cstring("Set-Cookie");
+	const dstring SetCookieHeaderKey = get_literal_cstring("Set-Cookie");
 
 	if(SetCookie != NULL && !is_empty_dstring(SetCookie))
 		insert_duplicate_in_dmap(&(hr->headers), &SetCookieHeaderKey, SetCookie);
