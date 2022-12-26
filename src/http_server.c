@@ -24,7 +24,7 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 	sgp.server_file_cache = ((ROOT_PATH != NULL) ? new_file_cache(ROOT_PATH) : NULL);
 
 	// start the server using https connection handler
-	connection_group cgp = new_connection_group_tcp_ipv4("127.0.0.1", PORT);
+	comm_address cgp = new_comm_address_tcp_ipv4(NULL, PORT);
 
 	// for HTTPS server, you also need to create appropriate ssl context
 	if(SSL_KEYS_CERTS != NULL)
