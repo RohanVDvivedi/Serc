@@ -11,9 +11,6 @@
 typedef struct HttpRequest HttpRequest;
 struct HttpRequest
 {
-	// connection to read/write from
-	int conn_fd;
-
 	// if this response is being read and parsed
 	// then this is the context for it
 	HttpParseContext parseContext;
@@ -28,7 +25,7 @@ struct HttpRequest
 };
 
 // to init/create HttpRequest Object, by initializing and allocating memory for all its attributes
-void initHttpRequest(HttpRequest* hr, int conn_fd);
+void initHttpRequest(HttpRequest* hr);
 
 // parse string to populate HttpRequest
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr);

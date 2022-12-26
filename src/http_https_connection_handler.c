@@ -18,23 +18,10 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 {
 	server_global_params* sgpp = server_specific_params;
 
-	int is_secured_http = (sgpp->server_ssl_ctx != NULL);
-	SSL* ssl = NULL;
-
-	if(is_secured_http)
-	{
-		ssl = SSL_new(sgpp->server_ssl_ctx);
-		SSL_set_fd(ssl, conn_fd);
-
-		if(SSL_accept(ssl) == -1)
-		{
-			SSL_free(ssl);
-			return;
-		}
-	}
-
 	// set this in the loop, if you want to close the connection
 	int close_connection = 0;
+
+	int strm_error = 0;
 
 	// we loop on receving the 
 	while(!close_connection)
@@ -45,19 +32,15 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 		int buffreadlength = -1;
 
 		// create a new HttpRequest Object
-		HttpRequest hrq; initHttpRequest(&hrq, conn_fd);
+		HttpRequest hrq; initHttpRequest(&hrq);
 		http_connection_handler_error error = 0;
 
 		while(1)
 		{
-			// read request byte array, we must read blockingly
-			if(is_secured_http)
-				buffreadlength = SSL_read(ssl, bufferRequest, buffersize);	// read ssl encrypted request
-			else
-				buffreadlength = recv(conn_fd, bufferRequest, buffersize, 0);
 
-			// if no characters read than exit
-			if(buffreadlength == -1)
+			buffreadlength = read_from_stream(strm, bufferRequest, buffersize, &strm_error);
+
+			if(strm_error != 0)
 			{
 				error = TCP_CONNECTION_ERROR_READING;
 				break;
@@ -90,7 +73,7 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 		if(error == 0)
 		{
 			// create a HttpResponse Object here
-			HttpResponse hrp; initHttpResponse(&hrp, conn_fd);
+			HttpResponse hrp; initHttpResponse(&hrp);
 
 			close_connection = distribute(&hrq, &hrp, sgpp->server_file_cache);
 
@@ -105,10 +88,10 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 			serializeResponse(&bufferResponse, &hrp);
 
 			// send the data
-			if(is_secured_http)
-				SSL_write(ssl, get_byte_array_dstring(&bufferResponse), get_char_count_dstring(&bufferResponse));
-			else
-				send(conn_fd, get_byte_array_dstring(&bufferResponse), get_char_count_dstring(&bufferResponse), 0);
+			write_to_stream(strm, get_byte_array_dstring(&bufferResponse), get_char_count_dstring(&bufferResponse),  &strm_error);
+
+			if(strm_error != 0)
+				close_connection = 1;
 
 			// once data sent delete bufferResponse
 			deinit_dstring(&bufferResponse);
@@ -126,7 +109,4 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 		// deinitialize HttpRequest Object
 		deinitHttpRequest(&hrq);
 	}
-
-	if(is_secured_http)
-		SSL_free(ssl);
 }

@@ -6,10 +6,8 @@
 
 #include<cutlery_stds.h>
 
-void initHttpRequest(HttpRequest* hr, int conn_fd)
+void initHttpRequest(HttpRequest* hr)
 {
-	hr->conn_fd = conn_fd;
-
 	initHttpParseContext(&(hr->parseContext));
 
 	hr->method = UNIDENTIFIED;
