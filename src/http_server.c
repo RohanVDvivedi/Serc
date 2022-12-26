@@ -31,7 +31,7 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 		sgp.server_ssl_ctx = create_gbl_server_ssl_ctx(SSL_KEYS_CERTS);
 
 	signal(SIGINT, intHandler);
-	serve(&cgp, &sgp, http_connection_handler, 100, &listen_fd);
+	serve_using_handlers(&cgp, &sgp, http_connection_handler, 100, &listen_fd);
 
 	if(sgp.server_ssl_ctx != NULL)
 		destroy_gbl_server_ssl_ctx(sgp.server_ssl_ctx);
