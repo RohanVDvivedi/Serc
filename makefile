@@ -7,7 +7,7 @@ DOWNLOAD_DIR:=/usr/local
 # we may download all the public headers
 
 # list of public api headers (only these headers will be installed)
-PUBLIC_HEADERS:=http_server.h http_client.h\
+PUBLIC_HEADERS:=http_server.h\
 				distributer.h\
 				http_request.h http_response.h http_object.h zlib_compression_wrapper.h\
 				http_method.h http_status.h http_parse_context.h\
