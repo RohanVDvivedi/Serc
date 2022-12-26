@@ -15,6 +15,24 @@ static void intHandler(int signum)
     	server_stop(listen_fd);
 }
 
+static SSL_CTX* create_server_ssl_ctx(char* SSL_KEYS_CERTS)
+{
+	int len = strlen(SSL_KEYS_CERTS);
+
+	char* cert_file = malloc(len + 10);
+	strcpy(cert_file, SSL_KEYS_CERTS);
+	strcat(cert_file, ".crt");
+
+	char* key_file = malloc(len + 10);
+	strcpy(cert_file, SSL_KEYS_CERTS);
+	strcat(cert_file, ".key");
+
+	SSL_CTX* ssl_ctx = get_ssl_ctx_for_server(cert_file, key_file);
+
+	free(cert_file);
+	free(key_file);
+}
+
 void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 {
 	// these values will be constant through out all the connections of this specific server
@@ -27,14 +45,15 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 	comm_address cgp = new_comm_address_tcp_ipv4(NULL, PORT);
 
 	// for HTTPS server, you also need to create appropriate ssl context
+	SSL_CTX* ssl_ctx = NULL;
 	if(SSL_KEYS_CERTS != NULL)
-		sgp.server_ssl_ctx = create_gbl_server_ssl_ctx(SSL_KEYS_CERTS);
+		ssl_ctx = create_server_ssl_ctx(SSL_KEYS_CERTS);
 
 	signal(SIGINT, intHandler);
-	serve_using_stream_handlers(&cgp, &sgp, http_connection_stream_handler, 100, SSL_CTX* ssl_ctx, &listen_fd);
+	serve_using_stream_handlers(&cgp, &sgp, http_connection_stream_handler, 100, ssl_ctx, &listen_fd);
 
-	if(sgp.server_ssl_ctx != NULL)
-		destroy_gbl_server_ssl_ctx(sgp.server_ssl_ctx);
+	if(ssl_ctx != NULL)
+		destroy_ssl_ctx(ssl_ctx);
 
 	// delete the file cache
 	if(sgp.server_file_cache != NULL)
