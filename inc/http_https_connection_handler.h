@@ -1,6 +1,8 @@
 #ifndef HTTP_HTTPS_CONNECTION_HANDLER_H
 #define HTTP_HTTPS_CONNECTION_HANDLER_H
 
+#include<stream.h>
+
 typedef enum http_connection_handler_error http_connection_handler_error;
 enum http_connection_handler_error
 {
