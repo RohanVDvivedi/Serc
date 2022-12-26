@@ -1,7 +1,7 @@
 #include<http_server.h>
 
 #include<server_global_params.h>
-#include<http_https_connection_handler.h>
+#include<http_connection_handler.h>
 
 #include<server.h>
 
@@ -33,6 +33,8 @@ static SSL_CTX* create_server_ssl_ctx(char* SSL_KEYS_CERTS)
 
 	free(cert_file);
 	free(key_file);
+
+	return ssl_ctx;
 }
 
 void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
