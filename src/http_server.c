@@ -26,8 +26,8 @@ static SSL_CTX* create_server_ssl_ctx(char* SSL_KEYS_CERTS)
 	strcat(cert_file, ".crt");
 
 	char* key_file = malloc(len + 10);
-	strcpy(cert_file, SSL_KEYS_CERTS);
-	strcat(cert_file, ".key");
+	strcpy(key_file, SSL_KEYS_CERTS);
+	strcat(key_file, ".key");
 
 	SSL_CTX* ssl_ctx = get_ssl_ctx_for_server(cert_file, key_file);
 
@@ -51,7 +51,11 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 	// for HTTPS server, you also need to create appropriate ssl context
 	SSL_CTX* ssl_ctx = NULL;
 	if(SSL_KEYS_CERTS != NULL)
+	{
 		ssl_ctx = create_server_ssl_ctx(SSL_KEYS_CERTS);
+		if(ssl_ctx == NULL)
+			printf("starting server without SSL TLS security\n");
+	}
 
 	signal(SIGINT, intHandler);
 	serve_using_stream_handlers(&cgp, &sgp, http_connection_stream_handler, 100, ssl_ctx, &listen_fd);
