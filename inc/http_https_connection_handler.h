@@ -11,6 +11,6 @@ enum http_connection_handler_error
 	TCP_CONNECTION_ERROR_READING = -4
 };
 
-void http_connection_handler(int conn_fd, void* server_global_params);
+void http_connection_stream_handler(stream* strm, void* server_global_params);
 
 #endif
