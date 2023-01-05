@@ -28,7 +28,7 @@ dstring* find_equals_in_dmap(dmap* dmapp, const dstring* key)
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
 	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 	{
-		dstring copy_key = new_copy_dstring(key); toLowercase(&copy_key);
+		dstring copy_key = new_copy_dstring(key); to_lowercase_dstring(&copy_key);
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
 		deinit_dstring(&copy_key);
 	}
@@ -62,7 +62,7 @@ void insert_unique_in_dmap(dmap* dmapp, const dstring* key, const dstring* value
 		rehash_and_expand_hashmap_if_necessary(dmapp);
 		dentry* dent = new_dentry(key, value);
 		if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
-			toLowercase(&(dent->key));
+			to_lowercase_dstring(&(dent->key));
 		insert_in_hashmap(&(dmapp->map), dent);
 	}
 }
@@ -79,7 +79,7 @@ void insert_duplicate_in_dmap(dmap* dmapp, const dstring* key, const dstring* va
 	rehash_and_expand_hashmap_if_necessary(dmapp);
 	dentry* dent = new_dentry(key, value);
 	if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
-		toLowercase(&(dent->key));
+		to_lowercase_dstring(&(dent->key));
 	insert_in_hashmap(&(dmapp->map), dent);
 }
 
@@ -99,7 +99,7 @@ int remove_from_dmap(dmap* dmapp, const dstring* key)
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = *key}));
 	else if(dmapp->key_type == CASE_INSENSITIVE_KEY_TYPE)
 	{
-		dstring copy_key = new_copy_dstring(key); toLowercase(&copy_key);
+		dstring copy_key = new_copy_dstring(key); to_lowercase_dstring(&copy_key);
 		dent = (dentry*) find_equals_in_hashmap(&(dmapp->map), &((dentry){.key = copy_key}));
 		deinit_dstring(&copy_key);
 	}
