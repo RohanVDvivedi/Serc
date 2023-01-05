@@ -7,9 +7,9 @@ void initialize_dmap(dmap* dmapp, dmap_key_type key_type, unsigned int size)
 {
 	dmapp->key_type = key_type;
 	if(key_type == CASE_SENSITIVE_KEY_TYPE)
-		initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_SENSITIVE, 0);
+		initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_SENSITIVE, offsetof(dentry, embed_node));
 	else if(key_type == CASE_INSENSITIVE_KEY_TYPE)
-		initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_INSENSITIVE, 0);
+		initialize_hashmap(&(dmapp->map), ROBINHOOD_HASHING, size, key_hash_dentry, key_compare_dentry_CASE_INSENSITIVE, offsetof(dentry, embed_node));
 }
 
 dstring* find_equals_in_dmap_cstr(dmap* dmapp, const char* key)

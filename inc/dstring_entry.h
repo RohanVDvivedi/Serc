@@ -3,6 +3,8 @@
 
 #include<dstring.h>
 
+#include<hashmap.h>
+
 typedef struct dentry dentry;
 struct dentry
 {
@@ -12,6 +14,9 @@ struct dentry
 	dstring key;
 
 	dstring value;
+
+	// embedded node for dstring_hashmap
+	rbhnode embed_node;
 };
 
 dentry* new_dentry(const dstring* key, const dstring* value);
