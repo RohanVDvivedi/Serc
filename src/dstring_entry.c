@@ -9,6 +9,7 @@ dentry* new_dentry(const dstring* key, const dstring* value)
 	dentry* entryp = malloc(sizeof(dentry));
 	init_copy_dstring(&(entryp->key), key);
 	init_copy_dstring(&(entryp->value), value);
+	initialize_rbhnode(&(entryp->embed_node));
 	entryp->key_hash_value = 0;
 	return entryp;
 }
@@ -18,6 +19,7 @@ dentry* new_dentry_from_cstrings(const char* key, const char* value)
 	dentry* entryp = malloc(sizeof(dentry));
 	init_dstring(&(entryp->key), key, (key == NULL) ? 0 : strlen(key));
 	init_dstring(&(entryp->value), value, (value == NULL) ? 0 : strlen(value));
+	initialize_rbhnode(&(entryp->embed_node));
 	entryp->key_hash_value = 0;
 	return entryp;
 }
