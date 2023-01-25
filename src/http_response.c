@@ -22,7 +22,7 @@ void initHttpResponse(HttpResponse* hr)
 int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 {
 	// this is the key corresponding to which valueless partial keys of headers and parameters are stored
-	const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
+	const dstring partial_key_value_slize_key = get_dstring_pointing_to_literal_cstring("PARTIAL_KEY_NO_VALUE");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
@@ -254,7 +254,7 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 						hr->parseContext.state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("chunked")) != INVALID_INDEX )
+				else if(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("chunked")) != INVALID_INDEX )
 				{
 					hr->parseContext.state = IN_BODY_CHUNK_SIZE;
 				}
@@ -353,9 +353,9 @@ int parseResponse(char* buffer, int buffer_size, HttpResponse* hr)
 
 void serializeResponse(dstring* result, HttpResponse* hr)
 {
-	concatenate_dstring(result, &get_literal_cstring(getHttpResponseStatus(hr->status)));
+	concatenate_dstring(result, &get_dstring_pointing_to_cstring(getHttpResponseStatus(hr->status)));
 	for_each_in_dmap(&(hr->headers), (void (*)(const dstring*, const dstring*, const void*))serialize_header_entry, result);
-	concatenate_dstring(result, &get_literal_cstring("\r\n"));
+	concatenate_dstring(result, &get_dstring_pointing_to_literal_cstring("\r\n"));
 	concatenate_dstring(result, &(hr->body));
 }
 
@@ -417,14 +417,14 @@ void uncompressHttpResponseBody(HttpResponse* hrp)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("br")) != INVALID_INDEX) ||
-		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("br")) != INVALID_INDEX) )
+	if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_dstring_pointing_to_literal_cstring("br")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("br")) != INVALID_INDEX) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) ||
-		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_dstring_pointing_to_literal_cstring("deflate")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("deflate")) != INVALID_INDEX) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) ||
-		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_dstring_pointing_to_literal_cstring("gzip")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("gzip")) != INVALID_INDEX) )
 		compr_type = GZIP;
 	else{return ;}
 
@@ -452,7 +452,7 @@ void printResponse(HttpResponse* hr)
 
 void setSetCookie(HttpResponse* hr, dstring* SetCookie)
 {
-	const dstring SetCookieHeaderKey = get_literal_cstring("Set-Cookie");
+	const dstring SetCookieHeaderKey = get_dstring_pointing_to_literal_cstring("Set-Cookie");
 
 	if(SetCookie != NULL && !is_empty_dstring(SetCookie))
 		insert_duplicate_in_dmap(&(hr->headers), &SetCookieHeaderKey, SetCookie);

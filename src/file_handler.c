@@ -66,7 +66,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 		{
 			long long int read_count = fread(file_buffer, sizeof(char), FILE_READ_BUFFER_SIZE, file);
 			if(read_count >= 0)
-				concatenate_dstring(&file_contents, &get_literal_dstring(file_buffer, read_count));
+				concatenate_dstring(&file_contents, &get_dstring_pointing_to(file_buffer, read_count));
 		}
 	fclose(file);
 
@@ -100,6 +100,6 @@ void get_extension_from_file_path(dstring* extension_result, dstring* path)
 	if((*path_t) == '.')
 	{
 		path_t++;
-		concatenate_dstring(extension_result, &get_literal_dstring(path_t, get_byte_array_dstring(path) + get_char_count_dstring(path) - path_t));
+		concatenate_dstring(extension_result, &get_dstring_pointing_to(path_t, get_byte_array_dstring(path) + get_char_count_dstring(path) - path_t));
 	}
 }

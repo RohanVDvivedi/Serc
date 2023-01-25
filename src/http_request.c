@@ -24,7 +24,7 @@ void initHttpRequest(HttpRequest* hr)
 int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 {
 	// this is the key corresponding to which valueless partial keys of headers and parameters are stored
-	const dstring partial_key_value_slize_key = get_literal_cstring("PARTIAL_KEY_NO_VALUE");
+	const dstring partial_key_value_slize_key = get_dstring_pointing_to_literal_cstring("PARTIAL_KEY_NO_VALUE");
 
 	char* buff_start = buffer;
 	while((buffer < (buff_start + buffer_size)) && hr->parseContext.state != PARSED_SUCCESSFULLY)
@@ -321,7 +321,7 @@ int parseRequest(char* buffer, int buffer_size, HttpRequest* hr)
 						hr->parseContext.state = BODY_COMPLETE;
 					}
 				}
-				else if(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("chunked")) != INVALID_INDEX )
+				else if(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("chunked")) != INVALID_INDEX )
 				{
 					hr->parseContext.state = IN_BODY_CHUNK_SIZE;
 				}
@@ -497,14 +497,14 @@ void uncompressHttpRequestBody(HttpRequest* hrq)
 
 	compression_type compr_type;
 
-	if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("br")) != INVALID_INDEX) ||
-		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("br")) != INVALID_INDEX) )
+	if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_dstring_pointing_to_literal_cstring("br")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("br")) != INVALID_INDEX) )
 		compr_type = BROTLI;
-	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) ||
-		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("deflate")) != INVALID_INDEX) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_dstring_pointing_to_literal_cstring("deflate")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("deflate")) != INVALID_INDEX) )
 		compr_type = DEFLATE;
-	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) ||
-		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_literal_cstring("gzip")) != INVALID_INDEX) )
+	else if( (content_encoding != NULL && contains_dstring_NAIVE(content_encoding, &get_dstring_pointing_to_literal_cstring("gzip")) != INVALID_INDEX) ||
+		(transfer_encoding != NULL && contains_dstring_NAIVE(transfer_encoding, &get_dstring_pointing_to_literal_cstring("gzip")) != INVALID_INDEX) )
 		compr_type = GZIP;
 	else{return ;}
 

@@ -78,9 +78,9 @@ void serialize_parameter_entry(const dstring* key, const dstring* value, dstring
 void serialize_header_entry(const dstring* key, const dstring* value, dstring* result)
 {
 	concatenate_dstring(result, key);
-	concatenate_dstring(result, &get_literal_cstring(": "));
+	concatenate_dstring(result, &get_dstring_pointing_to_literal_cstring(": "));
 	concatenate_dstring(result, value);
-	concatenate_dstring(result, &get_literal_cstring("\r\n"));
+	concatenate_dstring(result, &get_dstring_pointing_to_literal_cstring("\r\n"));
 }
 
 void print_entry_wrapper(const dstring* key, const dstring* value, const void* addpar)
@@ -99,5 +99,5 @@ int hasHeader(char* Key, char* Value, dmap* headers)
 	if(value_test == NULL)
 		return 0;
 
-	return (compare_dstring(value_test, &get_literal_cstring(Value)) == 0);
+	return (compare_dstring(value_test, &get_dstring_pointing_to_cstring(Value)) == 0);
 }
