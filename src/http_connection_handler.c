@@ -89,9 +89,16 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 
 			// send the data
 			write_to_stream(strm, get_byte_array_dstring(&bufferResponse), get_char_count_dstring(&bufferResponse),  &strm_error);
-
 			if(strm_error != 0)
 				close_connection = 1;
+
+			// flush all written data
+			if(strm_error == 0)
+			{
+				flush_all_from_stream(strm, &strm_error);
+				if(strm_error != 0)
+					close_connection = 1;
+			}
 
 			// once data sent delete bufferResponse
 			deinit_dstring(&bufferResponse);
