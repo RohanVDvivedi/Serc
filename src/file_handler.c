@@ -72,7 +72,7 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 
 	// concatenate the file result to the append_file_contents
 	// and update the file_cache_tabel
-	set_key_value_expiry_cashtable(fc->file_cache_table, relative_file_path, &file_contents, CACHE_EXPIRY_MINS * 60);
+	//set_key_value_expiry_cashtable(fc->file_cache_table, relative_file_path, &file_contents, CACHE_EXPIRY_MINS * 60);
 	concatenate_dstring(append_file_contents, &file_contents);
 
 	deinit_dstring(&(file_contents));
