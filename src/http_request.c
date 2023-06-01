@@ -431,7 +431,7 @@ void serializeRequest(dstring* result, HttpRequest* hr)
 
 void setServerDefaultHeadersInRequest(HttpRequest* hrq)
 {
-	char ptemp[13];
+	char ptemp[32];
 	// content-length header only if the request is not get
 	if(hrq->method != GET)
 	{

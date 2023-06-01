@@ -361,7 +361,7 @@ void serializeResponse(dstring* result, HttpResponse* hr)
 
 void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 {
-	char ptemp[13];
+	char ptemp[32];
 	sprintf(ptemp, PRIu_cy_uint, get_char_count_dstring(&(hrp->body)));
 	insert_unique_in_dmap_cstr(&(hrp->headers), "content-length", ptemp);
 	insert_unique_in_dmap_cstr(&(hrp->headers), "server", "serc0");
