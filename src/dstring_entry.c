@@ -34,7 +34,7 @@ int key_compare_dentry_CASE_INSENSITIVE(const void* entry1, const void* entry2)
 	return case_compare_dstring(&(((dentry*)entry1)->key), &(((dentry*)entry2)->key));
 }
 
-unsigned int key_hash_dentry(const void* entryp)
+cy_uint key_hash_dentry(const void* entryp)
 {
 	if(((dentry*)entryp)->key_hash_value == 0)
 		((dentry*)entryp)->key_hash_value = getHashValueDstring(&(((dentry*)entryp)->key));

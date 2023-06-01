@@ -9,7 +9,7 @@ typedef struct dentry dentry;
 struct dentry
 {
 	// cached hashvalue of the key
-	unsigned int key_hash_value;
+	cy_uint key_hash_value;
 
 	dstring key;
 
@@ -25,7 +25,7 @@ dentry* new_dentry_from_cstrings(const char* key, const char* value);
 int key_compare_dentry_CASE_SENSITIVE(const void* entry1, const void* entry2);
 int key_compare_dentry_CASE_INSENSITIVE(const void* entry1, const void* entry2);
 
-unsigned int key_hash_dentry(const void* entryp);
+cy_uint key_hash_dentry(const void* entryp);
 
 void delete_dentry(dentry* entryp);
 
