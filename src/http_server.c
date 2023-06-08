@@ -41,9 +41,7 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {0};
-
-	// initialize the content cache for serving the files
-	sgp.server_file_cache = ((ROOT_PATH != NULL) ? new_file_cache(ROOT_PATH) : NULL);
+	init_dstring(&(sgp.ROOT_PATH), ROOT_PATH, strlen(ROOT_PATH));
 
 	// start the server using https connection handler
 	comm_address cgp = new_comm_address_tcp_ipv4(NULL, PORT);
@@ -63,7 +61,6 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 	if(ssl_ctx != NULL)
 		destroy_ssl_ctx(ssl_ctx);
 
-	// delete the file cache
-	if(sgp.server_file_cache != NULL)
-		delete_file_cache(sgp.server_file_cache);
+	// de init server global params
+	deinit_dstring(&(sgp.ROOT_PATH));
 }
