@@ -7,8 +7,8 @@ DOWNLOAD_DIR:=/usr/local
 # we may download all the public headers
 
 # list of public api headers (only these headers will be installed)
-PUBLIC_HEADERS:=http_server.h distributer.h\
-				strhsh.h file_request_resolution_controller.h file_handler.h
+PUBLIC_HEADERS:=http_server.h distributer.h server_global_params.h\
+				strhsh.h file_request_resolution_controller.h
 # these are the tools that will be used for helping you create your own distributer file
 ROUTING_SCRIPT:=route.py
 ROUTING_TEMPLATE:=distributer_source.temp
