@@ -17,11 +17,12 @@ int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 //@switch_case
 
 	if(routing_resolved == 0)
-	{
 		// check if we can serve the request with some file, on the server's root
 		close_connection = file_request_controller(hrq, strm, sgp, &routing_resolved);
-		if(routing_resolved == 0)
-			hrp->status = 404;
+
+	if(routing_resolved == 0)
+	{
+//@Controller404
 	}
 
 	// close the connection, after his request, if connection:close header is provided
