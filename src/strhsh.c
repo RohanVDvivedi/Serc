@@ -1,16 +1,16 @@
 #include<strhsh.h>
 
-unsigned long long int getHashValue(const char* s)
+unsigned long long int get_hash_cstring(const char* s)
 {
-    return getHashValueByLength(s, strlen(s));
+    return get_hash_by_length(s, strlen(s));
 }
 
-unsigned long long int getHashValueDstring(const dstring* dstr)
+unsigned long long int get_hash_dstring(const dstring* dstr)
 {
-    return getHashValueByLength(get_byte_array_dstring(dstr), get_char_count_dstring(dstr));
+    return get_hash_by_length(get_byte_array_dstring(dstr), get_char_count_dstring(dstr));
 }
 
-unsigned long long int getHashValueByLength(const char* s, unsigned long long int length)
+unsigned long long int get_hash_by_length(const char* s, unsigned long long int length)
 {
     unsigned long long int ans = 0,i = 1,last = 0,curr = 0,diff = 0;
     unsigned long long int lastoccur[128] = {};

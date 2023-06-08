@@ -4,10 +4,10 @@
 #include<string.h>
 #include<dstring.h>
 
-unsigned long long int getHashValue(const char* s);
+unsigned long long int get_hash_cstring(const char* s);
 
-unsigned long long int getHashValueDstring(const dstring* dstr);
+unsigned long long int get_hash_dstring(const dstring* dstr);
 
-unsigned long long int getHashValueByLength(const char* s, unsigned long long int length);
+unsigned long long int get_hash_by_length(const char* s, unsigned long long int length);
 
 #endif
