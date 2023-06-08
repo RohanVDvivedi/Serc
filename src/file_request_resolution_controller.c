@@ -61,7 +61,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			init_http_response_head(&hrp);
 			hrp.status = 200;
 			hrp.version = hrq->version;
-			//insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "identity"/*"deflate"*//*"gzip"*/);
+			insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "gzip");
 			insert_literal_cstrings_in_dmap(&(hrp.headers), "transfer-encoding", "chunked");
 			dstring mime_type = get_mimetype_from_file_extension(&extension);
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
