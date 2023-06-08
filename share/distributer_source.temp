@@ -13,8 +13,6 @@ int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 	int routing_resolved = 0;
 	int close_connection = 0;
 
-	uncompressHttpRequestBody(hrq);
-
 //@switch_case
 
 	if(routing_resolved == 0)
@@ -24,14 +22,6 @@ int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 		if(routing_resolved == 0)
 			hrp->status = 404;
 	}
-
-	// response for a HEAD request must not contain body
-	if(hrq->method == HEAD)
-		make_dstring_empty(&(hrp->body));
-
-	compressHttpResponseBody(hrp, DEFAULT_COMPRESSION);
-
-	setServerDefaultHeadersInResponse(hrp);
 
 	// close the connection, after his request, if connection:close header is provided
 	if(close_connection == 0 && hasHeader("connection", "close", &(hrq->headers)))
