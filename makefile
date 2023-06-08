@@ -7,11 +7,7 @@ DOWNLOAD_DIR:=/usr/local
 # we may download all the public headers
 
 # list of public api headers (only these headers will be installed)
-PUBLIC_HEADERS:=http_server.h\
-				distributer.h\
-				http_request.h http_response.h http_object.h zlib_compression_wrapper.h\
-				http_method.h http_status.h http_parse_context.h\
-				dstring_hashmap.h dstring_entry.h\
+PUBLIC_HEADERS:=http_server.h distributer.h\
 				strhsh.h file_request_resolution_controller.h file_handler.h
 # these are the tools that will be used for helping you create your own distributer file
 ROUTING_SCRIPT:=route.py
@@ -36,7 +32,7 @@ CC:=gcc
 # compiler flags
 CFLAGS:=-Wall -O3 -I${INC_DIR}
 # linker flags, this will used to compile the binary
-LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME} -lcashed -lm -lslabby -lconnman -lrwlock -lboompar -lpthread -lcutlery -lz -lssl -lcrypto
+LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME} -lhttpparser -lconnman -lz -lssl -lcrypto -lboompar -lpthread -lcutlery
 # Archiver
 AR:=ar rcs
 
