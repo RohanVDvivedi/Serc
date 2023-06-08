@@ -2,7 +2,7 @@
 
 int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp)
 {
-	if(hrq->method == GET && !is_empty_dstring(&(hrq->path)))
+	/*if(hrq->method == GET && !is_empty_dstring(&(hrq->path)))
 	{
 		// extract extension dstring from the file path
 		dstring extension; init_empty_dstring(&extension, 0);
@@ -25,6 +25,6 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
     	// delete the extension and file_path dstrings
     	deinit_dstring(&(extension));
-	}
+	}*/
 	return 0;
 }

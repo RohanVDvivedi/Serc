@@ -1,14 +1,12 @@
 #include<distributer.h>
 
-#include<http_object.h>
-
 #include<cutlery_stds.h>
 
 // forward declrations of all your controller functions
 //@controller_definitions
 
 
-int distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache)
+int distribute(http_request* hrq, stream* strm, server_global_params* sgp)
 {
 	unsigned long long int PATH_HASH = getHashValueDstring(&(hrq->path));
 
