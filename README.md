@@ -32,9 +32,6 @@
  * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
  * [BoomPar](https://github.com/RohanVDvivedi/BoomPar)
  * [ConnMan](https://github.com/RohanVDvivedi/ConnMan)
- * [ReaderWriterLock](https://github.com/RohanVDvivedi/ReaderWriterLock)
- * [Slabby](https://github.com/RohanVDvivedi/Slabby)
- * [Cashed](https://github.com/RohanVDvivedi/Cashed)
  * [zlib](https://github.com/madler/zlib)		  ($ sudo apt install zlib1g-dev)
  * [openssl](https://github.com/openssl/openssl)	($ sudo apt install libssl-dev)
 
