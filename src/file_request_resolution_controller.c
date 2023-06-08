@@ -51,6 +51,8 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		}
 		else if(S_ISREG(fstatus.st_mode))
 		{
+			*routing_resolved = 1;
+
 			int fd = open(abs_path_cstr, O_RDONLY);
 			if(fd <= 0)
 				goto EXIT0;
@@ -60,10 +62,15 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			init_http_response_head(&hrp);
 			hrp.status = 200;
 			hrp.version = hrq->version;
-			insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "identity"/*"deflate"*//*"gzip"*/);
-			insert_literal_cstrings_in_dmap(&(hrp.headers), "transfer-encoding", "chunked");
+			//insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "identity"/*"deflate"*//*"gzip"*/);
+			//insert_literal_cstrings_in_dmap(&(hrp.headers), "transfer-encoding", "chunked");
 			dstring mime_type = get_mimetype_from_file_extension(&extension);
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
+			{
+				char size_in_int[32];
+				sprintf(size_in_int, "%zu", fstatus.st_size);
+				insert_literal_cstrings_in_dmap(&(hrp.headers), "content-length", size_in_int);
+			}
 
 			print_http_response_head(&hrp);
 
@@ -95,14 +102,11 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			int error = 0;
 
 			// read data from file in to buffer and write buffer to response stream
-			#define BUFFER_SIZE 1024
+			#define BUFFER_SIZE 128
 			char buffer[BUFFER_SIZE];
 			ssize_t bytes_read = 0;
 			while((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
-			{
 				size_t a = write_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), buffer, bytes_read, &error);
-				printf("%zu %zu <%.*s>\n", bytes_read, a, (int)bytes_read, buffer);
-			}
 
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
