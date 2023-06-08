@@ -6,7 +6,7 @@
 //@controller_definitions
 
 
-int distribute(http_request* hrq, stream* strm, server_global_params* sgp)
+int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 {
 	unsigned long long int PATH_HASH = getHashValueDstring(&(hrq->path));
 
