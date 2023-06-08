@@ -1,20 +1,12 @@
 #ifndef FILE_HANDLER_H
 #define FILE_HANDLER_H
 
-#include<cashed_hashtable.h>
-
 typedef struct file_cache file_cache;
 struct file_cache
 {
 	// this is the root path to the folder that we are serving using this server
 	dstring root_path;
-
-	// this is the cashtable where the server will cache the files that it will read from the disk
-	// contents of each file is stored against its relative filepath
-	cashtable* file_cache_table;
 };
-
-#define CACHE_EXPIRY_MINS 1
 
 // this will create the file cache, for your server
 file_cache* new_file_cache(const char* root_path);
