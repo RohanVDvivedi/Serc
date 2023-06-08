@@ -10,21 +10,11 @@ file_cache* new_file_cache(const char* root_path)
 {
 	file_cache* fc = malloc(sizeof(file_cache));
 	init_dstring(&(fc->root_path), root_path, strlen(root_path));
-	fc->file_cache_table = new_cashtable(30);
 	return fc;
 }
 
 int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring* relative_file_path)
 {
-	// cache hit case ---->>>
-
-	int cache_hit = get_value_cashtable(fc->file_cache_table, relative_file_path, append_file_contents);
-
-	if(cache_hit)
-		return 0;
-
-	// cache hit case <<<----
-
 	// cache miss case ---->>>
 
 	dstring file_path;
@@ -87,19 +77,4 @@ void delete_file_cache(file_cache* fc)
 	deinit_dstring(&(fc->root_path));
 	delete_cashtable(fc->file_cache_table);
 	free(fc);
-}
-
-void get_extension_from_file_path(dstring* extension_result, dstring* path)
-{
-	char* path_t = get_byte_array_dstring(path) + get_char_count_dstring(path) - 1;
-	for(;path_t >= get_byte_array_dstring(path); path_t--)
-	{
-		if((*path_t) == '.')
-			break;
-	}
-	if((*path_t) == '.')
-	{
-		path_t++;
-		concatenate_dstring(extension_result, &get_dstring_pointing_to(path_t, get_byte_array_dstring(path) + get_char_count_dstring(path) - path_t));
-	}
 }

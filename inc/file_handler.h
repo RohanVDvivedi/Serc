@@ -20,9 +20,4 @@ int read_file_in_dstring(dstring* append_file_contents, file_cache* fc, dstring*
 // it will clear the cache completely and delete the struct then, hence releasing all the resources
 void delete_file_cache(file_cache* fc);
 
-// UTILITY FUNCTION
-
-// extension_result is appended with the extension from the file_path, only a utility function
-void get_extension_from_file_path(dstring* extension_result, dstring* file_path);
-
 #endif
