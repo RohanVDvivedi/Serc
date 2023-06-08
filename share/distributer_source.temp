@@ -2,8 +2,12 @@
 
 #include<cutlery_stds.h>
 
+#include<strhsh.h>
+
 // forward declrations of all your controller functions
 //@controller_definitions
+
+#include<file_request_resolution_controller.h>
 
 static dstring const * const close_dstr = &get_dstring_pointing_to_literal_cstring("close");
 
@@ -29,7 +33,7 @@ int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 	if(!close_connection)
 	{
 		for_each_equals_in_dmap(entry_p, &(hrq->headers), &get_dstring_pointing_to_literal_cstring("connection"))
-			if(contains_dstring_RK(&(entry_p->value), &close_dstr) != INVALID_INDEX)
+			if(contains_dstring_RK(&(entry_p->value), close_dstr) != INVALID_INDEX)
 			{
 				close_connection = 1;
 				break;
