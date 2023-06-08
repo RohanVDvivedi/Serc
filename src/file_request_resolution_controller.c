@@ -48,7 +48,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		else if(S_ISREG(fstatus.st_mode))
 		{
 			int fd = open(abs_path_cstr, O_RDONLY);
-			if(fd != 0)
+			if(fd <= 0)
 				goto EXIT0;
 
 			// initialize response head
