@@ -1,3 +1,17 @@
+ Tasks picked
+
+* file request resolution controller
+ * logic to serve folders if requested
+ * implement range query for bytes in files
+ * write logic to automatically pick content-encoding from any of the supported accept encoding
+ * test logic to check if content-type is supported in the accept header before sending a file
+
+
+
+
+
+
+
  * use HTTPparser library and ConnMan's stream extension 
 
  * use client_set with ssl support for http clients
