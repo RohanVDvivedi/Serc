@@ -8,6 +8,7 @@
 
 #include<stacked_stream.h>
 #include<init_content_encoding_streams.h>
+#include<http_body_stream.h>
 
 #include<http_response.h>
 
