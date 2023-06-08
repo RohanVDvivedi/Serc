@@ -12,6 +12,6 @@
 
 // return 0, if same connection is usable
 // return 1, to close the connection
-int distribute(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache);
+int distribute(http_request* hrq, stream* strm, file_cache* server_file_cache);
 
 #endif
