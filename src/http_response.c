@@ -14,14 +14,6 @@ void setServerDefaultHeadersInResponse(HttpResponse* hrp)
 	insert_unique_in_dmap_cstr(&(hrp->headers), "server", "serc0");
 }
 
-void setSetCookie(HttpResponse* hr, dstring* SetCookie)
-{
-	const dstring SetCookieHeaderKey = get_dstring_pointing_to_literal_cstring("Set-Cookie");
-
-	if(SetCookie != NULL && !is_empty_dstring(SetCookie))
-		insert_duplicate_in_dmap(&(hr->headers), &SetCookieHeaderKey, SetCookie);
-}
-
 void redirectTo(int with_status, char* new_path, HttpResponse* hrp)
 {
 	// we need to make sure that the with_status provided by the user is 3xx
