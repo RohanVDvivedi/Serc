@@ -6,7 +6,11 @@
  * write logic to automatically pick content-encoding from any of the supported accept encoding
  * test logic to check if content-type is supported in the accept header before sending a file
 
+* add funcions to quickly initialize http request and response object in HTTPparser
 
+* distributer
+ * revamp python logic
+ * add default 404 handler case
 
 
 
