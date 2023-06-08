@@ -1,10 +1,6 @@
 #include<file_request_resolution_controller.h>
 
-#include<strhsh.h>
-
-char* get_content_type_from_file_extension(dstring* extension);
-
-int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, file_cache* server_file_cache, int* routing_resolved)
+int file_request_controller(HttpRequest* hrq, HttpResponse* hrp, server_global_params* sgp)
 {
 	if(hrq->method == GET && !is_empty_dstring(&(hrq->path)))
 	{
