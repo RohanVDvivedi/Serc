@@ -10,13 +10,15 @@
 #include<stddef.h>
 
 #include<stacked_stream.h>
+
 #include<init_content_encoding_streams.h>
 #include<http_body_stream.h>
-
 #include<http_response.h>
+#include<file_handling_util.h>
 
 int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {
+	print_http_request_head(hrq);
 	// return value
 	int close_connection = 0;
 
@@ -35,6 +37,8 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		expand_dstring(&abs_path, 1);
 		char* abs_path_cstr = get_byte_array_dstring(&abs_path);
 		abs_path_cstr[get_char_count_dstring(&abs_path)] = '\0';
+
+		dstring extension = get_extension_from_file_path(&abs_path);
 
 		// if we couldn't stat the path then quit
 		struct stat fstatus;
@@ -56,8 +60,12 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			init_http_response_head(&hrp);
 			hrp.status = 200;
 			hrp.version = hrq->version;
-			insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "gzip");
+			insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "identity"/*"deflate"*//*"gzip"*/);
 			insert_literal_cstrings_in_dmap(&(hrp.headers), "transfer-encoding", "chunked");
+			dstring mime_type = get_mimetype_from_file_extension(&extension);
+			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
+
+			print_http_response_head(&hrp);
 
 			// write http response head
 			if(-1 == serialize_http_response_head(strm, &hrp))
@@ -70,12 +78,13 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			initialize_stacked_stream(&sstrm);
 
 			stream* body_stream = malloc(sizeof(stream));
-			push_to_stacked_stream(&sstrm, body_stream, WRITE_STREAMS);
 			if(!initialize_writable_body_stream(body_stream, strm, &(hrp.headers)))
 			{
+				free(body_stream);
 				close_connection = 1;
 				goto EXIT4;
 			}
+			push_to_stacked_stream(&sstrm, body_stream, WRITE_STREAMS);
 
 			if(0 > initialize_writable_content_encoding_stream(&sstrm, &(hrp.headers)))
 			{
@@ -90,7 +99,10 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			char buffer[BUFFER_SIZE];
 			ssize_t bytes_read = 0;
 			while((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
-				write_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), buffer, bytes_read, &error);
+			{
+				size_t a = write_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), buffer, bytes_read, &error);
+				printf("%zu %zu <%.*s>\n", bytes_read, a, (int)bytes_read, buffer);
+			}
 
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
@@ -99,6 +111,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			{
 				stream* strm = get_top_of_stacked_stream(&sstrm, WRITE_STREAMS);
 				pop_from_stacked_stream(&sstrm, WRITE_STREAMS);
+				printf("popped %p\n", strm);
 				close_stream(strm, &error);
 				deinitialize_stream(strm);
 				free(strm);
