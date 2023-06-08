@@ -1,6 +1,6 @@
 #include<file_request_resolution_controller.h>
 
-int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp)
+int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {
 	/*if(hrq->method == GET && !is_empty_dstring(&(hrq->path)))
 	{
