@@ -41,7 +41,7 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {0};
-	init_dstring(&(sgp.ROOT_PATH), ROOT_PATH, strlen(ROOT_PATH));
+	init_dstring(&(sgp.root_path), ROOT_PATH, strlen(ROOT_PATH));
 
 	// start the server using https connection handler
 	comm_address cgp = new_comm_address_tcp_ipv4(NULL, PORT);
@@ -62,5 +62,5 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, char* SSL_KEYS_CERTS)
 		destroy_ssl_ctx(ssl_ctx);
 
 	// de init server global params
-	deinit_dstring(&(sgp.ROOT_PATH));
+	deinit_dstring(&(sgp.root_path));
 }
