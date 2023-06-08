@@ -310,7 +310,7 @@ for method in mydict:
 	case_string         			+= "\n\t\t}"
 case_string							+= "\n\t\tdefault :"
 case_string							+= "\n\t\t{"
-case_string							+= "\n\t\t\thrp->status = 404;"
+#case_string							+= "\n\t\t\thrp->status = 404;"
 case_string							+= "\n\t\t}"
 case_string             			+= "\n\t}\n"
 		
