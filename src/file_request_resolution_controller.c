@@ -132,5 +132,5 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 	}
 
 	EXIT0:;
-	return 0;
+	return close_connection;
 }
