@@ -1,5 +1,16 @@
 #include<file_request_resolution_controller.h>
 
+#include<fcntl.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<stddef.h>
+
+#include<stacked_stream.h>
+#include<init_content_encoding_streams.h>
+
+#include<http_response.h>
+
 int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {
 	// return value
@@ -40,7 +51,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			http_response_head hrp;
 			init_http_response_head(&hrp);
 			hrp.status = 200;
-			hrp.version = hrq.version;
+			hrp.version = hrq->version;
 			insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "gzip");
 			insert_literal_cstrings_in_dmap(&(hrp.headers), "transfer-encoding", "chunked");
 
@@ -48,7 +59,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			if(-1 == serialize_http_response_head(strm, &hrp))
 			{
 				close_connection = 1;
-				goto EXIT2:;
+				goto EXIT2;
 			}
 
 			stacked_stream sstrm;
@@ -89,13 +100,13 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				free(strm);
 			}
 
-			EXIT3:;
+			//EXIT3:;
 			deinitialize_stacked_stream(&sstrm);
 
 			EXIT2:;
 			deinit_http_response_head(&hrp);
 
-			EXIT1:;
+			//EXIT1:;
 			close(fd);
 		}
 		else
