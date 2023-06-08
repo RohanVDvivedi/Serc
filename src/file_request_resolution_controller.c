@@ -18,7 +18,6 @@
 
 int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {
-	print_http_request_head(hrq);
 	// return value
 	int close_connection = 0;
 
@@ -72,8 +71,6 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				insert_literal_cstrings_in_dmap(&(hrp.headers), "content-length", size_in_int);
 			}*/
 
-			print_http_response_head(&hrp);
-
 			// write http response head
 			if(-1 == serialize_http_response_head(strm, &hrp))
 			{
@@ -115,7 +112,6 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			{
 				stream* strm = get_top_of_stacked_stream(&sstrm, WRITE_STREAMS);
 				pop_from_stacked_stream(&sstrm, WRITE_STREAMS);
-				printf("popped %p\n", strm);
 				close_stream(strm, &error);
 				deinitialize_stream(strm);
 				free(strm);
