@@ -22,7 +22,7 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 			break;
 		}
 
-		if(1 == distribute(&hrq, strm, sgpp->server_file_cache))
+		if(1 == distribute(&hrq, strm, sgpp))
 		{
 			deinit_http_request(&hrq);
 			break;
@@ -37,6 +37,6 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 		}
 
 		// deinitialize http_request Object
-		deinitHttpRequest(&hrq);
+		deinit_http_request(&hrq);
 	}
 }
