@@ -32,10 +32,7 @@ int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 
 		// replace below logic once controller for 404 is setup
 		http_response_head hrp;
-		init_http_response_head(&hrp);
-		hrp.status = 404;
-		hrp.version = hrq->version;
-		insert_literal_cstrings_in_dmap(&(hrp.headers), "content-length", "0");
+		init_http_response_head_from_http_request_head(&hrp, hrq, 404, 0);
 		if(-1 == serialize_http_response_head(strm, &hrp))
 			close_connection = 1;
 		deinit_http_response_head(&hrp);
