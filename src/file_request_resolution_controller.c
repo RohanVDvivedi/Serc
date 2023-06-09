@@ -58,18 +58,9 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 			// initialize response head
 			http_response_head hrp;
-			init_http_response_head(&hrp);
-			hrp.status = 200;
-			hrp.version = hrq->version;
-			insert_literal_cstrings_in_dmap(&(hrp.headers), "content-encoding", "gzip");
-			insert_literal_cstrings_in_dmap(&(hrp.headers), "transfer-encoding", "chunked");
+			init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED);
 			dstring mime_type = get_mimetype_from_file_extension(&extension);
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
-			/*{
-				char size_in_int[32];
-				sprintf(size_in_int, "%zu", fstatus.st_size);
-				insert_literal_cstrings_in_dmap(&(hrp.headers), "content-length", size_in_int);
-			}*/
 
 			// write http response head
 			if(-1 == serialize_http_response_head(strm, &hrp))
