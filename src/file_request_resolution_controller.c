@@ -26,7 +26,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 	if(is_empty_dstring(&(sgp->root_path)) || is_empty_dstring(&(hrq->path)))
 		return close_connection;
 
-	if(hrq->method == GET && !is_empty_dstring(&(hrq->path)))
+	if((hrq->method == GET || hrq->method == HEAD) && !is_empty_dstring(&(hrq->path)))
 	{
 		// build absolute path
 		dstring abs_path = new_copy_dstring(&(sgp->root_path));
@@ -45,11 +45,12 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		if(stat(abs_path_cstr, &fstatus) != 0)
 			goto EXIT0;
 
-		if(S_ISDIR(fstatus.st_mode))
+		if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
 		{
 			goto EXIT0;
+			// TODO : on a get on a directory return directory only if serve directory is set
 		}
-		else if(S_ISREG(fstatus.st_mode))
+		else if(S_ISREG(fstatus.st_mode) && hrq->method == GET)
 		{
 			*routing_resolved = 1;
 
@@ -117,6 +118,20 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 			//EXIT1:;
 			close(fd);
+		}
+		else if(S_ISREG(fstatus.st_mode) && hrq->method == HEAD)
+		{
+			// initialize response head
+			http_response_head hrp;
+			init_http_response_head_from_http_request_head(&hrp, hrq, 200, fstatus.st_size);
+			dstring mime_type = get_mimetype_from_file_extension(&extension);
+			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
+
+			// write http response head
+			if(-1 == serialize_http_response_head(strm, &hrp))
+				close_connection = 1;
+
+			deinit_http_response_head(&hrp);
 		}
 		else
 			goto EXIT0;
