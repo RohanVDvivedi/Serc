@@ -16,6 +16,7 @@
 #include<http_body_stream.h>
 #include<http_response.h>
 #include<file_handling_util.h>
+#include<http_header_util.h>
 
 int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {
@@ -39,15 +40,19 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		abs_path_cstr[get_char_count_dstring(&abs_path)] = '\0';
 
 		dstring extension = get_extension_from_file_path(&abs_path);
+		dstring mime_type = get_mimetype_from_file_extension(&extension);
+
+		if(!check_content_type_acceptable(&mime_type, hrq))
+			goto EXIT0_1;
 
 		// if we couldn't stat the path then quit
 		struct stat fstatus;
 		if(stat(abs_path_cstr, &fstatus) != 0)
-			goto EXIT0;
+			goto EXIT0_1;
 
 		if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
 		{
-			goto EXIT0;
+			goto EXIT0_1;
 			// TODO : on a get on a directory return directory only if serve directory is set
 		}
 		else if(S_ISREG(fstatus.st_mode) && hrq->method == GET)
@@ -56,12 +61,11 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 			int fd = open(abs_path_cstr, O_RDONLY);
 			if(fd <= 0)
-				goto EXIT0;
+				goto EXIT0_1;
 
 			// initialize response head
 			http_response_head hrp;
 			init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED);
-			dstring mime_type = get_mimetype_from_file_extension(&extension);
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
 
 			// write http response head
@@ -134,9 +138,12 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			deinit_http_response_head(&hrp);
 		}
 		else
-			goto EXIT0;
+			goto EXIT0_1;
+
+		EXIT0_1:;
+		deinit_dstring(&abs_path);
 	}
 
-	EXIT0:;
+	//EXIT0:;
 	return close_connection;
 }
