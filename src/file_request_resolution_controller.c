@@ -25,7 +25,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 	// both of root path and the request path must be present to resolve the file
 	if(is_empty_dstring(&(sgp->root_path)) || is_empty_dstring(&(hrq->path)))
-		return close_connection;
+		goto EXIT0;
 
 	if((hrq->method == GET || hrq->method == HEAD) && !is_empty_dstring(&(hrq->path)))
 	{
@@ -42,15 +42,26 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		dstring extension = get_extension_from_file_path(&abs_path);
 		dstring mime_type = get_mimetype_from_file_extension(&extension);
 
-		if(!check_content_type_acceptable(&mime_type, hrq))
-			goto EXIT0_1;
-
 		// if we couldn't stat the path then quit
 		struct stat fstatus;
 		if(stat(abs_path_cstr, &fstatus) != 0)
 			goto EXIT0_1;
 
-		if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
+		if(!check_content_type_acceptable(&mime_type, hrq))
+		{
+			// this just implies that routing was resolved
+			*routing_resolved = 1;
+
+			// respond with Not Acceptable
+			http_response_head hrp;
+			init_http_response_head_from_http_request_head(&hrp, hrq, 406, 0);
+			if(-1 == serialize_http_response_head(strm, &hrp))
+				close_connection = 1;
+			deinit_http_response_head(&hrp);
+
+			goto EXIT0_1;
+		}
+		else if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
 		{
 			goto EXIT0_1;
 			// TODO : on a get on a directory return directory only if serve directory is set
@@ -144,6 +155,6 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		deinit_dstring(&abs_path);
 	}
 
-	//EXIT0:;
+	EXIT0:;
 	return close_connection;
 }
