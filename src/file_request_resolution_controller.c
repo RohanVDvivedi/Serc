@@ -109,8 +109,12 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			struct dirent* direntp;
 			while((direntp = readdir(dirp)) != NULL)
 			{
-				write_to_stream_formatted(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error, 
-				"<a href=\"." printf_dstring_format "/%s\">%s</a><br>", printf_dstring_params(&(hrq->path)), direntp->d_name, direntp->d_name);
+				if(0 == compare_dstring(&(hrq->path), &get_dstring_pointing_to_literal_cstring("/")))
+					write_to_stream_formatted(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error, 
+					"<a href=\"./%s\">%s</a><br>", direntp->d_name, direntp->d_name);
+				else
+					write_to_stream_formatted(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error, 
+					"<a href=\"." printf_dstring_format "/%s\">%s</a><br>", printf_dstring_params(&(hrq->path)), direntp->d_name, direntp->d_name);
 				if(error)
 					goto EXIT_D_4;
 			}
