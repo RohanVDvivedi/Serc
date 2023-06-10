@@ -63,16 +63,31 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		}
 		else if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
 		{
-			goto EXIT0_1;
-			// TODO : on a get on a directory return directory only if serve directory is set
+			// do not serve the directory contents if the serve_dirs is not set
+			if(!sgp->serve_dirs)
+				goto EXIT0_1;
+
+			*routing_resolved = 1;
+
+			// respond with Not Acceptable
+			http_response_head hrp;
+			init_http_response_head_from_http_request_head(&hrp, hrq, 200, 0);
+			if(-1 == serialize_http_response_head(strm, &hrp))
+			{
+				close_connection = 1;
+				goto EXIT_D_0;
+			}
+
+			EXIT_D_0:;
+			deinit_http_response_head(&hrp);
 		}
 		else if(S_ISREG(fstatus.st_mode) && hrq->method == GET)
 		{
 			*routing_resolved = 1;
 
 			int fd = open(abs_path_cstr, O_RDONLY);
-			if(fd <= 0)
-				goto EXIT0_1;
+			if(fd < 0)
+				goto EXIT_F_0;
 
 			// initialize response head
 			http_response_head hrp;
@@ -83,7 +98,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			if(-1 == serialize_http_response_head(strm, &hrp))
 			{
 				close_connection = 1;
-				goto EXIT2;
+				goto EXIT_F_2;
 			}
 
 			stacked_stream sstrm;
@@ -94,14 +109,14 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			{
 				free(body_stream);
 				close_connection = 1;
-				goto EXIT4;
+				goto EXIT_F_4;
 			}
 			push_to_stacked_stream(&sstrm, body_stream, WRITE_STREAMS);
 
 			if(0 > initialize_writable_content_encoding_stream(&sstrm, &(hrp.headers)))
 			{
 				close_connection = 1;
-				goto EXIT4;
+				goto EXIT_F_4;
 			}
 
 			int error = 0;
@@ -115,7 +130,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
-			EXIT4:;
+			EXIT_F_4:;
 			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
 			{
 				stream* strm = get_top_of_stacked_stream(&sstrm, WRITE_STREAMS);
@@ -125,14 +140,16 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				free(strm);
 			}
 
-			//EXIT3:;
+			//EXIT_F_3:;
 			deinitialize_stacked_stream(&sstrm);
 
-			EXIT2:;
+			EXIT_F_2:;
 			deinit_http_response_head(&hrp);
 
-			//EXIT1:;
+			//EXIT_F_1:;
 			close(fd);
+
+			EXIT_F_0:;
 		}
 		else if(S_ISREG(fstatus.st_mode) && hrq->method == HEAD)
 		{
