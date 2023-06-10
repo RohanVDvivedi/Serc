@@ -68,7 +68,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 			// respond with Not Acceptable
 			http_response_head hrp;
-			init_http_response_head_from_http_request_head(&hrp, hrq, 200, 0);
+			init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED);
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
 			if(-1 == serialize_http_response_head(strm, &hrp))
 			{
@@ -103,7 +103,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 					)
 			, &error);
 			if(error)
-					goto EXIT_D_4;
+				goto EXIT_D_4;
 
 			// all directory contents as a tags
 			struct dirent* direntp;
@@ -122,7 +122,9 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 					)
 			, &error);
 			if(error)
-					goto EXIT_D_4;
+				goto EXIT_D_4;
+
+			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
 			EXIT_D_4:;
 			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
