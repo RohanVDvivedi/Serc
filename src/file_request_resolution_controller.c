@@ -78,6 +78,42 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				goto EXIT_D_0;
 			}
 
+			stacked_stream sstrm;
+			initialize_stacked_stream(&sstrm);
+
+			stream* body_stream = malloc(sizeof(stream));
+			if(!initialize_writable_body_stream(body_stream, strm, &(hrp.headers)))
+			{
+				free(body_stream);
+				close_connection = 1;
+				goto EXIT_D_4;
+			}
+			push_to_stacked_stream(&sstrm, body_stream, WRITE_STREAMS);
+
+			if(0 > initialize_writable_content_encoding_stream(&sstrm, &(hrp.headers)))
+			{
+				close_connection = 1;
+				goto EXIT_D_4;
+			}
+
+			EXIT_D_4:;
+			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
+			{
+				stream* strm = get_top_of_stacked_stream(&sstrm, WRITE_STREAMS);
+				pop_from_stacked_stream(&sstrm, WRITE_STREAMS);
+				close_stream(strm, &error);
+				deinitialize_stream(strm);
+				free(strm);
+			}
+
+			// write all contents of the directory to the sstrm's top
+
+			//EXIT_D_3:;
+			deinitialize_stacked_stream(&sstrm);
+
+			EXIT_D_2:;
+			deinit_http_response_head(&hrp);
+
 			EXIT_D_0:;
 			deinit_http_response_head(&hrp);
 		}
