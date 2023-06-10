@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 			sscanf(argv[i], "--port=%d", &port);
 		else if(starts_with("--root=", argv[i]))
 			root_path = argv[i] + strlen("--root=");
-		else if(strcmp("--serve-dirs", argv[i]))
+		else if(0 == strcmp("--serve-dirs", argv[i]))
 			serve_dirs = 1;
 		else if(starts_with("--ssl_cert_keys=", argv[i]))
 			ssl_keys_certs_prefix = argv[i] + strlen("--ssl_cert_keys=");
