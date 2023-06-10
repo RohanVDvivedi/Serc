@@ -69,13 +69,17 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 
 			*routing_resolved = 1;
 
+			DIR* dirp = opendir(dirname);
+			if(dirp == NULL)
+				goto EXIT_D_0;
+
 			// respond with Not Acceptable
 			http_response_head hrp;
 			init_http_response_head_from_http_request_head(&hrp, hrq, 200, 0);
 			if(-1 == serialize_http_response_head(strm, &hrp))
 			{
 				close_connection = 1;
-				goto EXIT_D_0;
+				goto EXIT_D_2;
 			}
 
 			stacked_stream sstrm;
@@ -96,6 +100,8 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				goto EXIT_D_4;
 			}
 
+			// write all contents of the directory to the sstrm's top
+
 			EXIT_D_4:;
 			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
 			{
@@ -106,16 +112,16 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				free(strm);
 			}
 
-			// write all contents of the directory to the sstrm's top
-
 			//EXIT_D_3:;
 			deinitialize_stacked_stream(&sstrm);
 
 			EXIT_D_2:;
 			deinit_http_response_head(&hrp);
 
+			EXIT_D_1:;
+			closedir(dirp);
+
 			EXIT_D_0:;
-			deinit_http_response_head(&hrp);
 		}
 		else if(S_ISREG(fstatus.st_mode) && hrq->method == GET)
 		{
