@@ -15,6 +15,7 @@ int main(int argc, char** argv)
 {
 	// default paths to use
 	char* root_path = ".";
+	int serve_dirs = 0;
 	char* ssl_keys_certs_prefix = NULL;
 
 	int port = -1;
@@ -32,6 +33,8 @@ int main(int argc, char** argv)
 			sscanf(argv[i], "--port=%d", &port);
 		else if(starts_with("--root=", argv[i]))
 			root_path = argv[i] + strlen("--root=");
+		else if(strcmp("--serve_dirs", argv[i]))
+			serve_dirs = 1;
 		else if(starts_with("--ssl_cert_keys=", argv[i]))
 			ssl_keys_certs_prefix = argv[i] + strlen("--ssl_cert_keys=");
 	}
@@ -52,7 +55,7 @@ int main(int argc, char** argv)
 		printf("ssl certficate (and public key) found at %s.crt and private key %s.key\n", ssl_keys_certs_prefix, ssl_keys_certs_prefix);
 
 	// start the server
-	http_server_run(port, root_path, ssl_keys_certs_prefix);
+	http_server_run(port, root_path, serve_dirs, ssl_keys_certs_prefix);
 
 	return 0;
 }
