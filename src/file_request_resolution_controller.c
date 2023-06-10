@@ -9,8 +9,10 @@
 #include<stdio.h>
 #include<stddef.h>
 #include<stdint.h>
+#include<dirent.h>
 
 #include<stacked_stream.h>
+#include<stream_util.h>
 
 #include<init_content_encoding_streams.h>
 #include<http_body_stream.h>
@@ -47,35 +49,27 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 		if(stat(abs_path_cstr, &fstatus) != 0)
 			goto EXIT0_1;
 
-		if(!check_content_type_acceptable(&mime_type, hrq))
-		{
-			// this just implies that routing was resolved
-			*routing_resolved = 1;
-
-			// respond with Not Acceptable
-			http_response_head hrp;
-			init_http_response_head_from_http_request_head(&hrp, hrq, 406, 0);
-			if(-1 == serialize_http_response_head(strm, &hrp))
-				close_connection = 1;
-			deinit_http_response_head(&hrp);
-
-			goto EXIT0_1;
-		}
-		else if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
+		if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
 		{
 			// do not serve the directory contents if the serve_dirs is not set
 			if(!sgp->serve_dirs)
 				goto EXIT0_1;
 
+			// we will serve the directory contents as text/html file
+			dstring mime_type = get_dstring_pointing_to_literal_cstring("text/html");
+			if(!check_content_type_acceptable(&mime_type, hrq))
+				goto EXIT0_1;
+
 			*routing_resolved = 1;
 
-			DIR* dirp = opendir(dirname);
+			DIR* dirp = opendir(abs_path_cstr);
 			if(dirp == NULL)
 				goto EXIT_D_0;
 
 			// respond with Not Acceptable
 			http_response_head hrp;
 			init_http_response_head_from_http_request_head(&hrp, hrq, 200, 0);
+			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
 			if(-1 == serialize_http_response_head(strm, &hrp))
 			{
 				close_connection = 1;
@@ -100,7 +94,35 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 				goto EXIT_D_4;
 			}
 
-			// write all contents of the directory to the sstrm's top
+			int error = 0;
+
+			// write html prefix
+			write_dstring_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS),
+				&get_dstring_pointing_to_literal_cstring(
+					"<html><head></head><body>"
+					)
+			, &error);
+			if(error)
+					goto EXIT_D_4;
+
+			// all directory contents as a tags
+			struct dirent* direntp;
+			while((direntp = readdir(dirp)) != NULL)
+			{
+				write_to_stream_formatted(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error, 
+				"<a href=\"" printf_dstring_format "/%s\">%s</a> \n", printf_dstring_params(&(hrq->path)), direntp->d_name, direntp->d_name);
+				if(error)
+					goto EXIT_D_4;
+			}
+
+			// write html suffix
+			write_dstring_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS),
+				&get_dstring_pointing_to_literal_cstring(
+					"</body></html>"
+					)
+			, &error);
+			if(error)
+					goto EXIT_D_4;
 
 			EXIT_D_4:;
 			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
@@ -118,10 +140,24 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			EXIT_D_2:;
 			deinit_http_response_head(&hrp);
 
-			EXIT_D_1:;
+			//EXIT_D_1:;
 			closedir(dirp);
 
 			EXIT_D_0:;
+		}
+		else if(!check_content_type_acceptable(&mime_type, hrq))
+		{
+			// this just implies that routing was resolved
+			*routing_resolved = 1;
+
+			// respond with Not Acceptable
+			http_response_head hrp;
+			init_http_response_head_from_http_request_head(&hrp, hrq, 406, 0);
+			if(-1 == serialize_http_response_head(strm, &hrp))
+				close_connection = 1;
+			deinit_http_response_head(&hrp);
+
+			goto EXIT0_1;
 		}
 		else if(S_ISREG(fstatus.st_mode) && hrq->method == GET)
 		{
