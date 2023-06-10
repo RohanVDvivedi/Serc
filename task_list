@@ -1,7 +1,6 @@
  Tasks picked
 
 * file request resolution controller
- * logic to serve folders if requested
  * implement range query for bytes in files
 
 * distributer
