@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
 	int port = -1;
 
-	if(argc > 4)
+	if(argc > 5)
 		return -1;
 
 	// read command line options 
