@@ -13,14 +13,14 @@ routing file must contain be a json array
 example. : 
 [
 	{
-		"controller"				:	"first_controller",
-		"methods"					:	["GET","POST"],
-		"paths"						:	["/index/get_post"]
+		"controller"	:	"first_controller",
+		"methods"		:	["GET","POST"],
+		"paths"			:	["/index/get_post"]
 	},
 	{
+		"controller"	:	"first_controller",
 		"methods"		:	["DELETE","POST"],
-		"paths"			:	["/index/delete_post"],
-		"controller"	:	"first_controller"
+		"paths"			:	["/index/delete_post"]
 	},
 	{
 		"controller"	:	"wild_controller",
