@@ -15,23 +15,12 @@ example. :
 	{
 		"controller"				:	"first_controller",
 		"methods"					:	["GET","POST"],
-		"paths"						:	["/index/get_post"],
-		"set_response_headers"		:	{
-			"custom_api_specific_header"	:	"custom_header_value"
-		}
+		"paths"						:	["/index/get_post"]
 	},
 	{
 		"methods"		:	["DELETE","POST"],
 		"paths"			:	["/index/delete_post"],
 		"controller"	:	"first_controller"
-	},
-	{
-		"methods"		:	["GET"],
-		"paths"			:	["/doc/go_google"],
-		"redirect_to"	:	{
-			"status"	:	303,
-			"url"		:	"http://www.google.com"
-		}
 	},
 	{
 		"controller"	:	"wild_controller",
