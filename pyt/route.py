@@ -12,18 +12,36 @@ example. :
 [
 	{
 		"controller"	:	"first_controller",
+		"before"		:	["call_before_controller"],
+		"after"			:	["call_after_controller"],
 		"methods"		:	["GET","POST"],
 		"paths"			:	["/index/get_post"]
 	},
 	{
 		"controller"	:	"first_controller",
+		"before"		:	"call_before_controller",
+		"after"			:	"call_after_controller",
 		"methods"		:	["DELETE","POST"],
 		"paths"			:	["/index/delete_post"]
 	},
 	{
-		"controller"	:	"wild_controller",
-		"methods"		:	["*"],
-		"paths"			:	["/wild/*"]
+		"controller"	:	"redirect_to_google",
+		"methods"		:	"GET",
+		"paths"			:	["/doc/go_google"]
+	},
+	{
+		"controller"	:	"wildcard_controller",
+		"before"		:	["call_before_controller"],
+		"after"			:	["call_after_controller"],
+		"methods"		:	"*",
+		"paths"			:	["/wild/*/personal/*/hello/*", "/all/*"]
+	},
+	{
+		"controller"	:	"cookie_setup_controller",
+		"before"		:	["call_before_controller"],
+		"after"			:	["call_after_controller"],
+		"methods"		:	"*",
+		"paths"			:	["/cookie_setup"]
 	}
 ]
 
