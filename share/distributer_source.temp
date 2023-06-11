@@ -28,8 +28,6 @@ int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
 
 	if(routing_resolved == 0)
 	{
-//@Controller404
-
 		// replace below logic once controller for 404 is setup
 		http_response_head hrp;
 		init_http_response_head_from_http_request_head(&hrp, hrq, 404, 0);
