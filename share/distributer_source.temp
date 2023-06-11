@@ -9,7 +9,6 @@
 // forward declarations of all your controller functions
 //@controller_definitions
 
-
 #include<file_request_resolution_controller.h>
 
 static dstring const * const close_dstr = &get_dstring_pointing_to_literal_cstring("close");

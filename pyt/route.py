@@ -295,7 +295,7 @@ case_string             			+= "\n\t}\n"
 # below for loop builds forward declations for all the controllers that you will be using in your application
 declarations = ""
 for function_name in functions_declarations :
-	declarations += "\nint " + function_name + "(HttpRequest* hrq, stream* raw_strm, const void* server_params);"
+	declarations += "int " + function_name + "(const http_request_head* hrq, stream* strm, const void* server_params);\n"
 
 
 
