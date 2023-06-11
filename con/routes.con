@@ -1,3 +1,22 @@
 [
-
+	{
+		"controller"				:	"first_controller",
+		"methods"					:	["GET","POST"],
+		"paths"						:	["/index/get_post"]
+	},
+	{
+		"controller"	:	"first_controller",
+		"methods"		:	["DELETE","POST"],
+		"paths"			:	["/index/delete_post"]
+	},
+	{
+		"controller"	:	"wildcard_controller",
+		"methods"		:	"*",
+		"paths"			:	["/wild/*/personal/*/hello/*", "/all/*"]
+	},
+	{
+		"controller"	:	"cookie_setup_controller",
+		"methods"		:	"*",
+		"paths"			:	["/cookie_setup"]
+	}
 ]
