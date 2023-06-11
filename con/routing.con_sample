@@ -4,7 +4,7 @@
 		"before"		:	["call_before_controller"],
 		"after"			:	["call_after_controller"],
 		"methods"		:	["GET","POST"],
-		"paths"			:	["/index/get_post"],
+		"paths"			:	["/index/get_post"]
 	},
 	{
 		"controller"	:	"first_controller",
@@ -14,7 +14,7 @@
 		"paths"			:	["/index/delete_post"]
 	},
 	{
-		"controller"	:	"redirect_to_google"
+		"controller"	:	"redirect_to_google",
 		"methods"		:	"GET",
 		"paths"			:	["/doc/go_google"]
 	},
