@@ -5,8 +5,6 @@
 command is used as below
 
 python3 pyt/route.py <routing_file_0> <routing_file_1> <routing_file_2> <routing_file_3> ...
-do not add con to the end of the routing file name,
-routing files all should be present in the con folder only,
 routing file must have a .con extension at the end,
 routing file must contain be a json array
 
@@ -96,7 +94,7 @@ supported_methods = ["GET", "POST", "PUT", "DELETE",
 # simply using the latter file as the higher priority
 mydict = {}
 
-# this is the array containting the names of all the controller functions in the system
+# this is the set containting the names of all the controller functions in the system
 functions_declarations = set()
 
 # loop throught all the routing files and collect all paths
@@ -109,7 +107,7 @@ for routing_file in command_line_args:
 	# read the file that contains route configurations
 	routing_config_file = open(routing_file, "r")
 
-	# since the file is in json use json.loads to use it as onject
+	# since the file is in json use json.loads to use it as object
 	routes = json.loads(routing_config_file.read())
 
 	routing_config_file.close()
