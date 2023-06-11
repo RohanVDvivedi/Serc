@@ -131,14 +131,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
 			EXIT_D_4:;
-			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
-			{
-				stream* strm = get_top_of_stacked_stream(&sstrm, WRITE_STREAMS);
-				pop_from_stacked_stream(&sstrm, WRITE_STREAMS);
-				close_stream(strm, &error);
-				deinitialize_stream(strm);
-				free(strm);
-			}
+			close_deinitialize_free_all_from_stacked_stream(&sstrm, WRITE_STREAMS);
 
 			//EXIT_D_3:;
 			deinitialize_stacked_stream(&sstrm);
@@ -215,14 +208,7 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
 			EXIT_F_4:;
-			while(!is_empty_stacked_stream(&sstrm, WRITE_STREAMS))
-			{
-				stream* strm = get_top_of_stacked_stream(&sstrm, WRITE_STREAMS);
-				pop_from_stacked_stream(&sstrm, WRITE_STREAMS);
-				close_stream(strm, &error);
-				deinitialize_stream(strm);
-				free(strm);
-			}
+			close_deinitialize_free_all_from_stacked_stream(&sstrm, WRITE_STREAMS);
 
 			//EXIT_F_3:;
 			deinitialize_stacked_stream(&sstrm);
