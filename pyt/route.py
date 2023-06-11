@@ -181,7 +181,7 @@ for routing_file in command_line_args:
 # below for loop builds the switch case statements for routing the request to specified controller
 
 """
-outer most routing part is switch by HttpMethodType
+outer most routing part is switch by http_method
 after that we route by the hash value of path
 but note that any 2 strings can and may have same hash value
 so for this we compare all the strings having the same hash value
