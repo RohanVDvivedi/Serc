@@ -216,34 +216,19 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
-		int match_path_with_path_regex(const dstring* path, const dstring* path_regex);
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
 		case_string					+= "\n\t\t\t\t\tunsigned int last_wild_card_at = 0;"
 		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
-			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			path_parts = path.split("*")
+			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method " + method
 			if first_wild_card == True :
 				case_string			+= "\n\t\t\t\t\t"
 				first_wild_card = False
 			else :
 				case_string 		+= "\n\t\t\t\t\telse "
-			case_string				+= "if( (" + str(len("".join(path_parts))) + " < get_char_count_dstring(&(hrq->path)))"
-			previous_path_part = None
-			path_part_iter = 0
-			for path_part in path_parts :
-				if path_part != "" :
-					if path_part_iter == 0 :
-						from_str = "&(hrq->path)"
-					else :
-						from_str = "&get_literal_dstring(get_byte_array_dstring(&(hrq->path)) + last_wild_card_at + " + str(len(previous_path_part)) + ", get_char_count_dstring(&(hrq->path)) - last_wild_card_at - " + str(len(previous_path_part)) + " )"
-						case_string += " && (last_wild_card_at + " + str(len(previous_path_part)) + " < get_char_count_dstring(&(hrq->path)))"
-					case_string		+= " && ((last_wild_card_at = contains_dstring_RK(" + from_str + " , &get_literal_cstring(\"" + path_part + "\"))) != INVALID_INDEX)"
-					path_part_iter += 1
-					previous_path_part = path_part
-			case_string				+= " )"
+			case_string				+= "if( match_path_with_path_regex(&(hrq->path), &get_dstring_pointing_to_literal_cstring(\"" + path + "\") ) )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('before' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['before'] is not None :
 				for before in mydict[method]["wild_card_paths"][path]['before'] :
