@@ -198,35 +198,25 @@ for method in mydict:
 		# wild card paths will be handled by the default case
 		if hashval == "wild_card_paths" :
 			continue
-		case_string     			+= "\n\t\t\t\tcase " + str(hashval) + " :"
-		case_string     			+= "\n\t\t\t\t{"
+		case_string					+= "\n\t\t\t\tcase " + str(hashval) + " :"
+		case_string					+= "\n\t\t\t\t{"
 		for path in mydict[method][hashval]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method = " + method
-			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(&(hrq->path), &get_literal_cstring(\"" + path + "\")) )"
+			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(&(hrq->path), &get_dstring_pointing_to_literal_cstring(\"" + path + "\")) )"
 			case_string 			+= "\n\t\t\t\t\t{"
-			if ('set_response_headers' in mydict[method][hashval][path]) and mydict[method][hashval][path]['set_response_headers'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
-				for header_key, header_value in mydict[method][hashval][path]['set_response_headers'].items() :
-					case_string 	+= "\n\t\t\t\t\t\tinsert_unique_in_dmap_cstr(&(hrp->headers),\"" + header_key + "\", \"" + header_value + "\");"
+			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 			if ('before' in mydict[method][hashval][path]) and mydict[method][hashval][path]['before'] is not None :
 				for before in mydict[method][hashval][path]['before'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + before + "(hrq, hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection ||= " + before + "(hrq, strm, sgp->server_params);"
 			if ('controller' in mydict[method][hashval][path]) and mydict[method][hashval][path]['controller'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection |= " + mydict[method][hashval][path]['controller'] + "(hrq, hrp);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection ||= " + mydict[method][hashval][path]['controller'] + "(hrq, strm, sgp->server_params);"
 			if ('after' in mydict[method][hashval][path]) and mydict[method][hashval][path]['after'] is not None :
 				for after in mydict[method][hashval][path]['after'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + after + "(hrq, hrp);"
-			if ('redirect_to' in mydict[method][hashval][path]) and mydict[method][hashval][path]['redirect_to'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-				status = -1
-				if ('with_status' in mydict[method][hashval][path]['redirect_to']) :
-					status = mydict[method][hashval][path]['redirect_to']['with_status']
-				case_string 		+= "\n\t\t\t\t\t\tredirectTo(" + str(status) + ", \"" + mydict[method][hashval][path]['redirect_to']['url'] + "\", hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection ||= " + after + "(hrq, strm, sgp->server_params);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
+		int match_path_with_path_regex(const dstring* path, const dstring* path_regex);
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
@@ -255,31 +245,15 @@ for method in mydict:
 					previous_path_part = path_part
 			case_string				+= " )"
 			case_string 			+= "\n\t\t\t\t\t{"
-			if ('set_response_headers' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['set_response_headers'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\t// now here we add headers to the response, that we have to send"
-				for header_key, header_value in mydict[method]["wild_card_paths"][path]['set_response_headers'].items() :
-					case_string 	+= "\n\t\t\t\t\t\tinsert_unique_in_dmap_cstr(&(hrp->headers),\"" + header_key + "\", \"" + header_value + "\");"
 			if ('before' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['before'] is not None :
 				for before in mydict[method]["wild_card_paths"][path]['before'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + before + "(hrq, hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + before + "(hrq, strm, sgp->server_params);"
 			if ('controller' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['controller'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-				case_string 		+= "\n\t\t\t\t\t\thrp->status = 200;"
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection |= " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, hrp);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection |= " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, strm, sgp->server_params);"
 			if ('after' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['after'] is not None :
 				for after in mydict[method]["wild_card_paths"][path]['after'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + after + "(hrq, hrp);"
-			if ('redirect_to' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['redirect_to'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-				status = -1
-				if ('with_status' in mydict[method]["wild_card_paths"][path]['redirect_to']) :
-					status = mydict[method]["wild_card_paths"][path]['redirect_to']['with_status']
-				case_string 		+= "\n\t\t\t\t\t\tredirectTo(" + str(status) + ", \"" + mydict[method]["wild_card_paths"][path]['redirect_to']['url'] + "\", hrp);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + after + "(hrq, strm, sgp->server_params);"
 			case_string 			+= "\n\t\t\t\t\t}"
-		case_string					+= "\n\t\t\t\t\telse"
-		case_string					+= "\n\t\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\t\thrp->status = 404;"
-		case_string					+= "\n\t\t\t\t\t}"
 		case_string					+= "\n\t\t\t\t\tbreak;"
 		case_string					+= "\n\t\t\t\t}"
 	case_string         			+= "\n\t\t\t}"
@@ -287,7 +261,7 @@ for method in mydict:
 	case_string         			+= "\n\t\t}"
 case_string							+= "\n\t\tdefault :"
 case_string							+= "\n\t\t{"
-#case_string							+= "\n\t\t\thrp->status = 404;"
+case_string							+= "\n\t\t\tbreak;"
 case_string							+= "\n\t\t}"
 case_string             			+= "\n\t}\n"
 		
