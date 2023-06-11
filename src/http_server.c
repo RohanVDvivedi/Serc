@@ -37,12 +37,13 @@ static SSL_CTX* create_server_ssl_ctx(char* SSL_KEYS_CERTS)
 	return ssl_ctx;
 }
 
-void http_server_run(uint16_t PORT, char* ROOT_PATH, int SERVE_DIRS, char* SSL_KEYS_CERTS)
+void http_server_run(uint16_t PORT, char* ROOT_PATH, int SERVE_DIRS, char* SSL_KEYS_CERTS, const void* server_param)
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {0};
 	init_dstring(&(sgp.root_path), ROOT_PATH, strlen(ROOT_PATH));
 	sgp.serve_dirs = SERVE_DIRS;
+	sgp.server_param = server_param;
 
 	// start the server using https connection handler
 	comm_address cgp = new_comm_address_tcp_ipv4(NULL, PORT);

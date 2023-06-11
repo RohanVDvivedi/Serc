@@ -11,6 +11,9 @@ struct server_global_params
 
 	// set this value if you want to serve directories at the root path
 	int serve_dirs;
+
+	// this is a common server param that will be passed to all your controllers
+	const void* server_param;
 };
 
 #endif
