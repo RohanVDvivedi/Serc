@@ -20,7 +20,7 @@
 #include<file_handling_util.h>
 #include<http_header_util.h>
 
-int file_request_controller(http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
+int file_request_controller(const http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {
 	// return value
 	int close_connection = 0;

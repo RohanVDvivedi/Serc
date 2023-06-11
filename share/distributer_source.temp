@@ -14,7 +14,7 @@
 
 static dstring const * const close_dstr = &get_dstring_pointing_to_literal_cstring("close");
 
-int distribute(http_request_head* hrq, stream* strm, server_global_params* sgp)
+int distribute(const http_request_head* hrq, stream* strm, server_global_params* sgp)
 {
 	unsigned long long int PATH_HASH = get_hash_dstring(&(hrq->path));
 
