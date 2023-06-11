@@ -4,6 +4,7 @@
  * implement range query for bytes in files
 
 * distributer
+ * discard "redirect to" and "set response headers" features
  * revamp python logic
  * pass stream and parsed http request to handler functions
  * add default 404 handler case

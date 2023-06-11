@@ -2,31 +2,17 @@
 	{
 		"controller"				:	"first_controller",
 		"methods"					:	["GET","POST"],
-		"paths"						:	["/index/get_post"],
-		"set_response_headers"		:	{
-			"custom_api_specific_header"	:	"custom_header_value"
-		}
+		"paths"						:	["/index/get_post"]
 	},
 	{
+		"controller"	:	"first_controller",
 		"methods"		:	["DELETE","POST"],
-		"paths"			:	["/index/delete_post"],
-		"controller"	:	"first_controller"
-	},
-	{
-		"methods"		:	["GET"],
-		"paths"			:	["/doc/go_google"],
-		"redirect_to"	:	{
-			"status"	:	303,
-			"url"		:	"http://www.google.com"
-		}
+		"paths"			:	["/index/delete_post"]
 	},
 	{
 		"controller"	:	"wildcard_controller",
 		"methods"		:	"*",
-		"paths"			:	["/wild/*/personal/*/hello/*", "/all/*"],
-		"set_response_headers"		:	{
-			"is_wild_controller"	:	"true"
-		}
+		"paths"			:	["/wild/*/personal/*/hello/*", "/all/*"]
 	},
 	{
 		"controller"	:	"cookie_setup_controller",
