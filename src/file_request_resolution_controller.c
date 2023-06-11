@@ -79,19 +79,10 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			stacked_stream sstrm;
 			initialize_stacked_stream(&sstrm);
 
-			stream* body_stream = malloc(sizeof(stream));
-			if(!initialize_writable_body_stream(body_stream, strm, &(hrp.headers)))
-			{
-				free(body_stream);
-				close_connection = 1;
-				goto EXIT_D_4;
-			}
-			push_to_stacked_stream(&sstrm, body_stream, WRITE_STREAMS);
-
-			if(0 > initialize_writable_content_encoding_stream(&sstrm, &(hrp.headers)))
+			if(0 > intialize_http_body_and_encoding_streams_for_writing(&sstrm, strm, &(hrp.headers)))
 			{
 				close_connection = 1;
-				goto EXIT_D_4;
+				goto EXIT_D_3;
 			}
 
 			int error = 0;
@@ -103,7 +94,10 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 					)
 			, &error);
 			if(error)
+			{
+				close_connection = 1;
 				goto EXIT_D_4;
+			}
 
 			// all directory contents as a tags
 			struct dirent* direntp;
@@ -116,7 +110,10 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 					write_to_stream_formatted(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error, 
 					"<a href=\"." printf_dstring_format "/%s\">%s</a><br>", printf_dstring_params(&(hrq->path)), direntp->d_name, direntp->d_name);
 				if(error)
+				{
+					close_connection = 1;
 					goto EXIT_D_4;
+				}
 			}
 
 			// write html suffix
@@ -126,14 +123,17 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 					)
 			, &error);
 			if(error)
+			{
+				close_connection = 1;
 				goto EXIT_D_4;
+			}
 
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
 			EXIT_D_4:;
 			close_deinitialize_free_all_from_stacked_stream(&sstrm, WRITE_STREAMS);
 
-			//EXIT_D_3:;
+			EXIT_D_3:;
 			deinitialize_stacked_stream(&sstrm);
 
 			EXIT_D_2:;
@@ -181,19 +181,10 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			stacked_stream sstrm;
 			initialize_stacked_stream(&sstrm);
 
-			stream* body_stream = malloc(sizeof(stream));
-			if(!initialize_writable_body_stream(body_stream, strm, &(hrp.headers)))
-			{
-				free(body_stream);
-				close_connection = 1;
-				goto EXIT_F_4;
-			}
-			push_to_stacked_stream(&sstrm, body_stream, WRITE_STREAMS);
-
-			if(0 > initialize_writable_content_encoding_stream(&sstrm, &(hrp.headers)))
+			if(0 > intialize_http_body_and_encoding_streams_for_writing(&sstrm, strm, &(hrp.headers)))
 			{
 				close_connection = 1;
-				goto EXIT_F_4;
+				goto EXIT_F_3;
 			}
 
 			int error = 0;
@@ -203,14 +194,21 @@ int file_request_controller(http_request_head* hrq, stream* strm, server_global_
 			char buffer[BUFFER_SIZE];
 			ssize_t bytes_read = 0;
 			while((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
+			{
 				write_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), buffer, bytes_read, &error);
+				if(error)
+				{
+					close_connection = 1;
+					goto EXIT_F_4;
+				}
+			}
 
 			flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 
 			EXIT_F_4:;
 			close_deinitialize_free_all_from_stacked_stream(&sstrm, WRITE_STREAMS);
 
-			//EXIT_F_3:;
+			EXIT_F_3:;
 			deinitialize_stacked_stream(&sstrm);
 
 			EXIT_F_2:;
