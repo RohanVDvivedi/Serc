@@ -173,16 +173,6 @@ for routing_file in command_line_args:
 						path_route_hash['after'] = route['after']
 						functions_declarations.union(set(path_route_hash['after']))
 
-				# this is the redirection that will be used if, 
-				# the METHOD and PATH satisfy the condition, and they match in the request
-				if 'redirect_to' in route :
-					path_route_hash['redirect_to'] = route['redirect_to']
-
-				# the headers will the set for the response of every request,
-				# if it hits this controller
-				if 'set_response_headers' in route :
-					path_route_hash['set_response_headers'] = route['set_response_headers']
-
 
 
 
