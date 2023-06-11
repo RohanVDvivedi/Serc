@@ -247,12 +247,12 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t{"
 			if ('before' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['before'] is not None :
 				for before in mydict[method]["wild_card_paths"][path]['before'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + before + "(hrq, strm, sgp->server_params);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection ||= " + before + "(hrq, strm, sgp->server_params);"
 			if ('controller' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['controller'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection |= " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, strm, sgp->server_params);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection ||= " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, strm, sgp->server_params);"
 			if ('after' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['after'] is not None :
 				for after in mydict[method]["wild_card_paths"][path]['after'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection |= " + after + "(hrq, strm, sgp->server_params);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection ||= " + after + "(hrq, strm, sgp->server_params);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string					+= "\n\t\t\t\t\tbreak;"
 		case_string					+= "\n\t\t\t\t}"
