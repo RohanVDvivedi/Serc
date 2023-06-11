@@ -5,17 +5,7 @@
 
 * distributer
  * revamp python logic
-* pass stream and parsed http request to handler functions
+ * pass stream and parsed http request to handler functions
  * add default 404 handler case
 
-
-
-
-
- * use HTTPparser library and ConnMan's stream extension 
-
  * use client_set with ssl support for http clients
-
- * update controller logic
-
- * stronger adherence to HTTP standard headers and make server to act accordingly, instead of relying on the user/application developer to do it correctly
