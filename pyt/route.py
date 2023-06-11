@@ -219,7 +219,6 @@ for method in mydict:
 	if ("wild_card_paths" in mydict[method]) and len(mydict[method]["wild_card_paths"]):
 		case_string					+= "\n\t\t\t\tdefault : "
 		case_string					+= "\n\t\t\t\t{"
-		case_string					+= "\n\t\t\t\t\tunsigned int last_wild_card_at = 0;"
 		first_wild_card = True
 		for path in mydict[method]["wild_card_paths"]:
 			case_string 			+= "\n\t\t\t\t\t// case for path = " + path + " and supports method " + method
