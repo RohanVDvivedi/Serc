@@ -1,8 +1,10 @@
 [
 	{
 		"controller"	:	"first_controller",
+		"construct_per_request_param" : "new_per_request_param",
 		"before"		:	["call_before_controller"],
 		"after"			:	["call_after_controller"],
+		"destroy_per_request_param" : "del_per_request_param",
 		"methods"		:	["GET","POST"],
 		"paths"			:	["/index/get_post"]
 	},
