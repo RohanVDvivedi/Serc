@@ -118,7 +118,7 @@ mydict = {}
 controller_like_function_declarations = set()
 
 #declarations for contructiona and destroy per request param
-construct_per_request_param_declaraions = set()
+construct_per_request_param_declarations = set()
 destroy_per_request_param_declarations = set()
 
 # loop throught all the routing files and collect all paths
@@ -199,11 +199,11 @@ for routing_file in command_line_args:
 
 				if 'construct_per_request_param' in route :
 					path_route_hash['construct_per_request_param'] = route['construct_per_request_param']
-					construct_per_request_param_declaraions.add(route['construct_per_request_param'])
+					construct_per_request_param_declarations.add(route['construct_per_request_param'])
 
 				if 'destroy_per_request_param' in route :
 					path_route_hash['destroy_per_request_param'] = route['destroy_per_request_param']
-					destroy_per_request_param_declaraions.add(route['destroy_per_request_param'])
+					destroy_per_request_param_declarations.add(route['destroy_per_request_param'])
 
 
 
@@ -299,9 +299,9 @@ case_string             			+= "\n\t}\n"
 declarations = ""
 for function_name in controller_like_function_declarations :
 	declarations += "int " + function_name + "(const http_request_head* hrq, stream* strm, void* per_request_param, const void* server_param);\n"
-for function_name in construct_per_request_param_declaraions :
+for function_name in construct_per_request_param_declarations :
 	declarations += "void* " + function_name + "(const void* server_param);\n"
-for function_name in construct_per_request_param_declaraions :
+for function_name in construct_per_request_param_declarations :
 	declarations += "void " + function_name + "(void* per_request_param, const void* server_param);\n"
 
 
