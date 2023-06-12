@@ -238,7 +238,7 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t{"
 			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 			if("construct_per_request_param" in mydict[method][hashval][path]) and mydict[method][hashval][path]['construct_per_request_param'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = " + mydict[method][hashval][path]['construct_per_request_param'] + "(server_param);"
+				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = " + mydict[method][hashval][path]['construct_per_request_param'] + "(sgp->server_param);"
 			else :
 				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = NULL;"
 			if ('before' in mydict[method][hashval][path]) and mydict[method][hashval][path]['before'] is not None :
@@ -250,7 +250,7 @@ for method in mydict:
 				for after in mydict[method][hashval][path]['after'] :
 					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + after + "(hrq, strm, per_request_param, sgp->server_param);"
 			if("destroy_per_request_param" in mydict[method][hashval][path]) and mydict[method][hashval][path]['destroy_per_request_param'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\t" + mydict[method][hashval][path]['destroy_per_request_param'] + "(per_request_param , server_param);"
+				case_string 		+= "\n\t\t\t\t\t\t" + mydict[method][hashval][path]['destroy_per_request_param'] + "(per_request_param , sgp->server_param);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
@@ -269,7 +269,7 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\t{"
 			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
 			if("construct_per_request_param" in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['construct_per_request_param'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = " + mydict[method]["wild_card_paths"][path]['construct_per_request_param'] + "(server_param);"
+				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = " + mydict[method]["wild_card_paths"][path]['construct_per_request_param'] + "(sgp->server_param);"
 			else :
 				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = NULL;"
 			if ('before' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['before'] is not None :
@@ -281,7 +281,7 @@ for method in mydict:
 				for after in mydict[method]["wild_card_paths"][path]['after'] :
 					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + after + "(hrq, strm, per_request_param, sgp->server_param);"
 			if("destroy_per_request_param" in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['destroy_per_request_param'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\t" + mydict[method]["wild_card_paths"][path]['destroy_per_request_param'] + "(per_request_param , server_param);"
+				case_string 		+= "\n\t\t\t\t\t\t" + mydict[method]["wild_card_paths"][path]['destroy_per_request_param'] + "(per_request_param , sgp->server_param);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string					+= "\n\t\t\t\t\tbreak;"
 		case_string					+= "\n\t\t\t\t}"
@@ -301,7 +301,7 @@ for function_name in controller_like_function_declarations :
 	declarations += "int " + function_name + "(const http_request_head* hrq, stream* strm, void* per_request_param, const void* server_param);\n"
 for function_name in construct_per_request_param_declarations :
 	declarations += "void* " + function_name + "(const void* server_param);\n"
-for function_name in construct_per_request_param_declarations :
+for function_name in destroy_per_request_param_declarations :
 	declarations += "void " + function_name + "(void* per_request_param, const void* server_param);\n"
 
 
