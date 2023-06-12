@@ -6,7 +6,7 @@ command is used as below
 
 python3 pyt/route.py <routing_file_0> <routing_file_1> <routing_file_2> <routing_file_3> ...
 routing file must have a .con extension at the end,
-routing file must contain be a json array
+routing file must be a json array
 
 example. : 
 [
