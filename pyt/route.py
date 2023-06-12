@@ -12,8 +12,10 @@ example. :
 [
 	{
 		"controller"	:	"first_controller",
+		"construct_per_request_param" : "new_per_request_param",
 		"before"		:	["call_before_controller"],
 		"after"			:	["call_after_controller"],
+		"destroy_per_request_param" : "del_per_request_param",
 		"methods"		:	["GET","POST"],
 		"paths"			:	["/index/get_post"]
 	},
@@ -235,15 +237,20 @@ for method in mydict:
 			case_string 			+= "\n\t\t\t\t\tif( 0 == compare_dstring(&(hrq->path), &get_dstring_pointing_to_literal_cstring(\"" + path + "\")) )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-			case_string 			+= "\n\t\t\t\t\t\tvoid* per_request_param = NULL;"
+			if("construct_per_request_param" in mydict[method][hashval][path]) and mydict[method][hashval][path]['construct_per_request_param'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = " + mydict[method][hashval][path]['construct_per_request_param'] + "(server_param);"
+			else :
+				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = NULL;"
 			if ('before' in mydict[method][hashval][path]) and mydict[method][hashval][path]['before'] is not None :
 				for before in mydict[method][hashval][path]['before'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + before + "(hrq, strm, &per_request_param, sgp->server_param);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + before + "(hrq, strm, per_request_param, sgp->server_param);"
 			if ('controller' in mydict[method][hashval][path]) and mydict[method][hashval][path]['controller'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + mydict[method][hashval][path]['controller'] + "(hrq, strm, &per_request_param, sgp->server_param);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + mydict[method][hashval][path]['controller'] + "(hrq, strm, per_request_param, sgp->server_param);"
 			if ('after' in mydict[method][hashval][path]) and mydict[method][hashval][path]['after'] is not None :
 				for after in mydict[method][hashval][path]['after'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + after + "(hrq, strm, &per_request_param, sgp->server_param);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + after + "(hrq, strm, per_request_param, sgp->server_param);"
+			if("destroy_per_request_param" in mydict[method][hashval][path]) and mydict[method][hashval][path]['destroy_per_request_param'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\t" + mydict[method][hashval][path]['destroy_per_request_param'] + "(per_request_param , server_param);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string     			+= "\n\t\t\t\t\tbreak;"
 		case_string     			+= "\n\t\t\t\t}"
@@ -261,15 +268,20 @@ for method in mydict:
 			case_string				+= "if( match_path_with_path_regex(&(hrq->path), &get_dstring_pointing_to_literal_cstring(\"" + path + "\") ) )"
 			case_string 			+= "\n\t\t\t\t\t{"
 			case_string 			+= "\n\t\t\t\t\t\trouting_resolved = 1;"
-			case_string 			+= "\n\t\t\t\t\t\tvoid* per_request_param = NULL;"
+			if("construct_per_request_param" in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['construct_per_request_param'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = " + mydict[method]["wild_card_paths"][path]['construct_per_request_param'] + "(server_param);"
+			else :
+				case_string 		+= "\n\t\t\t\t\t\tvoid* per_request_param = NULL;"
 			if ('before' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['before'] is not None :
 				for before in mydict[method]["wild_card_paths"][path]['before'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + before + "(hrq, strm, &per_request_param, sgp->server_param);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + before + "(hrq, strm, per_request_param, sgp->server_param);"
 			if ('controller' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['controller'] is not None :
-				case_string 		+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, strm, &per_request_param, sgp->server_param);"
+				case_string 		+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + mydict[method]["wild_card_paths"][path]['controller'] + "(hrq, strm, per_request_param, sgp->server_param);"
 			if ('after' in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['after'] is not None :
 				for after in mydict[method]["wild_card_paths"][path]['after'] :
-					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + after + "(hrq, strm, &per_request_param, sgp->server_param);"
+					case_string 	+= "\n\t\t\t\t\t\tclose_connection = close_connection || " + after + "(hrq, strm, per_request_param, sgp->server_param);"
+			if("destroy_per_request_param" in mydict[method]["wild_card_paths"][path]) and mydict[method]["wild_card_paths"][path]['destroy_per_request_param'] is not None :
+				case_string 		+= "\n\t\t\t\t\t\t" + mydict[method]["wild_card_paths"][path]['destroy_per_request_param'] + "(per_request_param , server_param);"
 			case_string 			+= "\n\t\t\t\t\t}"
 		case_string					+= "\n\t\t\t\t\tbreak;"
 		case_string					+= "\n\t\t\t\t}"
@@ -286,11 +298,11 @@ case_string             			+= "\n\t}\n"
 # below for loop builds forward declations for all the controllers that you will be using in your application
 declarations = ""
 for function_name in controller_like_function_declarations :
-	declarations += "int " + function_name + "(const http_request_head* hrq, stream* strm, void* per_request_param, const void* server_params);\n"
+	declarations += "int " + function_name + "(const http_request_head* hrq, stream* strm, void* per_request_param, const void* server_param);\n"
 for function_name in construct_per_request_param_declaraions :
-	declarations += "void* " + function_name + "(const void* server_params);\n"
+	declarations += "void* " + function_name + "(const void* server_param);\n"
 for function_name in construct_per_request_param_declaraions :
-	declarations += "void " + function_name + "(void* per_request_param, const void* server_params);\n"
+	declarations += "void " + function_name + "(void* per_request_param, const void* server_param);\n"
 
 
 
