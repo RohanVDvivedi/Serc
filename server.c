@@ -13,6 +13,9 @@ int starts_with(const char *pre, const char *str)
 
 int main(int argc, char** argv)
 {
+	// you handle EPIPE errors of stream and not rely on SIGPIPE
+	signal(SIGPIPE, SIG_IGN);
+
 	// default paths to use
 	char* root_path = ".";
 	int serve_dirs = 0;
