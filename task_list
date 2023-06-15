@@ -1,4 +1,1 @@
-* file request resolution controller
- * implement range query for bytes in files
-
  * use client_set with ssl support for http clients
