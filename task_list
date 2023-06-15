@@ -1,1 +1,3 @@
  * use client_set with ssl support for http clients
+
+ * http file range requests (* far future)
