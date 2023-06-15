@@ -6,6 +6,9 @@
 *.DS_store
 *.o
 
+# video files if used for testing will not be added to the project
+*.mp4
+
 # gitignore anything in any of bin obj or lib folder anywhere
 obj
 lib
