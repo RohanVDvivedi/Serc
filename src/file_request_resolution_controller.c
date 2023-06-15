@@ -190,12 +190,19 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 			int error = 0;
 
 			// read data from file in to buffer and write buffer to response stream
-			#define BUFFER_SIZE 128
+			#define BUFFER_SIZE 512
 			char buffer[BUFFER_SIZE];
 			ssize_t bytes_read = 0;
 			while((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
 			{
 				write_to_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), buffer, bytes_read, &error);
+				if(error)
+				{
+					close_connection = 1;
+					goto EXIT_F_4;
+				}
+
+				flush_all_from_stream(get_top_of_stacked_stream(&sstrm, WRITE_STREAMS), &error);
 				if(error)
 				{
 					close_connection = 1;
