@@ -4,6 +4,7 @@
 #include<http_request.h>
 #include<http_response.h>
 #include<ssl_ctx_helper.h>
+#include<http_header_util.h>
 
 #include<http_client_set.h>
 #include<stacked_stream.h>
@@ -35,7 +36,7 @@ int main()
 	if(ssl_ctx != NULL)
 		destroy_ssl_ctx(ssl_ctx);
 
-	return NULL;
+	return 0;
 }
 
 void* query_and_print_meaning(void* word)
@@ -65,18 +66,18 @@ void* query_and_print_meaning(void* word)
 	if(serialize_http_request_head(raw_stream, &hrq) == -1)
 	{
 		printf("error serializing http request head\n");
-		goto EXIT_3;
+		goto EXIT_2;
 	}
 	flush_all_from_stream(raw_stream, &error);
 	if(error)
 	{
 		printf("%d error flushing request head\n", error);
-		goto EXIT_3;
+		goto EXIT_2;
 	}
 	if(parse_http_response_head(raw_stream, &hrp) == -1)
 	{
 		printf("error parsing http response head\n");
-		goto EXIT_3;
+		goto EXIT_2;
 	}
 
 	// printing response head
@@ -108,16 +109,15 @@ void* query_and_print_meaning(void* word)
 		}
 
 
-		printf("%.*s", bytes_read, read_buffer, &error);
+		printf("%.*s", bytes_read, read_buffer);
 	}
 
-	EXIT_4:;
 	close_deinitialize_free_all_from_stacked_stream(&sstrm, READ_STREAMS);
 
 	EXIT_3:;
 	deinitialize_stacked_stream(&sstrm);
 
-	EXIT_1:;
+	EXIT_2:;
 	deinit_http_request_head(&hrq);
 	deinit_http_response_head(&hrp);
 
