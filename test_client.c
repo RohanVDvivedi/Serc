@@ -16,7 +16,7 @@ client_set* http_s_client_set = NULL;
 
 void* query_and_print_meaning(void* word);
 
-#define MAX_CLIENT_CONNECTIONS 3
+#define MAX_CLIENT_CONNECTIONS 4
 
 int main()
 {
@@ -44,7 +44,7 @@ int main()
 	submit_job(executor_p, query_and_print_meaning, "Database", NULL, 0);
 	submit_job(executor_p, query_and_print_meaning, "Operating Systems", NULL, 0);
 	submit_job(executor_p, query_and_print_meaning, "Systems", NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Systems Programming", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Programming", NULL, 0);
 
 	shutdown_executor(executor_p, 0);
 	wait_for_all_threads_to_complete(executor_p);
