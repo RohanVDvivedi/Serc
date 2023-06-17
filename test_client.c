@@ -3,10 +3,14 @@
 
 #include<http_request.h>
 #include<http_response.h>
+#include<ssl_ctx_helper.h>
 
 #include<http_client_set.h>
+#include<stacked_stream.h>
 
 client_set* http_s_client_set = NULL;
+
+void* query_and_print_meaning(void* word);
 
 int main()
 {
@@ -104,7 +108,7 @@ void* query_and_print_meaning(void* word)
 		}
 
 
-		printf("%.*s", bytes_read, bytes_read, &error);
+		printf("%.*s", bytes_read, read_buffer, &error);
 	}
 
 	EXIT_4:;
@@ -112,9 +116,6 @@ void* query_and_print_meaning(void* word)
 
 	EXIT_3:;
 	deinitialize_stacked_stream(&sstrm);
-
-	close_stream(raw_stream, &error);
-	deinitialize_stream(&raw_stream);
 
 	EXIT_1:;
 	deinit_http_request_head(&hrq);
