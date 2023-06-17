@@ -23,7 +23,9 @@ int main()
 	}
 
 	query_and_print_meaning("hello");
-	
+
+	shutdown_and_delete_client_set(http_s_client_set);
+
 	FAILED:;
 
 	if(ssl_ctx != NULL)
@@ -34,10 +36,6 @@ int main()
 
 void* query_and_print_meaning(void* word)
 {
-	stream rs, ws;
-	initialize_stream_for_fd(&rs, 0);
-	initialize_stream_for_fd(&ws, 1);
-
 	http_request_head hrq;
 	init_http_request_head(&hrq);
 	hrq.method = GET;
@@ -116,18 +114,7 @@ void* query_and_print_meaning(void* word)
 		}
 
 
-		write_to_stream(&ws, read_buffer, bytes_read, &error);
-		if(error)
-		{
-			printf("error writing to STDOUT\n");
-			break;
-		}
-		flush_all_from_stream(&ws, &error);
-		if(error)
-		{
-			printf("flushing STDOUT threw error\n");
-			break;
-		}
+		printf("%.*s", bytes_read, bytes_read, &error);
 	}
 
 	EXIT_4:;
@@ -146,9 +133,6 @@ void* query_and_print_meaning(void* word)
 	EXIT_1:;
 	deinit_http_request_head(&hrq);
 	deinit_http_response_head(&hrp);
-
-	deinitialize_stream(&rs);
-	deinitialize_stream(&ws);
 
 	return NULL;
 }
