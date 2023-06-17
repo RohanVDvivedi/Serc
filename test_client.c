@@ -28,6 +28,8 @@ int main()
 	}
 
 	query_and_print_meaning("hello");
+	query_and_print_meaning("how");
+	query_and_print_meaning("are");
 
 	shutdown_and_delete_client_set(http_s_client_set);
 
