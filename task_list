@@ -1,3 +1,1 @@
- * use http url parser from HTTP parser and return a http_client_set, managing a set of predefined number of clients to a particular server
-
  * http file range requests (* far future)
