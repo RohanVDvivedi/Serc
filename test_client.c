@@ -1,13 +1,16 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+#include<executor.h>
+
+#include<stacked_stream.h>
+#include<ssl_ctx_helper.h>
+
 #include<http_request.h>
 #include<http_response.h>
-#include<ssl_ctx_helper.h>
 #include<http_header_util.h>
 
 #include<http_client_set.h>
-#include<stacked_stream.h>
 
 client_set* http_s_client_set = NULL;
 
@@ -27,9 +30,17 @@ int main()
 		goto FAILED;
 	}
 
-	query_and_print_meaning("hello");
-	query_and_print_meaning("how");
-	query_and_print_meaning("are");
+	// wait for 1 seconds to receive, after which the worker will be killed
+	executor* executor_p = new_executor(CACHED_THREAD_POOL_EXECUTOR, 16, 1024, 1000, NULL, NULL, NULL);
+
+	submit_job(executor_p, query_and_print_meaning, "hello", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "how",   NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "are",   NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "you",   NULL, 0);
+
+	shutdown_executor(executor_p, 0);
+	wait_for_all_threads_to_complete(executor_p);
+	delete_executor(executor_p);
 
 	shutdown_and_delete_client_set(http_s_client_set);
 
