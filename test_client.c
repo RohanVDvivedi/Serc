@@ -94,7 +94,7 @@ void* query_and_print_meaning(void* word)
 		goto EXIT_3;
 	}
 
-	#define read_buffer_size 64
+	#define read_buffer_size 4096
 	char read_buffer[read_buffer_size];
 	while(1)
 	{
