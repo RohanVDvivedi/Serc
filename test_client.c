@@ -36,9 +36,15 @@ int main()
 	executor* executor_p = new_executor(FIXED_THREAD_COUNT_EXECUTOR, MAX_CLIENT_CONNECTIONS, 1024, 0, NULL, NULL, NULL);
 
 	submit_job(executor_p, query_and_print_meaning, "hello", NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "how",   NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "are",   NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "you",   NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "how", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "are", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "you", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Dinosaur", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Rohan", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Database", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Operating Systems", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Systems", NULL, 0);
+	submit_job(executor_p, query_and_print_meaning, "Systems Programming", NULL, 0);
 
 	shutdown_executor(executor_p, 0);
 	wait_for_all_threads_to_complete(executor_p);
