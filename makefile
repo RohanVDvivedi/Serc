@@ -75,6 +75,10 @@ ${BIN_DIR} :
 ${BIN_DIR}/${BINARY} : ./server.c ./distributer.c ${LIB_DIR}/${LIBRARY} | ${BIN_DIR}
 	${CC} ${CFLAGS} ./server.c ./distributer.c ${LFLAGS} -o $@
 
+# building a a test client
+./test_client : ./test_client.c
+	${CC} ${CFLAGS} $< ${LFLAGS} -o $@
+
 # to build the binary along with the library
 all : ${BIN_DIR}/${BINARY}
 
