@@ -16,13 +16,15 @@ client_set* http_s_client_set = NULL;
 
 void* query_and_print_meaning(void* word);
 
+#define MAX_CLIENT_CONNECTIONS 3
+
 int main()
 {
 	// initialize openssl and create an ssl context
 	ssl_lib_init();
 	SSL_CTX* ssl_ctx = get_ssl_ctx_for_client(NULL, NULL);
 
-	http_s_client_set = new_http_s_client_set("api.dictionaryapi.dev", NULL, ssl_ctx, 1);
+	http_s_client_set = new_http_s_client_set("api.dictionaryapi.dev", NULL, ssl_ctx, MAX_CLIENT_CONNECTIONS);
 
 	if(http_s_client_set == NULL)
 	{
@@ -31,7 +33,7 @@ int main()
 	}
 
 	// wait for 1 seconds to receive, after which the worker will be killed
-	executor* executor_p = new_executor(CACHED_THREAD_POOL_EXECUTOR, 16, 1024, 1000, NULL, NULL, NULL);
+	executor* executor_p = new_executor(FIXED_THREAD_COUNT_EXECUTOR, MAX_CLIENT_CONNECTIONS, 1024, 0, NULL, NULL, NULL);
 
 	submit_job(executor_p, query_and_print_meaning, "hello", NULL, 0);
 	submit_job(executor_p, query_and_print_meaning, "how",   NULL, 0);
