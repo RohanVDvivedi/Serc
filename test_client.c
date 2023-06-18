@@ -18,13 +18,15 @@ void* query_and_print_meaning(void* word);
 
 #define MAX_CLIENT_CONNECTIONS 4
 
+const dstring baseuri = get_dstring_pointing_to_literal_cstring("https://api.dictionaryapi.dev/api/v2/entries/en/");
+
 int main()
 {
 	// initialize openssl and create an ssl context
 	ssl_lib_init();
 	SSL_CTX* ssl_ctx = get_ssl_ctx_for_client(NULL, NULL);
 
-	http_s_client_set = new_http_s_client_set("api.dictionaryapi.dev", NULL, ssl_ctx, MAX_CLIENT_CONNECTIONS);
+	http_s_client_set = new_http_s_client_set(&baseuri, ssl_ctx, MAX_CLIENT_CONNECTIONS);
 
 	if(http_s_client_set == NULL)
 	{
@@ -70,12 +72,9 @@ void* query_and_print_meaning(void* word)
 	}
 
 	http_request_head hrq;
-	init_http_request_head(&hrq);
+	init_http_request_head_from_uri(&hrq, &baseuri);
 	hrq.method = GET;
-	concatenate_dstring(&(hrq.path), &get_dstring_pointing_to_literal_cstring("/api/v2/entries/en/"));
 	concatenate_dstring(&(hrq.path), &get_dstring_pointing_to_cstring(word));
-	hrq.version = (http_version){1,1};
-	insert_literal_cstrings_in_dmap(&(hrq.headers), "host", "api.dictionaryapi.dev");
 	insert_literal_cstrings_in_dmap(&(hrq.headers), "accept", "*/*");
 	insert_literal_cstrings_in_dmap(&(hrq.headers), "accept-encoding", "gzip,deflate");
 
