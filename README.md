@@ -61,7 +61,9 @@
 #### usage as framework
  * create appropriate routing.con file (as described in the sample file in the con directory).
  * and create appropriate controller files with functions with strict declaration signature as : 
-   * ```int controller(HttpRequest* hrq, HttpResponse* hrp)```
+   * ```int controller(http_request_head* hrq, stream* strm, void* per_request_param, const void* server_param)```
+   * Here server_params is global to all the requests, while per_request_param is generated for each request.
+   * Serc also supports Aspect Oriented PRogramming, by "before" and "after" handlers in the routing file.
    * controller returns a 1 value to close the current connection (i.e. for a parse error or read timeout).
  * Create appropriate json entries, in your routing.con file, to specify routing information.
  * do not forget to include appropriate public api headers as and when needed by your source, which includes
@@ -73,10 +75,10 @@
  * Now, you must compile your source with this distributer.c file, simultaneously linking with serc library.
  * **More info**
    * The distribute() function, has a quite similar function signature, to the signature required by the controller functions.
-   * The distribute function is already present, and is called, internally in the source code of the library, but there is only declaration and no definition to that function in the library.
+   * The distribute function is declared and called in the source code of the library, for every request head that gets parsed on any of the connections.
    * The route.py script reads your routing configuration file and generates a distributer function required to route to your controller functions, using a huge switch case statement.
    * And so you are required to compile this distributer functions, while linking with serc library, to produce appropriate binary of your application.
- * don't forget to add "-lserc -lcashed -lm -lconnman -lrwlock -lboompar -lpthread -lcutlery -lz -lssl -lcrypto" linker flag, while compiling your application
+ * don't forget to add "-lserc -lhttpparser -lconnman -lz -lssl -lcrypto -lboompar -lpthread -lcutlery" linker flag, while compiling your application
 
 ## Third party acknowledgements
  * *gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib) checkout their website [here](https://zlib.net/).*
