@@ -29,12 +29,8 @@
 
 ## Setup instructions
 **Install dependencies :**
- * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
- * [BoomPar](https://github.com/RohanVDvivedi/BoomPar)
  * [ConnMan](https://github.com/RohanVDvivedi/ConnMan)
  * [HTTPparser](https://github.com/RohanVDvivedi/HTTPparser)
- * [zlib](https://github.com/madler/zlib)		  ($ sudo apt install zlib1g-dev)
- * [openssl](https://github.com/openssl/openssl)	($ sudo apt install libssl-dev)
 
 **Download source code :**
  * `git clone https://github.com/RohanVDvivedi/Serc.git`
