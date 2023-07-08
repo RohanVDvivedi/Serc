@@ -32,6 +32,7 @@
  * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
  * [BoomPar](https://github.com/RohanVDvivedi/BoomPar)
  * [ConnMan](https://github.com/RohanVDvivedi/ConnMan)
+ * [HTTPparser](https://github.com/RohanVDvivedi/HTTPparser)
  * [zlib](https://github.com/madler/zlib)		  ($ sudo apt install zlib1g-dev)
  * [openssl](https://github.com/openssl/openssl)	($ sudo apt install libssl-dev)
 
@@ -79,7 +80,3 @@
    * The route.py script reads your routing configuration file and generates a distributer function required to route to your controller functions, using a huge switch case statement.
    * And so you are required to compile this distributer functions, while linking with serc library, to produce appropriate binary of your application.
  * don't forget to add "-lserc -lhttpparser -lconnman -lz -lssl -lcrypto -lboompar -lpthread -lcutlery" linker flag, while compiling your application
-
-## Third party acknowledgements
- * *gzip and deflate compression, internally supported by [zlib](https://github.com/madler/zlib) checkout their website [here](https://zlib.net/).*
- * *SSL and TLS encryption for https, internally supported by [openssl](https://github.com/openssl/openssl) checkout their website [here](https://www.openssl.org/).*
