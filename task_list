@@ -1,3 +1,3 @@
- * fail functions if dstring or dpipe function calls fail, or stream unread functions fail
+ * fail functions if dstring or dpipe function calls fail
 
  * http file range requests (* far future)
