@@ -65,6 +65,7 @@ int main()
 void* query_and_print_meaning(void* word)
 {
 	stream* raw_stream = reserve_client(http_s_client_set, 0);
+	int force_shutdown_raw_stream = 0;
 	if(raw_stream == NULL)
 	{
 		printf("error getting a raw stream\n");
@@ -86,17 +87,20 @@ void* query_and_print_meaning(void* word)
 	if(serialize_http_request_head(raw_stream, &hrq) == -1)
 	{
 		printf("error serializing http request head\n");
+		force_shutdown_raw_stream = 1;
 		goto EXIT_2;
 	}
 	flush_all_from_stream(raw_stream, &error);
 	if(error)
 	{
 		printf("%d error flushing request head\n", error);
+		force_shutdown_raw_stream = 1;
 		goto EXIT_2;
 	}
 	if(parse_http_response_head(raw_stream, &hrp) == -1)
 	{
 		printf("error parsing http response head\n");
+		force_shutdown_raw_stream = 1;
 		goto EXIT_2;
 	}
 
@@ -109,6 +113,7 @@ void* query_and_print_meaning(void* word)
 	if(0 > intialize_http_body_and_decoding_streams_for_reading(&sstrm, raw_stream, &(hrp.headers)))
 	{
 		printf("error initializing one of body or decoding streams\n");
+		force_shutdown_raw_stream = 1;
 		goto EXIT_3;
 	}
 
@@ -120,6 +125,7 @@ void* query_and_print_meaning(void* word)
 		if(error)
 		{
 			printf("body stream read error\n");
+			force_shutdown_raw_stream = 1;
 			break;
 		}
 		if(bytes_read == 0)
@@ -141,7 +147,8 @@ void* query_and_print_meaning(void* word)
 	deinit_http_request_head(&hrq);
 	deinit_http_response_head(&hrp);
 
-	return_client(http_s_client_set, raw_stream);
+	// if errored, we ask the client set to destroy the stream
+	return_client(http_s_client_set, raw_stream, force_shutdown_raw_stream);
 
 	return NULL;
 }
