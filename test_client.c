@@ -37,19 +37,19 @@ int main()
 	// wait for 1 seconds to receive, after which the worker will be killed
 	executor* executor_p = new_executor(FIXED_THREAD_COUNT_EXECUTOR, MAX_CLIENT_CONNECTIONS, 1024, 0, NULL, NULL, NULL);
 
-	submit_job(executor_p, query_and_print_meaning, "hello", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "how", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "are", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "you", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Dinosaur", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Rohan", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Database", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Operating Systems", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Systems", NULL, NULL, 0);
-	submit_job(executor_p, query_and_print_meaning, "Programming", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "hello", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "how", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "are", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "you", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "Dinosaur", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "Rohan", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "Database", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "Operating Systems", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "Systems", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "Programming", NULL, NULL, 0);
 
 	shutdown_executor(executor_p, 0);
-	wait_for_all_threads_to_complete(executor_p);
+	wait_for_all_executor_workers_to_complete(executor_p);
 	delete_executor(executor_p);
 
 	shutdown_and_delete_client_set(http_s_client_set);
