@@ -1,3 +1,5 @@
  * fail functions if dstring or dpipe function calls fail
+ * use new HTTPparser error handling api, and its parsing error codes
+ * add logic to parse test_client output using JSONparser and print only the meaning of the word in context
 
  * http file range requests (* far future)
