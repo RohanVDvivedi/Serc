@@ -21,10 +21,12 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 		goto ERROR;
 
 	// make host and port c compatible strings
-	expand_dstring(&(uriv.host), 1);
+	if(get_unused_capacity_dstring(&(uriv.host)) == 0 && !expand_dstring(&(uriv.host), 1))
+		goto ERROR;
 	get_byte_array_dstring(&(uriv.host))[get_char_count_dstring(&(uriv.host))] = '\0';
 
-	expand_dstring(&(uriv.port), 1);
+	if(get_unused_capacity_dstring(&(uriv.port)) == 0 && !expand_dstring(&(uriv.port), 1))
+		goto ERROR;
 	get_byte_array_dstring(&(uriv.port))[get_char_count_dstring(&(uriv.port))] = '\0';
 
 	const char* hostname = get_byte_array_dstring(&(uriv.host));
@@ -45,8 +47,7 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 		goto ERROR;
 
 	comm_address server_address;
-	int res = lookup_by_name(hostname, port, SOCK_STREAM, AF_UNSPEC, &server_address, 1);
-	if(res == 0)
+	if(0 == lookup_by_name(hostname, port, SOCK_STREAM, AF_UNSPEC, &server_address, 1)) // if lookup fails, then fail
 		goto ERROR;
 
 	deinit_uri(&uriv);
