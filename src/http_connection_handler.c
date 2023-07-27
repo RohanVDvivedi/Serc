@@ -16,15 +16,15 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 		// create a new HttpRequest Object
 		http_request_head hrq; init_http_request_head(&hrq);
 
-		// error in parsing, we fail
-		if(HTTP_NO_ERROR != parse_http_request_head(strm, &hrq))
+		int http_parse_error = parse_http_request_head(strm, &hrq);
+		if(http_parse_error)
 		{
 			deinit_http_request_head(&hrq);
 			break;
 		}
 
 		// distribute returns 1, if we were asked to close the connection
-		if(1 == distribute(&hrq, strm, sgpp))
+		if(distribute(&hrq, strm, sgpp))
 		{
 			deinit_http_request_head(&hrq);
 			break;
