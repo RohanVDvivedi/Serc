@@ -13,7 +13,7 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 	uri uriv;
 	init_uri(&uriv);
 
-	if(-1 == parse_uri(&uriv, uri_dstr))
+	if(URI_NO_ERROR != parse_uri(&uriv, uri_dstr))
 		goto ERROR;
 
 	// host must not be empty
