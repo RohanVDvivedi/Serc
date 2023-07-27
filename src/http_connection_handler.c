@@ -16,12 +16,14 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 		// create a new HttpRequest Object
 		http_request_head hrq; init_http_request_head(&hrq);
 
-		if(-1 == parse_http_request_head(strm, &hrq))
+		// error in parsing, we fail
+		if(HTTP_NO_ERROR != parse_http_request_head(strm, &hrq))
 		{
 			deinit_http_request_head(&hrq);
 			break;
 		}
 
+		// distribute returns 1, if we were asked to close the connection
 		if(1 == distribute(&hrq, strm, sgpp))
 		{
 			deinit_http_request_head(&hrq);
@@ -30,7 +32,7 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 
 		int strm_flush_error;
 		flush_all_from_stream(strm, &strm_flush_error);
-		if(0 != strm_flush_error)
+		if(strm_flush_error)
 		{
 			deinit_http_request_head(&hrq);
 			break;
