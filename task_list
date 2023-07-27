@@ -1,4 +1,4 @@
- * for file_request_resolution_controller and distributer
+ * for file_request_resolution_controller
    * fail functions if dstring or dpipe function calls fail
    * use new HTTPparser error handling api, and its parsing error codes
 
