@@ -1,5 +1,7 @@
- * fail functions if dstring or dpipe function calls fail
- * use new HTTPparser error handling api, and its parsing error codes
+ * for file_request_resolution_controller and distributer
+   * fail functions if dstring or dpipe function calls fail
+   * use new HTTPparser error handling api, and its parsing error codes
+
  * add logic to parse test_client output using JSONparser and print only the meaning of the word in context
 
  * http file range requests (* far future)
