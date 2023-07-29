@@ -31,10 +31,14 @@ int distribute(const http_request_head* hrq, stream* strm, server_global_params*
 	{
 		// replace below logic once controller for 404 is setup
 		http_response_head hrp;
-		init_http_response_head_from_http_request_head(&hrp, hrq, 404, 0);
-		if(0 != serialize_http_response_head(strm, &hrp)) // failure to serialize
+		if(init_http_response_head_from_http_request_head(&hrp, hrq, 404, 0))
+		{
+			if(0 != serialize_http_response_head(strm, &hrp)) // failure to serialize
+				close_connection = 1;
+			deinit_http_response_head(&hrp);
+		}
+		else // if we fail to initialize even a 404 response then close_connection and exit
 			close_connection = 1;
-		deinit_http_response_head(&hrp);
 	}
 
 	// close the connection, after his request, if connection:close header is provided
