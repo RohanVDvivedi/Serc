@@ -27,15 +27,19 @@ int main()
 	SSL_CTX* ssl_ctx = get_ssl_ctx_for_client(NULL, NULL);
 
 	http_s_client_set = new_http_s_client_set(&baseuri, ssl_ctx, MAX_CLIENT_CONNECTIONS);
-
 	if(http_s_client_set == NULL)
 	{
 		printf("failed to initialize http client set\n");
-		goto FAILED;
+		goto EXIT_0;
 	}
 
 	// wait for 1 seconds to receive, after which the worker will be killed
 	executor* executor_p = new_executor(FIXED_THREAD_COUNT_EXECUTOR, MAX_CLIENT_CONNECTIONS, 1024, 0, NULL, NULL, NULL);
+	if(executor_p == NULL)
+	{
+		printf("failed to initialize executor to call http requests\n");
+		goto EXIT_1;
+	}
 
 	submit_job_executor(executor_p, query_and_print_meaning, "hello", NULL, NULL, 0);
 	submit_job_executor(executor_p, query_and_print_meaning, "how", NULL, NULL, 0);
@@ -52,10 +56,10 @@ int main()
 	wait_for_all_executor_workers_to_complete(executor_p);
 	delete_executor(executor_p);
 
+	EXIT_1:;
 	shutdown_and_delete_client_set(http_s_client_set);
 
-	FAILED:;
-
+	EXIT_0:;
 	if(ssl_ctx != NULL)
 		destroy_ssl_ctx(ssl_ctx);
 
