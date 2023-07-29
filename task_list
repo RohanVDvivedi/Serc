@@ -1,7 +1,3 @@
- * for file_request_resolution_controller
-   * fail functions if dstring or dpipe function calls fail
- * error handling conforming to new HTTPparser error handling api for parser and serializer
-
  * add logic to parse test_client output using JSONparser and print only the meaning of the word in context
 
  * http file range requests (* far future)
