@@ -1,3 +1,1 @@
- * add logic to parse test_client output using JSONparser and print only the meaning of the word in context
-
  * http file range requests (* far future)
