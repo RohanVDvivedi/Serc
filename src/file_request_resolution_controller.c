@@ -33,23 +33,14 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 	{
 		// build absolute path
 		dstring abs_path;
-		if(!init_copy_dstring(&(sgp->root_path)))
-		{
-			close_connection = 1;
+		if(!init_copy_dstring(&abs_path, &(sgp->root_path)))
 			goto EXIT0;
-		}
 		if(!concatenate_char(&abs_path, '/') || !concatenate_dstring(&abs_path, &(hrq->path)))
-		{
-			close_connection = 1;
 			goto EXIT0_1;
-		}
 
 		// make absolute path -> cstring compatible
 		if(get_unused_capacity_dstring(&abs_path) == 0 && !expand_dstring(&abs_path, 1))
-		{
-			close_connection = 1;
 			goto EXIT0_1;
-		}
 		char* abs_path_cstr = get_byte_array_dstring(&abs_path);
 		abs_path_cstr[get_char_count_dstring(&abs_path)] = '\0';
 
@@ -78,11 +69,11 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 			if(dirp == NULL)
 				goto EXIT_D_0;
 
-			// respond with Not Acceptable
 			http_response_head hrp;
-			init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED);
+			if(!init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED))
+				goto EXIT_D_1;
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
-			if(-1 == serialize_http_response_head(strm, &hrp))
+			if(HTTP_NO_ERROR != serialize_http_response_head(strm, &hrp))
 			{
 				close_connection = 1;
 				goto EXIT_D_2;
@@ -151,7 +142,7 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 			EXIT_D_2:;
 			deinit_http_response_head(&hrp);
 
-			//EXIT_D_1:;
+			EXIT_D_1:;
 			closedir(dirp);
 
 			EXIT_D_0:;
@@ -163,8 +154,9 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 
 			// respond with Not Acceptable
 			http_response_head hrp;
-			init_http_response_head_from_http_request_head(&hrp, hrq, 406, 0);
-			if(-1 == serialize_http_response_head(strm, &hrp))
+			if(!init_http_response_head_from_http_request_head(&hrp, hrq, 406, 0))
+				goto EXIT0_1;
+			if(HTTP_NO_ERROR != serialize_http_response_head(strm, &hrp))
 				close_connection = 1;
 			deinit_http_response_head(&hrp);
 
@@ -180,11 +172,12 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 
 			// initialize response head
 			http_response_head hrp;
-			init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED);
+			if(!init_http_response_head_from_http_request_head(&hrp, hrq, 200, TRANSFER_CHUNKED))
+				goto EXIT_F_1;
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
 
 			// write http response head
-			if(-1 == serialize_http_response_head(strm, &hrp))
+			if(HTTP_NO_ERROR != serialize_http_response_head(strm, &hrp))
 			{
 				close_connection = 1;
 				goto EXIT_F_2;
@@ -233,7 +226,7 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 			EXIT_F_2:;
 			deinit_http_response_head(&hrp);
 
-			//EXIT_F_1:;
+			EXIT_F_1:;
 			close(fd);
 
 			EXIT_F_0:;
@@ -242,12 +235,13 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 		{
 			// initialize response head
 			http_response_head hrp;
-			init_http_response_head_from_http_request_head(&hrp, hrq, 200, fstatus.st_size);
+			if(!init_http_response_head_from_http_request_head(&hrp, hrq, 200, fstatus.st_size))
+				goto EXIT0_1;
 			dstring mime_type = get_mimetype_from_file_extension(&extension);
 			insert_in_dmap(&(hrp.headers), &get_dstring_pointing_to_literal_cstring("content-type"), &mime_type);
 
 			// write http response head
-			if(-1 == serialize_http_response_head(strm, &hrp))
+			if(HTTP_NO_ERROR != serialize_http_response_head(strm, &hrp))
 				close_connection = 1;
 
 			deinit_http_response_head(&hrp);
