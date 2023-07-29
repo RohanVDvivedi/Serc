@@ -11,6 +11,7 @@
 #include<http_header_util.h>
 
 #include<http_client_set.h>
+#include<json_parser.h>
 
 client_set* http_s_client_set = NULL;
 
@@ -112,9 +113,6 @@ void* query_and_print_meaning(void* word)
 		goto EXIT_2;
 	}
 
-	// printing response head
-	print_http_response_head(&hrp);
-
 	stacked_stream sstrm;
 	initialize_stacked_stream(&sstrm);
 
@@ -125,27 +123,58 @@ void* query_and_print_meaning(void* word)
 		goto EXIT_3;
 	}
 
-	#define read_buffer_size 4096
-	char read_buffer[read_buffer_size];
-	while(1)
+	int json_parse_error = JSON_NO_ERROR;
+	json_node* js_resp = parse_json(get_top_of_stacked_stream(&sstrm, READ_STREAMS), 128, 64, &json_parse_error);
+	if(json_parse_error || js_resp)
+		goto EXIT_4;
+
+	// make sure that the js_resp has the result
+	json_node* js = js_resp;
+	int meaning_found = 0;
+	if(js->type == JSON_ARRAY)
 	{
-		unsigned int bytes_read = read_from_stacked_stream(&sstrm, read_buffer, read_buffer_size, &error);
-		if(error)
+		js = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), 0);
+		if(js != NULL && js->type == JSON_OBJECT)
 		{
-			printf("body stream read error\n");
-			force_shutdown_raw_stream = 1;
-			break;
+			js = (json_node*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("meanings"));
+			if(js != NULL && js->type == JSON_ARRAY)
+			{
+				for(cy_uint i = 0; i < get_element_count_arraylist(&(js->json_array)) && !meaning_found; i++)
+				{
+					js = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), i);
+					if(js != NULL && js->type == JSON_OBJECT)
+					{
+						json_node* js_pos = (json_node*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("partOfSpeech"));
+						if(js_pos != NULL && js_pos->type == JSON_STRING && compare_dstring(&(js_pos->json_string), &get_dstring_pointing_to_literal_cstring("noun")) == 0)
+						{
+							js = (json_node*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("definitions"));
+							if(js != NULL && js->type == JSON_ARRAY)
+							{
+								js = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), 0);
+								if(js != NULL && js->type == JSON_OBJECT)
+								{
+									js = (json_node*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("definition"));
+									if(js != NULL && js->type == JSON_STRING)
+									{
+										printf("%s : " printf_dstring_format "\n", (char*)word, printf_dstring_params(&(js->json_string)));
+										meaning_found = 1;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
-		if(bytes_read == 0)
-		{
-			printf("\n\nbody complete\n");
-			break;
-		}
-
-
-		printf("%.*s", bytes_read, read_buffer);
 	}
 
+	if(!meaning_found)
+		printf("%s : NO MEANING_FOUND\n", (char*)word);
+
+	//EXIT_5:;
+	delete_json_node(js_resp);
+
+	EXIT_4:;
 	close_deinitialize_free_all_from_stacked_stream(&sstrm, READ_STREAMS);
 
 	EXIT_3:;

@@ -77,7 +77,7 @@ ${BIN_DIR}/${BINARY} : ./server.c ./distributer.c ${LIB_DIR}/${LIBRARY} | ${BIN_
 
 # building a a test client
 ./test_client : ./test_client.c
-	${CC} ${CFLAGS} $< ${LFLAGS} -o $@
+	${CC} ${CFLAGS} $< ${LFLAGS} -ljsonparser -o $@
 
 # to build the binary along with the library
 all : ${BIN_DIR}/${BINARY}
