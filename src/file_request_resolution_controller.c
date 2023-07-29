@@ -32,12 +32,24 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 	if((hrq->method == GET || hrq->method == HEAD) && !is_empty_dstring(&(hrq->path)))
 	{
 		// build absolute path
-		dstring abs_path = new_copy_dstring(&(sgp->root_path));
-		concatenate_char(&abs_path, '/');
-		concatenate_dstring(&abs_path, &(hrq->path));
+		dstring abs_path;
+		if(!init_copy_dstring(&(sgp->root_path)))
+		{
+			close_connection = 1;
+			goto EXIT0;
+		}
+		if(!concatenate_char(&abs_path, '/') || !concatenate_dstring(&abs_path, &(hrq->path)))
+		{
+			close_connection = 1;
+			goto EXIT0_1;
+		}
 
 		// make absolute path -> cstring compatible
-		expand_dstring(&abs_path, 1);
+		if(get_unused_capacity_dstring(&abs_path) == 0 && !expand_dstring(&abs_path, 1))
+		{
+			close_connection = 1;
+			goto EXIT0_1;
+		}
 		char* abs_path_cstr = get_byte_array_dstring(&abs_path);
 		abs_path_cstr[get_char_count_dstring(&abs_path)] = '\0';
 
