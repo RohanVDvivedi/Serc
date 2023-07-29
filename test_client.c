@@ -77,18 +77,22 @@ void* query_and_print_meaning(void* word)
 	}
 
 	http_request_head hrq;
-	init_http_request_head_from_uri(&hrq, &baseuri);
+	if(!init_http_request_head_from_uri(&hrq, &baseuri))
+		goto EXIT_0;
 	hrq.method = GET;
-	concatenate_dstring(&(hrq.path), &get_dstring_pointing_to_cstring(word));
-	insert_literal_cstrings_in_dmap(&(hrq.headers), "accept", "*/*");
-	insert_literal_cstrings_in_dmap(&(hrq.headers), "accept-encoding", "gzip,deflate");
+	if(!concatenate_dstring(&(hrq.path), &get_dstring_pointing_to_cstring(word)))
+		goto EXIT_1;
+	if(!insert_literal_cstrings_in_dmap(&(hrq.headers), "accept", "*/*"))
+		goto EXIT_1;
+	if(!insert_literal_cstrings_in_dmap(&(hrq.headers), "accept-encoding", "gzip,deflate"))
+		goto EXIT_1;
 
 	http_response_head hrp;
 	init_http_response_head(&hrp);
 
 	int error = 0;
 
-	if(serialize_http_request_head(raw_stream, &hrq) == -1)
+	if(HTTP_NO_ERROR != serialize_http_request_head(raw_stream, &hrq))
 	{
 		printf("error serializing http request head\n");
 		force_shutdown_raw_stream = 1;
@@ -101,7 +105,7 @@ void* query_and_print_meaning(void* word)
 		force_shutdown_raw_stream = 1;
 		goto EXIT_2;
 	}
-	if(parse_http_response_head(raw_stream, &hrp) == -1)
+	if(HTTP_NO_ERROR != parse_http_response_head(raw_stream, &hrp))
 	{
 		printf("error parsing http response head\n");
 		force_shutdown_raw_stream = 1;
@@ -148,10 +152,12 @@ void* query_and_print_meaning(void* word)
 	deinitialize_stacked_stream(&sstrm);
 
 	EXIT_2:;
-	deinit_http_request_head(&hrq);
 	deinit_http_response_head(&hrp);
 
-	// if errored, we ask the client set to destroy the stream
+	EXIT_1:;
+	deinit_http_request_head(&hrq);
+
+	EXIT_0:;
 	return_client(http_s_client_set, raw_stream, force_shutdown_raw_stream);
 
 	return NULL;
