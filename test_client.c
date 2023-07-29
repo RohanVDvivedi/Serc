@@ -125,7 +125,7 @@ void* query_and_print_meaning(void* word)
 
 	int json_parse_error = JSON_NO_ERROR;
 	json_node* js_resp = parse_json(get_top_of_stacked_stream(&sstrm, READ_STREAMS), 128, 64, &json_parse_error);
-	if(json_parse_error || js_resp)
+	if(json_parse_error)
 	{
 		printf("error parsing json %d\n", json_parse_error);
 		force_shutdown_raw_stream = 1;
@@ -135,7 +135,7 @@ void* query_and_print_meaning(void* word)
 	// make sure that the js_resp has the result
 	json_node* js = js_resp;
 	int meaning_found = 0;
-	if(js->type == JSON_ARRAY)
+	if(js != NULL && js->type == JSON_ARRAY)
 	{
 		js = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), 0);
 		if(js != NULL && js->type == JSON_OBJECT)
