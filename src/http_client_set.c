@@ -14,7 +14,8 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 	init_uri(&uriv);
 
 	// if there is a parse_uri error, fail with an error
-	if(0 != parse_uri(&uriv, uri_dstr))
+	int uri_parse_error = parse_uri(&uriv, uri_dstr);
+	if(uri_parse_error)
 		goto ERROR;
 
 	// host must not be empty
