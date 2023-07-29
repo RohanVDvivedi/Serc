@@ -157,7 +157,7 @@ void* query_and_print_meaning(void* word)
 								json_node* js_pos = js_poso->value;
 								if(js_pos != NULL && js_pos->type == JSON_STRING && compare_dstring(&(js_pos->json_string), &get_dstring_pointing_to_literal_cstring("noun")) == 0)
 								{
-									jso = (json_object_entry*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("definitions"));
+									jso = (json_object_entry*)find_equals_in_hashmap(&(jsa->json_object), &get_dstring_pointing_to_literal_cstring("definitions"));
 									if(jso != NULL)
 									{
 										json_node* js = jso->value;
