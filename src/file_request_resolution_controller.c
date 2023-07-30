@@ -59,10 +59,7 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 		// if we couldn't stat the path then quit
 		struct stat fstatus;
 		if(stat(abs_path_cstr, &fstatus) != 0)
-		{
-			close_connection = 1;
 			goto EXIT0_1;
-		}
 
 		if(S_ISDIR(fstatus.st_mode) && hrq->method == GET)
 		{
