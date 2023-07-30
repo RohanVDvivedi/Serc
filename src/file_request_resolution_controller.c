@@ -27,10 +27,7 @@ int file_request_controller(const http_request_head* hrq, stream* strm, server_g
 
 	// both of root path and the request path must be present to resolve the file
 	if(is_empty_dstring(&(sgp->root_path)) || is_empty_dstring(&(hrq->path)))
-	{
-		close_connection = 1;
 		goto EXIT0;
-	}
 
 	if((hrq->method == GET || hrq->method == HEAD) && !is_empty_dstring(&(hrq->path)))
 	{
