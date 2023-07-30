@@ -141,7 +141,7 @@ void* query_and_print_meaning(void* word)
 	{
 		for(cy_uint i = 0; i < get_element_count_arraylist(&(js->json_array)) && !meaning_found; i++)
 		{
-			json_node* jsae = fetch_json_node_from_json_array(js, 0);
+			json_node* jsae = fetch_json_node_from_json_array(js, i);
 			json_node* jsae_pos = fetch_json_node_from_json_object(jsae, &get_dstring_pointing_to_literal_cstring("partOfSpeech"));
 			if(jsae_pos == NULL || jsae_pos->type != JSON_STRING || 0 != compare_dstring(&(jsae_pos->json_string), &get_dstring_pointing_to_literal_cstring("noun")))
 				continue;
