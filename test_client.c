@@ -133,57 +133,25 @@ void* query_and_print_meaning(void* word)
 	}
 
 	// make sure that the js_resp has the result
-	json_node* js = js_resp;
 	int meaning_found = 0;
+	json_node* js = js_resp;
+	js = fetch_json_node_from_json_array(js, 0);
+	js = fetch_json_node_from_json_object(js, &get_dstring_pointing_to_literal_cstring("meanings"));
 	if(js != NULL && js->type == JSON_ARRAY)
 	{
-		js = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), 0);
-		if(js != NULL && js->type == JSON_OBJECT)
+		for(cy_uint i = 0; i < get_element_count_arraylist(&(js->json_array)) && !meaning_found; i++)
 		{
-			json_object_entry* jso = (json_object_entry*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("meanings"));
-			if(jso != NULL)
+			json_node* jsae = fetch_json_node_from_json_array(js, 0);
+			json_node* jsae_pos = fetch_json_node_from_json_object(jsae, &get_dstring_pointing_to_literal_cstring("partOfSpeech"));
+			if(jsae_pos == NULL || jsae_pos->type != JSON_STRING || 0 != compare_dstring(&(jsae_pos->json_string), &get_dstring_pointing_to_literal_cstring("noun")))
+				continue;
+			json_node* jsae_def = fetch_json_node_from_json_object(jsae, &get_dstring_pointing_to_literal_cstring("definitions"));
+			jsae_def = fetch_json_node_from_json_array(jsae_def, 0);
+			jsae_def = fetch_json_node_from_json_object(jsae_def, &get_dstring_pointing_to_literal_cstring("definition"));
+			if(jsae_def != NULL && jsae_def->type == JSON_STRING)
 			{
-				js = jso->value;
-				if(js != NULL && js->type == JSON_ARRAY)
-				{
-					for(cy_uint i = 0; i < get_element_count_arraylist(&(js->json_array)) && !meaning_found; i++)
-					{
-						json_node* jsa = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), i);
-						if(jsa != NULL && jsa->type == JSON_OBJECT)
-						{
-							json_object_entry* js_poso = (json_object_entry*)find_equals_in_hashmap(&(jsa->json_object), &get_dstring_pointing_to_literal_cstring("partOfSpeech"));
-							if(js_poso != NULL)
-							{
-								json_node* js_pos = js_poso->value;
-								if(js_pos != NULL && js_pos->type == JSON_STRING && compare_dstring(&(js_pos->json_string), &get_dstring_pointing_to_literal_cstring("noun")) == 0)
-								{
-									jso = (json_object_entry*)find_equals_in_hashmap(&(jsa->json_object), &get_dstring_pointing_to_literal_cstring("definitions"));
-									if(jso != NULL)
-									{
-										json_node* js = jso->value;
-										if(js != NULL && js->type == JSON_ARRAY)
-										{
-											js = (json_node*)get_nth_from_front_of_arraylist(&(js->json_array), 0);
-											if(js != NULL && js->type == JSON_OBJECT)
-											{
-												jso = (json_object_entry*)find_equals_in_hashmap(&(js->json_object), &get_dstring_pointing_to_literal_cstring("definition"));
-												if(jso != NULL)
-												{
-													js = jso->value;
-													if(js != NULL && js->type == JSON_STRING)
-													{
-														printf("%s : " printf_dstring_format "\n", (char*)word, printf_dstring_params(&(js->json_string)));
-														meaning_found = 1;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				printf("%s : " printf_dstring_format "\n", (char*)word, printf_dstring_params(&(jsae_def->json_string)));
+				meaning_found = 1;
 			}
 		}
 	}
