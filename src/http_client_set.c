@@ -50,8 +50,11 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 	if(0 == lookup_by_name(hostname, port, SOCK_STREAM, AF_UNSPEC, &server_address, 1)) // if lookup fails, then fail
 		goto ERROR;
 
+	char* hostname_copy_for_cls = malloc(get_char_count_dstring(&(uriv.host)) + 1);
+	memory_move(hostname_copy_for_cls, hostname, get_char_count_dstring(&(uriv.host)) + 1);
+
 	deinit_uri(&uriv);
-	return new_client_set(&server_address, ssl_ctx, hostname, max_clients);
+	return new_client_set(&server_address, ssl_ctx, hostname_copy_for_cls, max_clients);
 
 	ERROR:;
 	deinit_uri(&uriv);
