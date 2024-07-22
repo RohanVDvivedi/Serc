@@ -8,4 +8,6 @@
 // uri must contain "http://" or "https://" a host name and optionally a port
 client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, unsigned int max_clients);
 
+void delete_http_s_client_set(client_set* cls);
+
 #endif

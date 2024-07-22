@@ -60,3 +60,9 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 	deinit_uri(&uriv);
 	return NULL;
 }
+
+void delete_http_s_client_set(client_set* http_cls)
+{
+	free((char*)(http_cls->hostname));
+	shutdown_and_delete_client_set(http_cls);
+}
