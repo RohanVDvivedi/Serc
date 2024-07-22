@@ -51,7 +51,7 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 		goto ERROR;
 
 	deinit_uri(&uriv);
-	return new_client_set(&server_address, ssl_ctx, max_clients);
+	return new_client_set(&server_address, ssl_ctx, hostname, max_clients);
 
 	ERROR:;
 	deinit_uri(&uriv);
