@@ -58,7 +58,7 @@ int main()
 	delete_executor(executor_p);
 
 	EXIT_1:;
-	shutdown_and_delete_client_set(http_s_client_set);
+	delete_http_s_client_set(http_s_client_set);
 
 	EXIT_0:;
 	if(ssl_ctx != NULL)
