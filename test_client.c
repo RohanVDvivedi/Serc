@@ -89,7 +89,8 @@ void* query_and_print_meaning(void* word)
 		goto EXIT_1;
 
 	http_response_head hrp;
-	init_http_response_head(&hrp);
+	if(!init_http_response_head(&hrp))
+		goto EXIT1;
 
 	int error = 0;
 
