@@ -13,7 +13,9 @@ void http_connection_stream_handler(stream* strm, void* server_specific_params)
 
 	while(1)
 	{
-		http_request_head hrq; init_http_request_head(&hrq);
+		http_request_head hrq;
+		if(!init_http_request_head(&hrq))
+			break;
 
 		if(HTTP_NO_ERROR != parse_http_request_head(strm, &hrq))
 		{
