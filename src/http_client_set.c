@@ -11,7 +11,8 @@ const dstring HTTPS_dstr = get_dstring_pointing_to_literal_cstring("https");
 client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, unsigned int max_clients)
 {
 	uri uriv;
-	init_uri(&uriv);
+	if(!init_uri(&uriv))
+		return NULL;
 
 	if(URI_NO_ERROR != parse_uri(&uriv, uri_dstr))
 		goto ERROR;
