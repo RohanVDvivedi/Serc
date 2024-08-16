@@ -128,7 +128,7 @@ void* query_and_print_meaning(void* word)
 	json_node* js_resp = parse_json(get_top_of_stacked_stream(&sstrm, READ_STREAMS), 2048, 64, &json_parse_error);
 	if(json_parse_error)
 	{
-		printf("error parsing json %d\n", json_parse_error);
+		printf("error parsing json %d, status code was %d\n", json_parse_error, hrp.status);
 		force_shutdown_raw_stream = 1;
 		goto EXIT_4;
 	}
