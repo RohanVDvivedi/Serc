@@ -1,16 +1,16 @@
-#include<distributer.h>
+#include<serc/distributer.h>
 
-#include<cutlery_stds.h>
+#include<cutlery/cutlery_stds.h>
 
-#include<strhsh.h>
+#include<serc/strhsh.h>
 
-#include<http_response.h>
-#include<file_handling_util.h>
+#include<httpparser/http_response.h>
+#include<httpparser/file_handling_util.h>
 
 // forward declarations of all your controller functions
 //@controller_definitions
 
-#include<file_request_resolution_controller.h>
+#include<serc/file_request_resolution_controller.h>
 
 static dstring const * const close_dstr = &get_dstring_pointing_to_literal_cstring("close");
 

@@ -1,4 +1,4 @@
-#include<file_request_resolution_controller.h>
+#include<serc/file_request_resolution_controller.h>
 
 #include<sys/types.h>
 #include<sys/stat.h>
@@ -11,14 +11,14 @@
 #include<stdint.h>
 #include<dirent.h>
 
-#include<stacked_stream.h>
-#include<stream_util.h>
+#include<connman/stacked_stream.h>
+#include<cutlery/stream_util.h>
 
-#include<init_content_encoding_streams.h>
-#include<http_body_stream.h>
-#include<http_response.h>
-#include<file_handling_util.h>
-#include<http_header_util.h>
+#include<httpparser/init_content_encoding_streams.h>
+#include<httpparser/http_body_stream.h>
+#include<httpparser/http_response.h>
+#include<httpparser/file_handling_util.h>
+#include<httpparser/http_header_util.h>
 
 int file_request_controller(const http_request_head* hrq, stream* strm, server_global_params* sgp, int* routing_resolved)
 {

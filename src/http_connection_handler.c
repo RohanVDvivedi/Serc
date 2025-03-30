@@ -1,11 +1,11 @@
-#include<http_connection_handler.h>
+#include<serc/http_connection_handler.h>
 
-#include<server_global_params.h>
+#include<serc/server_global_params.h>
 
-#include<http_request.h>
-#include<distributer.h>
+#include<httpparser/http_request.h>
+#include<serc/distributer.h>
 
-#include<dstring.h>
+#include<cutlery/dstring.h>
 
 void http_connection_stream_handler(stream* strm, void* server_specific_params)
 {

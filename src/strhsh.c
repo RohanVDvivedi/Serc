@@ -1,4 +1,4 @@
-#include<strhsh.h>
+#include<serc/strhsh.h>
 
 unsigned long long int get_hash_cstring(const char* s)
 {

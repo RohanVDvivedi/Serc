@@ -64,8 +64,8 @@
    * controller returns a 1 value to close the current connection (i.e. for a parse error or read timeout).
  * Create appropriate json entries, in your routing.con file, to specify routing information.
  * do not forget to include appropriate public api headers as and when needed by your source, which includes
-   * `#include<http_server.h>`
-   * `#include<http_client_set.h>`
+   * `#include<serc/http_server.h>`
+   * `#include<serc/http_client_set.h>`
  * Now the routing files need to be compiled to produce a distributer function (*a huge switch case*) in a distributer.c file, which will help the server to know how to route the request to your comroller.
    * route.py <routing_file_1.con> <routing_file_2.con> <routing_file_3.con> ...
  * above step will create distributer.c file in your `pwd`

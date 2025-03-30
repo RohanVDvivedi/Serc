@@ -1,17 +1,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#include<executor.h>
+#include<boompar/executor.h>
 
-#include<stacked_stream.h>
-#include<ssl_ctx_helper.h>
+#include<connman/stacked_stream.h>
+#include<connman/ssl_ctx_helper.h>
 
-#include<http_request.h>
-#include<http_response.h>
-#include<http_header_util.h>
+#include<httpparser/http_request.h>
+#include<httpparser/http_response.h>
+#include<httpparser/http_header_util.h>
 
-#include<http_client_set.h>
-#include<json_parser.h>
+#include<serc/http_client_set.h>
+#include<jsonparser/json_parser.h>
 
 client_set* http_s_client_set = NULL;
 

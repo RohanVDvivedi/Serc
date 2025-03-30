@@ -2,7 +2,7 @@
 #define STRHSH_H
 
 #include<string.h>
-#include<dstring.h>
+#include<cutlery/dstring.h>
 
 unsigned long long int get_hash_cstring(const char* s);
 
