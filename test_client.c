@@ -67,8 +67,12 @@ int main()
 	return 0;
 }
 
+#include<cutlery/deferred_callbacks.h>
+
 void* query_and_print_meaning(void* word)
 {
+	NEW_DEFERRED_CALLS(16);
+
 	stream* raw_stream = reserve_client(http_s_client_set, 0);
 	int force_shutdown_raw_stream = 0;
 	if(raw_stream == NULL)
@@ -79,18 +83,20 @@ void* query_and_print_meaning(void* word)
 
 	http_request_head hrq;
 	if(!init_http_request_head_from_uri(&hrq, &baseuri))
-		goto EXIT_0;
+		goto EXIT;
+	DEFER(deinit_http_request_head, &hrq);
 	hrq.method = GET;
 	if(!concatenate_dstring(&(hrq.path), &get_dstring_pointing_to_cstring(word)))
-		goto EXIT_1;
+		goto EXIT;
 	if(!insert_literal_cstrings_in_dmap(&(hrq.headers), "accept", "*/*"))
-		goto EXIT_1;
+		goto EXIT;
 	if(!insert_literal_cstrings_in_dmap(&(hrq.headers), "accept-encoding", "gzip,deflate"))
-		goto EXIT_1;
+		goto EXIT;
 
 	http_response_head hrp;
 	if(!init_http_response_head(&hrp))
-		goto EXIT_1;
+		goto EXIT;
+	DEFER(deinit_http_response_head, &hrp);
 
 	int error = 0;
 
@@ -98,31 +104,33 @@ void* query_and_print_meaning(void* word)
 	{
 		printf("error serializing http request head\n");
 		force_shutdown_raw_stream = 1;
-		goto EXIT_2;
+		goto EXIT;
 	}
 	flush_all_from_stream(raw_stream, &error);
 	if(error)
 	{
 		printf("%d error flushing request head\n", error);
 		force_shutdown_raw_stream = 1;
-		goto EXIT_2;
+		goto EXIT;
 	}
 	if(HTTP_NO_ERROR != parse_http_response_head(raw_stream, &hrp))
 	{
 		printf("error parsing http response head\n");
 		force_shutdown_raw_stream = 1;
-		goto EXIT_2;
+		goto EXIT;
 	}
 
 	stacked_stream sstrm;
 	initialize_stacked_stream(&sstrm);
+	DEFER(deinitialize_stacked_stream, &sstrm);
 
 	if(0 > intialize_http_body_and_decoding_streams_for_reading(&sstrm, raw_stream, &(hrp.headers)))
 	{
 		printf("error initializing one of body or decoding streams\n");
 		force_shutdown_raw_stream = 1;
-		goto EXIT_3;
+		goto EXIT;
 	}
+	DEFER(close_deinitialize_free_all_from_READER_stacked_stream, &sstrm);
 
 	int json_parse_error = JSON_NO_ERROR;
 	json_node* js_resp = parse_json(get_top_of_stacked_stream(&sstrm, READ_STREAMS), 2048, 64, &json_parse_error);
@@ -130,8 +138,9 @@ void* query_and_print_meaning(void* word)
 	{
 		printf("error parsing json %d, status code was %d\n", json_parse_error, hrp.status);
 		force_shutdown_raw_stream = 1;
-		goto EXIT_4;
+		goto EXIT;
 	}
+	DEFER(delete_json_node, js_resp);
 
 	// make sure that the js_resp has the result
 	int meaning_found = 0;
@@ -160,23 +169,8 @@ void* query_and_print_meaning(void* word)
 	if(!meaning_found)
 		printf("%s : NO MEANING_FOUND\n", (char*)word);
 
-	//EXIT_5:;
-	delete_json_node(js_resp);
-
-	EXIT_4:;
-	close_deinitialize_free_all_from_stacked_stream(&sstrm, READ_STREAMS);
-
-	EXIT_3:;
-	deinitialize_stacked_stream(&sstrm);
-
-	EXIT_2:;
-	deinit_http_response_head(&hrp);
-
-	EXIT_1:;
-	deinit_http_request_head(&hrq);
-
-	EXIT_0:;
+	EXIT:;
+	CALL_ALL_DEFERRED();
 	return_client(http_s_client_set, raw_stream, force_shutdown_raw_stream);
-
 	return NULL;
 }
