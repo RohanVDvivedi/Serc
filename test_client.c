@@ -144,17 +144,22 @@ void* query_and_print_meaning(void* word)
 
 	// make sure that the js_resp has the result
 	int meaning_found = 0;
-	json_node* js = js_resp;
-	js = fetch_json_node_from_json_array(js, 0);
-	js = fetch_json_node_from_json_object(js, &get_dstring_pointing_to_literal_cstring("meanings"));
-	if(js != NULL && js->type == JSON_ARRAY)
+	int non_existing = 0;
+	json_node* js = get_json_node_from_json_node(js_resp, STATIC_JSON_ACCESSOR(
+		JSON_ARRAY_INDEX(0),
+		JSON_OBJECT_KEY_literal("meanings")
+	), &non_existing);
+	if(!non_existing && js != NULL && js->type == JSON_ARRAY)
 	{
 		for(cy_uint i = 0; i < get_element_count_arraylist(&(js->json_array)) && !meaning_found; i++)
 		{
+			int non_existing = 0;
 			json_node* partOfSpeech = get_json_node_from_json_node(js, STATIC_JSON_ACCESSOR(
 				JSON_ARRAY_INDEX(i),
 				JSON_OBJECT_KEY_literal("partOfSpeech")
-			));
+			), &non_existing);
+			if(non_existing)
+				continue;
 			if(partOfSpeech == NULL || partOfSpeech->type != JSON_STRING || 0 != compare_dstring(&(partOfSpeech->json_string), &get_dstring_pointing_to_literal_cstring("noun")))
 				continue;
 
@@ -163,7 +168,9 @@ void* query_and_print_meaning(void* word)
 				JSON_OBJECT_KEY_literal("definitions"),
 				JSON_ARRAY_INDEX(0),
 				JSON_OBJECT_KEY_literal("definition")
-			));
+			), &non_existing);
+			if(non_existing)
+				continue;
 			if(definition0 != NULL && definition0->type == JSON_STRING)
 			{
 				printf("%s : " printf_dstring_format "\n", (char*)word, printf_dstring_params(&(definition0->json_string)));
