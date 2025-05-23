@@ -73,7 +73,7 @@ void* query_and_print_meaning(void* word)
 {
 	NEW_DEFERRED_CALLS(16);
 
-	stream* raw_stream = reserve_client(http_s_client_set, 0);
+	stream* raw_stream = reserve_client(http_s_client_set, BLOCKING);
 	int force_shutdown_raw_stream = 0;
 	if(raw_stream == NULL)
 	{
