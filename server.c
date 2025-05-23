@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 		printf("ssl certficate (and public key) found at %s.crt and private key %s.key\n", ssl_keys_certs_prefix, ssl_keys_certs_prefix);
 
 	// start the server
-	http_server_run(port, root_path, serve_dirs, ssl_keys_certs_prefix, 3000, NULL); // socket timeout of 3 seconds
+	http_server_run(port, root_path, serve_dirs, ssl_keys_certs_prefix, 6000, NULL); // socket timeout of 6 seconds
 
 	return 0;
 }
