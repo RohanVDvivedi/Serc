@@ -8,7 +8,7 @@ const char* port_443 = "443";
 const dstring HTTP_dstr = get_dstring_pointing_to_literal_cstring("http");
 const dstring HTTPS_dstr = get_dstring_pointing_to_literal_cstring("https");
 
-client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, unsigned int max_clients)
+client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uint64_t timeout_in_milliseconds, unsigned int max_clients)
 {
 	uri uriv;
 	if(!init_uri(&uriv))
@@ -55,7 +55,7 @@ client_set* new_http_s_client_set(const dstring* uri_dstr, SSL_CTX* ssl_ctx, uns
 	memory_move(hostname_copy_for_cls, hostname, get_char_count_dstring(&(uriv.host)) + 1);
 
 	deinit_uri(&uriv);
-	return new_client_set(&server_address, ssl_ctx, hostname_copy_for_cls, max_clients);
+	return new_client_set(&server_address, ssl_ctx, hostname_copy_for_cls, timeout_in_milliseconds, max_clients);
 
 	ERROR:;
 	deinit_uri(&uriv);

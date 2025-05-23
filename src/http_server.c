@@ -37,7 +37,7 @@ static SSL_CTX* create_server_ssl_ctx(char* SSL_KEYS_CERTS)
 	return ssl_ctx;
 }
 
-void http_server_run(uint16_t PORT, char* ROOT_PATH, int SERVE_DIRS, char* SSL_KEYS_CERTS, const void* server_param)
+void http_server_run(uint16_t PORT, char* ROOT_PATH, int SERVE_DIRS, char* SSL_KEYS_CERTS, uint64_t timeout_in_milliseconds, const void* server_param)
 {
 	// these values will be constant through out all the connections of this specific server
 	server_global_params sgp = {0};
@@ -58,7 +58,7 @@ void http_server_run(uint16_t PORT, char* ROOT_PATH, int SERVE_DIRS, char* SSL_K
 	}
 
 	signal(SIGINT, intHandler);
-	serve_using_stream_handlers(&cgp, &sgp, http_connection_stream_handler, 100, ssl_ctx, &listen_fd);
+	serve_using_stream_handlers(&cgp, &sgp, http_connection_stream_handler, 100, ssl_ctx, timeout_in_milliseconds, &listen_fd);
 
 	if(ssl_ctx != NULL)
 		destroy_ssl_ctx(ssl_ctx);

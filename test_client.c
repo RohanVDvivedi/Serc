@@ -27,7 +27,7 @@ int main()
 	ssl_lib_init();
 	SSL_CTX* ssl_ctx = get_ssl_ctx_for_client(NULL, NULL);
 
-	http_s_client_set = new_http_s_client_set(&baseuri, ssl_ctx, MAX_CLIENT_CONNECTIONS);
+	http_s_client_set = new_http_s_client_set(&baseuri, ssl_ctx, 3000, MAX_CLIENT_CONNECTIONS); // socket timeout of 3 seconds
 	if(http_s_client_set == NULL)
 	{
 		printf("failed to initialize http client set\n");
