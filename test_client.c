@@ -42,16 +42,16 @@ int main()
 		goto EXIT_1;
 	}
 
-	submit_job_executor(executor_p, query_and_print_meaning, "hello", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "how", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "are", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "you", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "Dinosaur", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "Rohan", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "Database", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "Operating Systems", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "Systems", NULL, NULL, 0);
-	submit_job_executor(executor_p, query_and_print_meaning, "Programming", NULL, NULL, 0);
+	submit_job_executor(executor_p, query_and_print_meaning, "hello", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "how", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "are", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "you", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "Dinosaur", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "Rohan", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "Database", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "Operating Systems", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "Systems", NULL, NULL, BLOCKING);
+	submit_job_executor(executor_p, query_and_print_meaning, "Programming", NULL, NULL, BLOCKING);
 
 	shutdown_executor(executor_p, 0);
 	wait_for_all_executor_workers_to_complete(executor_p);
