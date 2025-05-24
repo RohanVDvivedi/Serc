@@ -53,7 +53,7 @@
  * `serc` or `serc --root=.`	=> this will start a http server hosting all files in your `pwd`
  * `serc --root=./public --port=8080` => this will start a http server on port 8080 to host all your files in ./public directory
  * `serc --root=./public --serve-dirs --port=8080` => this will also serve directories from the root path.
- * `serc --port=6900 --root=./public --ssl_cert_keys=./con/server`	=> this will start a https server on port 6900 to host all your files in ./public directory, the public key and certificates will be "./con/server.crt" and  private key will be "./con/server.key".
+ * `serc --port=8080 --root=./public --ssl_cert_keys=./con/server`	=> this will start a https server on port 6900 to host all your files in ./public directory, the public key and certificates will be "./con/server.crt" and  private key will be "./con/server.key".
 
 #### usage as framework
  * create appropriate routing.con file (as described in the sample file in the con directory).
