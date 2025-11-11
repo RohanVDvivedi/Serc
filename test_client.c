@@ -35,7 +35,7 @@ int main()
 	}
 
 	// wait for 1 seconds to receive, after which the worker will be killed
-	executor* executor_p = new_executor(FIXED_THREAD_COUNT_EXECUTOR, MAX_CLIENT_CONNECTIONS, 1024, 0, NULL, NULL, NULL);
+	executor* executor_p = new_executor(FIXED_THREAD_COUNT_EXECUTOR, MAX_CLIENT_CONNECTIONS, 1024, 0, NULL, NULL, NULL, 0);
 	if(executor_p == NULL)
 	{
 		printf("failed to initialize executor to call http requests\n");
