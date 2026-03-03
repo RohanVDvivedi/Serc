@@ -30,7 +30,7 @@ TMP_DIR:=./share
 # compiler
 CC:=gcc
 # compiler flags
-CFLAGS:=-Wall -O3 -I${INC_DIR}
+CFLAGS:=-Wall -O3 -flto -I${INC_DIR}
 # linker flags, this will used to compile the binary
 LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME} -lhttpparser -lconnman -lz -lssl -lcrypto -lboompar -lpthread -lcutlery
 # Archiver
